@@ -3,9 +3,11 @@ import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import AmenitiesGrid from './components/AmenitiesGrid';
 import MediaGallery from './components/MediaGallery';
+import LocationMap from './components/LocationMap';
+import DiscoverSection from './components/DiscoverSection';
 import CustomerReviews from './components/CustomerReviews';
-import BookingCalendar from './components/BookingCalendar';
-import ContactForm from './components/ContactForm';
+import BookingCTA from './components/BookingCTA';
+import FloatingContactButton from './components/FloatingContactButton';
 import Footer from './components/Footer';
 
 export default function App() {
@@ -22,11 +24,14 @@ export default function App() {
         <HeroSection />
         <AmenitiesGrid />
         <MediaGallery />
+        <LocationMap />
+        <DiscoverSection />
         <CustomerReviews />
-        <BookingCalendar />
-        <ContactForm />
+        <BookingCTA />
       </main>
       <Footer />
+      <FloatingContactButton />
     </>
   );
 }
+

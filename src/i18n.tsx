@@ -52,10 +52,54 @@ const translations = {
         'gallery.beach': 'Beach',
         'gallery.views': 'Views',
 
+        // Location Map
+        'map.label': 'Location',
+        'map.title': 'Perfectly Located',
+        'map.subtitle': 'Everything you need is just a short walk away — beaches, restaurants, shops and more.',
+        'map.nearby': 'What\'s Nearby',
+        'map.beach': 'Playa de la Enramada',
+        'map.beachDist': '3 min walk (250 m)',
+        'map.restaurants': 'Restaurants & Bars',
+        'map.restaurantsDist': '2-5 min walk',
+        'map.supermarket': 'Supermarket (HiperDino)',
+        'map.supermarketDist': '5 min walk (400 m)',
+        'map.pharmacy': 'Pharmacy',
+        'map.pharmacyDist': '6 min walk (450 m)',
+        'map.pool': 'Communal Pool',
+        'map.poolDist': 'In the building',
+        'map.airport': 'Tenerife South Airport',
+        'map.airportDist': '20 min by car (25 km)',
+        'map.directions': 'Get Directions',
+
+        // Discover Playa Paraíso
+        'discover.label': 'Discover the Area',
+        'discover.title': 'Explore Playa Paraíso',
+        'discover.subtitle': 'More than just a place to stay — discover the best experiences, activities, and hidden gems that southern Tenerife has to offer.',
+        'discover.beachTitle': 'Pristine Beaches',
+        'discover.beachDesc': 'Golden and volcanic black-sand beaches just steps away. Playa del Duque and Playa de la Enramada are local favourites.',
+        'discover.snorkelTitle': 'Snorkeling & Diving',
+        'discover.snorkelDesc': 'Crystal-clear Atlantic waters with vibrant marine life, sea turtles, and volcanic rock formations perfect for underwater exploration.',
+        'discover.whaleTitle': 'Whale & Dolphin Watching',
+        'discover.whaleDesc': 'Year-round boat excursions to see pilot whales and bottlenose dolphins in their natural habitat — just minutes from the coast.',
+        'discover.hikingTitle': 'Hiking & Nature',
+        'discover.hikingDesc': 'From coastal cliff trails to the majestic Teide National Park, Tenerife offers world-class hiking for every fitness level.',
+        'discover.foodTitle': 'Local Gastronomy',
+        'discover.foodDesc': 'Savor fresh seafood, Canarian wrinkled potatoes with mojo sauce, and local wines from century-old vineyards.',
+        'discover.sunsetTitle': 'Magical Sunsets',
+        'discover.sunsetDesc': 'Watch the sun dip below the Atlantic from your terrace or the nearby cliffs — the golden hour here is truly spectacular.',
+        'discover.funFact': '🌋 Playa Paraíso sits on the sunny southwest coast of Tenerife, enjoying over 300 days of sunshine per year with average temperatures of 22–28°C. Mount Teide, Spain\'s highest peak, is just a 90-minute drive away.',
+        'discover.learnMore': 'Learn more',
+
         // Reviews
         'reviews.label': 'Guest Reviews',
         'reviews.title': 'What Our Guests Say',
         'reviews.count': 'reviews',
+
+        // Booking CTA
+        'bookingCta.title': 'Ready for Your Paradise Getaway?',
+        'bookingCta.subtitle': 'Book your stay at Verónica\'s Flat and wake up to stunning ocean views, warm Canarian sunshine, and the sound of waves just steps away.',
+        'bookingCta.button': 'Check Availability',
+        'bookingCta.hint': 'Free cancellation · No booking fees · Instant confirmation',
 
         // Booking
         'booking.label': 'Availability',
@@ -184,10 +228,54 @@ const translations = {
         'gallery.beach': 'Playa',
         'gallery.views': 'Vistas',
 
+        // Mapa de Ubicación
+        'map.label': 'Ubicación',
+        'map.title': 'Perfectamente Ubicado',
+        'map.subtitle': 'Todo lo que necesitas está a solo unos pasos — playas, restaurantes, tiendas y más.',
+        'map.nearby': 'Qué Hay Cerca',
+        'map.beach': 'Playa de la Enramada',
+        'map.beachDist': '3 min a pie (250 m)',
+        'map.restaurants': 'Restaurantes y Bares',
+        'map.restaurantsDist': '2-5 min a pie',
+        'map.supermarket': 'Supermercado (HiperDino)',
+        'map.supermarketDist': '5 min a pie (400 m)',
+        'map.pharmacy': 'Farmacia',
+        'map.pharmacyDist': '6 min a pie (450 m)',
+        'map.pool': 'Piscina Comunitaria',
+        'map.poolDist': 'En el edificio',
+        'map.airport': 'Aeropuerto Tenerife Sur',
+        'map.airportDist': '20 min en coche (25 km)',
+        'map.directions': 'Cómo Llegar',
+
+        // Descubrir Playa Paraíso
+        'discover.label': 'Descubre la Zona',
+        'discover.title': 'Explora Playa Paraíso',
+        'discover.subtitle': 'Más que un lugar donde alojarse — descubre las mejores experiencias, actividades y rincones secretos del sur de Tenerife.',
+        'discover.beachTitle': 'Playas Paradisíacas',
+        'discover.beachDesc': 'Playas de arena dorada y volcánica a pocos pasos. Playa del Duque y Playa de la Enramada son las favoritas de la zona.',
+        'discover.snorkelTitle': 'Snorkel y Buceo',
+        'discover.snorkelDesc': 'Aguas cristalinas del Atlántico con vida marina vibrante, tortugas marinas y formaciones rocosas volcánicas perfectas para explorar.',
+        'discover.whaleTitle': 'Avistamiento de Ballenas',
+        'discover.whaleDesc': 'Excursiones en barco durante todo el año para ver ballenas piloto y delfines mulares en su hábitat natural — a minutos de la costa.',
+        'discover.hikingTitle': 'Senderismo y Naturaleza',
+        'discover.hikingDesc': 'Desde senderos costeros hasta el majestuoso Parque Nacional del Teide, Tenerife ofrece rutas de senderismo de primer nivel.',
+        'discover.foodTitle': 'Gastronomía Local',
+        'discover.foodDesc': 'Saborea marisco fresco, papas arrugadas con mojo, y vinos locales de viñedos centenarios.',
+        'discover.sunsetTitle': 'Atardeceres Mágicos',
+        'discover.sunsetDesc': 'Contempla el sol hundiéndose en el Atlántico desde tu terraza o los acantilados cercanos — la hora dorada aquí es verdaderamente espectacular.',
+        'discover.funFact': '🌋 Playa Paraíso se encuentra en la soleada costa suroeste de Tenerife, disfrutando de más de 300 días de sol al año con temperaturas medias de 22–28°C. El Teide, el pico más alto de España, está a solo 90 minutos en coche.',
+        'discover.learnMore': 'Saber más',
+
         // Reviews
         'reviews.label': 'Opiniones de Huéspedes',
         'reviews.title': 'Lo que Dicen Nuestros Huéspedes',
         'reviews.count': 'opiniones',
+
+        // CTA de Reserva
+        'bookingCta.title': '¿Listo para Tu Escapada al Paraíso?',
+        'bookingCta.subtitle': 'Reserva tu estancia en el apartamento de Verónica y despierta con impresionantes vistas al mar, cálido sol canario y el sonido de las olas a pocos pasos.',
+        'bookingCta.button': 'Ver Disponibilidad',
+        'bookingCta.hint': 'Cancelación gratuita · Sin comisiones · Confirmación inmediata',
 
         // Booking
         'booking.label': 'Disponibilidad',
@@ -316,10 +404,54 @@ const translations = {
         'gallery.beach': 'Pláž',
         'gallery.views': 'Výhledy',
 
+        // Mapa Polohy
+        'map.label': 'Poloha',
+        'map.title': 'Perfektní Poloha',
+        'map.subtitle': 'Vše, co potřebujete, je jen pár kroků daleko — pláže, restaurace, obchody a další.',
+        'map.nearby': 'Co Je Poblíž',
+        'map.beach': 'Playa de la Enramada',
+        'map.beachDist': '3 min pěšky (250 m)',
+        'map.restaurants': 'Restaurace a Bary',
+        'map.restaurantsDist': '2-5 min pěšky',
+        'map.supermarket': 'Supermarket (HiperDino)',
+        'map.supermarketDist': '5 min pěšky (400 m)',
+        'map.pharmacy': 'Lékárna',
+        'map.pharmacyDist': '6 min pěšky (450 m)',
+        'map.pool': 'Společný Bazén',
+        'map.poolDist': 'V budově',
+        'map.airport': 'Letiště Tenerife Jih',
+        'map.airportDist': '20 min autem (25 km)',
+        'map.directions': 'Navigovat',
+
+        // Objevte Playa Paraíso
+        'discover.label': 'Objevte Okolí',
+        'discover.title': 'Prozkoumejte Playa Paraíso',
+        'discover.subtitle': 'Více než jen ubytování — poznejte nejlepší zážitky, aktivity a skryté klenoty jižního Tenerife.',
+        'discover.beachTitle': 'Nádherné Pláže',
+        'discover.beachDesc': 'Zlaté a černé písčité pláže vulkanického původu na dosah ruky. Playa del Duque a Playa de la Enramada jsou místní oblíbenci.',
+        'discover.snorkelTitle': 'Šnorchlování a Potápění',
+        'discover.snorkelDesc': 'Křišťálově čisté vody Atlantiku s pestrým mořským životem, mořskými želvami a vulkanickými útesy ideálními pro podmořský průzkum.',
+        'discover.whaleTitle': 'Pozorování Velryb a Delfínů',
+        'discover.whaleDesc': 'Celoroční lodní výlety za grindami a delfíny v jejich přirozeném prostředí — jen pár minut od pobřeží.',
+        'discover.hikingTitle': 'Turistika a Příroda',
+        'discover.hikingDesc': 'Od pobřežních stezek po majestátní Národní park Teide — Tenerife nabízí turistiku světové úrovně pro všechny zdatnostní kategorie.',
+        'discover.foodTitle': 'Místní Gastronomie',
+        'discover.foodDesc': 'Vychutnejte si čerstvé mořské plody, kanárské papas arrugadas s omáčkou mojo a místní vína ze staletých vinic.',
+        'discover.sunsetTitle': 'Kouzelné Západy Slunce',
+        'discover.sunsetDesc': 'Sledujte slunce klesající pod hladinu Atlantiku z vaší terasy nebo z nedaleký útesů — zlatá hodinka je tu opravdu velkolepá.',
+        'discover.funFact': '🌋 Playa Paraíso leží na slunném jihozápadním pobřeží Tenerife a těší se více než 300 slunečným dnům ročně s průměrnými teplotami 22–28 °C. Teide, nejvyšší hora Španělska, je jen 90 minut jízdy autem.',
+        'discover.learnMore': 'Více informací',
+
         // Reviews
         'reviews.label': 'Recenze Hostů',
         'reviews.title': 'Co Říkají Naši Hosté',
         'reviews.count': 'recenzí',
+
+        // CTA Rezervace
+        'bookingCta.title': 'Připraveni na Rajskou Dovolenou?',
+        'bookingCta.subtitle': 'Zarezervujte si pobyt v apartmánu Veroniky a probouzejte se s úžasným výhledem na oceán, teplým kanárským sluncem a zvukem vln jen pár kroků daleko.',
+        'bookingCta.button': 'Zkontrolovat Dostupnost',
+        'bookingCta.hint': 'Zrušení zdarma · Bez poplatků · Okamžité potvrzení',
 
         // Booking
         'booking.label': 'Dostupnost',

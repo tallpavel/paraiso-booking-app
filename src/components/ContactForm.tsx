@@ -88,8 +88,11 @@ export default function ContactForm() {
 
                         <div className="space-y-6">
                             <div className="flex items-start gap-4">
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-ocean/10 text-xl">
-                                    📍
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-ocean/10 text-ocean">
+                                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
                                 </div>
                                 <div>
                                     <h3 className="mb-1 font-semibold text-navy">{t('contact.address')}</h3>
@@ -100,8 +103,11 @@ export default function ContactForm() {
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-ocean/10 text-xl">
-                                    ✉️
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-ocean/10 text-ocean">
+                                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                                        <path d="M22 4l-10 8L2 4" />
+                                    </svg>
                                 </div>
                                 <div>
                                     <h3 className="mb-1 font-semibold text-navy">{t('contact.email')}</h3>
@@ -114,8 +120,12 @@ export default function ContactForm() {
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-ocean/10 text-xl">
-                                    🌐
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-ocean/10 text-ocean">
+                                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M2 12h20" />
+                                        <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                                    </svg>
                                 </div>
                                 <div>
                                     <h3 className="mb-1 font-semibold text-navy">{t('contact.location')}</h3>

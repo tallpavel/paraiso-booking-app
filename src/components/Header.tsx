@@ -7,7 +7,6 @@ const NAV_KEYS = [
     { key: 'nav.gallery' as const, href: '#gallery' },
     { key: 'nav.reviews' as const, href: '#reviews' },
     { key: 'nav.book' as const, href: '#booking' },
-    { key: 'nav.contact' as const, href: '#contact' },
 ];
 
 const LOCALE_FLAGS: Record<Locale, string> = { en: '🇬🇧', es: '🇪🇸', cs: '🇨🇿' };
@@ -84,8 +83,8 @@ export default function Header() {
                             type="button"
                             onClick={() => setLangOpen(!langOpen)}
                             className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 ${scrolled
-                                    ? 'bg-sand text-navy hover:bg-sand-light'
-                                    : 'bg-white/10 text-white hover:bg-white/20'
+                                ? 'bg-sand text-navy hover:bg-sand-light'
+                                : 'bg-white/10 text-white hover:bg-white/20'
                                 }`}
                             aria-label="Select language"
                             aria-expanded={langOpen}
@@ -117,8 +116,8 @@ export default function Header() {
                                         aria-selected={locale === loc}
                                         onClick={() => { setLocale(loc); setLangOpen(false); }}
                                         className={`flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${locale === loc
-                                                ? 'bg-ocean/10 text-ocean'
-                                                : 'text-navy hover:bg-sand-light'
+                                            ? 'bg-ocean/10 text-ocean'
+                                            : 'text-navy hover:bg-sand-light'
                                             }`}
                                     >
                                         <span className="text-lg">{LOCALE_FLAGS[loc]}</span>

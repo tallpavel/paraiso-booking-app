@@ -1,14 +1,5 @@
 import { PROPERTY_ADDRESS } from '../data';
 import { useI18n } from '../i18n';
-import type { TranslationKey } from '../i18n';
-
-const NAV_KEYS: { key: TranslationKey; href: string }[] = [
-    { key: 'nav.amenities', href: '#amenities' },
-    { key: 'nav.gallery', href: '#gallery' },
-    { key: 'nav.reviews', href: '#reviews' },
-    { key: 'nav.book', href: '#booking' },
-    { key: 'nav.contact', href: '#contact' },
-];
 
 export default function Footer() {
     const { t } = useI18n();
@@ -17,7 +8,7 @@ export default function Footer() {
     return (
         <footer className="bg-navy text-white/80">
             <div className="mx-auto max-w-7xl px-6 py-16">
-                <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
                     {/* Brand */}
                     <div className="sm:col-span-2 lg:col-span-1">
                         <div className="mb-4 flex items-center gap-3">
@@ -37,24 +28,6 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-white">
-                            {t('footer.quickLinks')}
-                        </h3>
-                        <ul className="space-y-3">
-                            {NAV_KEYS.map((link) => (
-                                <li key={link.href}>
-                                    <a
-                                        href={link.href}
-                                        className="text-sm text-white/60 transition-colors hover:text-white"
-                                    >
-                                        {t(link.key)}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
 
                     {/* Address */}
                     <div>
