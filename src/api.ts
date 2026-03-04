@@ -8,6 +8,7 @@ export interface ReservationPayload {
     checkOut: string;   // ISO date string
     nights: number;
     totalPrice: number;
+    comment?: string;
 }
 
 export interface Reservation extends ReservationPayload {
