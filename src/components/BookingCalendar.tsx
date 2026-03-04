@@ -1,5 +1,7 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useI18n } from '../i18n';
+import { createReservation, fetchConfirmedReservations } from '../api';
+import type { ConfirmedReservation } from '../api';
 
 const DAYS_EN = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
 const DAYS_ES = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'] as const;
@@ -40,6 +42,42 @@ function isBetween(date: Date, start: Date, end: Date): boolean {
     return date > start && date < end;
 }
 
+/** Turn a Date into a 'YYYY-MM-DD' key for the booked-dates Set. */
+function toDateKey(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** Expand a confirmed reservation into every day between checkIn and checkOut (inclusive of checkIn, exclusive of checkOut). */
+function expandBookedDays(reservations: ConfirmedReservation[]): Set<string> {
+    const set = new Set<string>();
+    for (const r of reservations) {
+        const start = new Date(r.checkIn);
+        const end = new Date(r.checkOut);
+        const cursor = new Date(start);
+        while (cursor < end) {
+            set.add(toDateKey(cursor));
+            cursor.setDate(cursor.getDate() + 1);
+        }
+    }
+    return set;
+}
+
+/** Check whether any day in [start, end) overlaps the booked set. */
+function rangeOverlapsBooked(start: Date, end: Date, booked: Set<string>): boolean {
+    const cursor = new Date(start);
+    while (cursor < end) {
+        if (booked.has(toDateKey(cursor))) return true;
+        cursor.setDate(cursor.getDate() + 1);
+    }
+    return false;
+}
+
+interface FormErrors {
+    name?: string;
+    email?: string;
+    dates?: string;
+}
+
 export default function BookingCalendar() {
     const { t, locale } = useI18n();
     const today = useMemo(() => new Date(), []);
@@ -48,7 +86,30 @@ export default function BookingCalendar() {
     const [checkIn, setCheckIn] = useState<Date | null>(null);
     const [checkOut, setCheckOut] = useState<Date | null>(null);
     const [guests, setGuests] = useState(2);
-    const [submitted, setSubmitted] = useState(false);
+
+    // ── Guest details & form state ────────────────────────────────────
+    const [guestName, setGuestName] = useState('');
+    const [guestEmail, setGuestEmail] = useState('');
+    const [errors, setErrors] = useState<FormErrors>({});
+    const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+    const [serverError, setServerError] = useState('');
+
+    // ── Confirmed reservations → booked dates ────────────────────────
+    const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
+
+    useEffect(() => {
+        let cancelled = false;
+        fetchConfirmedReservations()
+            .then((data) => {
+                if (!cancelled) {
+                    setBookedDates(expandBookedDays(data));
+                }
+            })
+            .catch((err) => {
+                console.warn('Could not load confirmed reservations:', err);
+            });
+        return () => { cancelled = true; };
+    }, []);
 
     const DAYS = locale === 'es' ? DAYS_ES : locale === 'cs' ? DAYS_CS : DAYS_EN;
     const MONTHS = locale === 'es' ? MONTHS_ES : locale === 'cs' ? MONTHS_CS : MONTHS_EN;
@@ -84,22 +145,41 @@ export default function BookingCalendar() {
         [currentMonth, currentYear],
     );
 
+    /** Check if a specific day is inside a confirmed booking. */
+    const isDayBooked = useCallback(
+        (day: Date): boolean => bookedDates.has(toDateKey(day)),
+        [bookedDates],
+    );
+
     const handleDayClick = useCallback(
         (day: Date) => {
             if (day < today) return;
+            if (isDayBooked(day)) return; // can't select a booked day
+
             if (!checkIn || (checkIn && checkOut)) {
                 setCheckIn(day);
                 setCheckOut(null);
             } else {
                 if (day > checkIn) {
-                    setCheckOut(day);
+                    // Before confirming check-out, verify the range doesn't overlap booked dates
+                    if (rangeOverlapsBooked(checkIn, day, bookedDates)) {
+                        // Start fresh — the range would cross a booking
+                        setCheckIn(day);
+                        setCheckOut(null);
+                    } else {
+                        setCheckOut(day);
+                    }
                 } else {
                     setCheckIn(day);
                     setCheckOut(null);
                 }
             }
+            // Clear dates error when user picks a date
+            if (errors.dates) {
+                setErrors((prev) => ({ ...prev, dates: undefined }));
+            }
         },
-        [checkIn, checkOut, today],
+        [checkIn, checkOut, today, errors.dates, isDayBooked, bookedDates],
     );
 
     const nights =
@@ -109,11 +189,69 @@ export default function BookingCalendar() {
             )
             : 0;
 
-    const handleSubmit = () => {
-        if (!checkIn || !checkOut) return;
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 4000);
+    // ── Validation ───────────────────────────────────────────────────
+    const validate = (): FormErrors => {
+        const errs: FormErrors = {};
+        if (!guestName.trim()) errs.name = t('booking.errorName');
+        if (!guestEmail.trim()) {
+            errs.email = t('booking.errorEmail');
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
+            errs.email = t('booking.errorEmailInvalid');
+        }
+        if (!checkIn || !checkOut) errs.dates = t('booking.errorDates');
+        return errs;
     };
+
+    const handleFieldChange = (field: keyof FormErrors) => {
+        if (errors[field]) {
+            setErrors((prev) => ({ ...prev, [field]: undefined }));
+        }
+    };
+
+    // ── Submit booking to API ────────────────────────────────────────
+    const handleSubmit = async () => {
+        const errs = validate();
+        if (Object.keys(errs).length > 0) {
+            setErrors(errs);
+            return;
+        }
+
+        setStatus('sending');
+        setServerError('');
+
+        try {
+            await createReservation({
+                guestName: guestName.trim(),
+                guestEmail: guestEmail.trim(),
+                checkIn: checkIn!.toISOString(),
+                checkOut: checkOut!.toISOString(),
+            });
+
+            setStatus('sent');
+            // Reset form after success
+            setGuestName('');
+            setGuestEmail('');
+            setCheckIn(null);
+            setCheckOut(null);
+            setGuests(2);
+            // Re-fetch confirmed reservations to update blocked days
+            fetchConfirmedReservations()
+                .then((data) => setBookedDates(expandBookedDays(data)))
+                .catch(() => { });
+            setTimeout(() => setStatus('idle'), 5000);
+        } catch (err: unknown) {
+            setStatus('error');
+            const apiErr = err as { message?: string; errors?: string[] };
+            setServerError(
+                apiErr?.errors?.join(', ') ||
+                apiErr?.message ||
+                t('booking.errorServer'),
+            );
+            setTimeout(() => setStatus('idle'), 6000);
+        }
+    };
+
+    const isReady = checkIn && checkOut && guestName.trim() && guestEmail.trim();
 
     return (
         <section id="booking" className="bg-sand-light py-20 sm:py-28">
@@ -177,6 +315,8 @@ export default function BookingCalendar() {
                             ))}
                             {days.map((day) => {
                                 const isPast = day < today && !isSameDay(day, today);
+                                const isBooked = isDayBooked(day);
+                                const isDisabled = isPast || isBooked;
                                 const isCheckIn = checkIn ? isSameDay(day, checkIn) : false;
                                 const isCheckOut = checkOut ? isSameDay(day, checkOut) : false;
                                 const isInRange =
@@ -187,10 +327,13 @@ export default function BookingCalendar() {
                                     <button
                                         key={day.toISOString()}
                                         type="button"
-                                        disabled={isPast}
+                                        disabled={isDisabled}
                                         onClick={() => handleDayClick(day)}
-                                        className={`relative rounded-lg py-2.5 text-sm font-medium transition-all duration-150 ${isPast
-                                            ? 'cursor-not-allowed text-navy/20'
+                                        title={isBooked ? 'Booked' : undefined}
+                                        className={`relative rounded-lg py-2.5 text-sm font-medium transition-all duration-150 ${isDisabled
+                                            ? isBooked
+                                                ? 'cursor-not-allowed bg-coral/10 text-coral/40 line-through'
+                                                : 'cursor-not-allowed text-navy/20'
                                             : isCheckIn || isCheckOut
                                                 ? 'bg-ocean text-white shadow-md'
                                                 : isInRange
@@ -205,6 +348,12 @@ export default function BookingCalendar() {
                                 );
                             })}
                         </div>
+
+                        {errors.dates && (
+                            <p className="mt-3 text-center text-xs text-coral" role="alert">
+                                {errors.dates}
+                            </p>
+                        )}
                     </div>
 
                     {/* Booking Summary */}
@@ -214,6 +363,52 @@ export default function BookingCalendar() {
                         </h3>
 
                         <div className="space-y-4">
+                            {/* Guest Name */}
+                            <div>
+                                <label htmlFor="booking-name" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
+                                    {t('booking.name')} <span className="text-coral">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="booking-name"
+                                    value={guestName}
+                                    onChange={(e) => {
+                                        setGuestName(e.target.value);
+                                        handleFieldChange('name');
+                                    }}
+                                    autoComplete="name"
+                                    placeholder={t('booking.namePlaceholder')}
+                                    className={`w-full rounded-xl border bg-sand-light px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean ${errors.name ? 'border-coral' : 'border-sand'}`}
+                                />
+                                {errors.name && (
+                                    <p className="mt-1 text-xs text-coral" role="alert">{errors.name}</p>
+                                )}
+                            </div>
+
+                            {/* Guest Email */}
+                            <div>
+                                <label htmlFor="booking-email" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
+                                    {t('booking.email')} <span className="text-coral">*</span>
+                                </label>
+                                <input
+                                    type="email"
+                                    id="booking-email"
+                                    value={guestEmail}
+                                    onChange={(e) => {
+                                        setGuestEmail(e.target.value);
+                                        handleFieldChange('email');
+                                    }}
+                                    autoComplete="email"
+                                    placeholder={t('booking.emailPlaceholder')}
+                                    spellCheck={false}
+                                    className={`w-full rounded-xl border bg-sand-light px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean ${errors.email ? 'border-coral' : 'border-sand'}`}
+                                />
+                                {errors.email && (
+                                    <p className="mt-1 text-xs text-coral" role="alert">{errors.email}</p>
+                                )}
+                            </div>
+
+                            {/* Check-in / Check-out */}
                             <div className="rounded-xl bg-sand-light p-4">
                                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
                                     {t('booking.checkIn')}
@@ -230,6 +425,8 @@ export default function BookingCalendar() {
                                     {checkOut ? formatDate(checkOut) : t('booking.selectDate')}
                                 </p>
                             </div>
+
+                            {/* Guests */}
                             <div className="rounded-xl bg-sand-light p-4">
                                 <label
                                     htmlFor="guest-count"
@@ -263,16 +460,36 @@ export default function BookingCalendar() {
                             </div>
                         )}
 
+                        {/* Server error message */}
+                        {status === 'error' && serverError && (
+                            <div className="rounded-xl border border-coral/30 bg-coral/5 p-3 text-center">
+                                <p className="text-sm text-coral">{serverError}</p>
+                            </div>
+                        )}
+
+                        {/* Success message */}
+                        {status === 'sent' && (
+                            <div className="rounded-xl border border-green-300 bg-green-50 p-3 text-center">
+                                <p className="text-sm font-medium text-green-700">{t('booking.sent')}</p>
+                            </div>
+                        )}
+
                         <button
                             type="button"
                             onClick={handleSubmit}
-                            disabled={!checkIn || !checkOut}
-                            className={`mt-auto w-full rounded-full py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 ${checkIn && checkOut
-                                ? 'bg-coral hover:bg-coral-dark hover:shadow-xl'
-                                : 'cursor-not-allowed bg-navy/20'
+                            disabled={status === 'sending'}
+                            className={`mt-auto w-full rounded-full py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 ${status === 'sending'
+                                ? 'cursor-wait bg-ocean/60'
+                                : isReady
+                                    ? 'bg-coral hover:bg-coral-dark hover:shadow-xl'
+                                    : 'bg-coral hover:bg-coral-dark hover:shadow-xl'
                                 }`}
                         >
-                            {submitted ? t('booking.sent') : t('booking.request')}
+                            {status === 'sending'
+                                ? t('booking.sending')
+                                : status === 'sent'
+                                    ? t('booking.sent')
+                                    : t('booking.request')}
                         </button>
 
                         <p className="text-center text-xs text-warm-gray">
