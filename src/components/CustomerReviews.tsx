@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { reviews } from '../data';
+import { useI18n } from '../i18n';
 
 export default function CustomerReviews() {
+    const { t } = useI18n();
     const [activeIndex, setActiveIndex] = useState(0);
     const averageRating = (
         reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
@@ -13,10 +15,10 @@ export default function CustomerReviews() {
                 {/* Header */}
                 <div className="mb-16 text-center">
                     <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-[0.15em] text-ocean">
-                        Guest Reviews
+                        {t('reviews.label')}
                     </span>
                     <h2 className="mb-4 font-heading text-3xl font-bold text-navy sm:text-4xl md:text-5xl">
-                        What Our Guests Say
+                        {t('reviews.title')}
                     </h2>
                     <div className="flex items-center justify-center gap-3">
                         <div className="flex">
@@ -27,7 +29,7 @@ export default function CustomerReviews() {
                             ))}
                         </div>
                         <span className="text-lg font-semibold text-navy">{averageRating}</span>
-                        <span className="text-warm-gray">· {reviews.length} reviews</span>
+                        <span className="text-warm-gray">· {reviews.length} {t('reviews.count')}</span>
                     </div>
                 </div>
 
@@ -38,7 +40,7 @@ export default function CustomerReviews() {
                             <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H0z" />
                         </svg>
                         <blockquote className="mb-6 font-heading text-xl leading-relaxed text-navy sm:text-2xl">
-                            "{reviews[activeIndex].quote}"
+                            &ldquo;{reviews[activeIndex].quote}&rdquo;
                         </blockquote>
                         <div className="flex items-center gap-4">
                             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ocean/10 text-lg font-bold text-ocean">
@@ -95,7 +97,7 @@ export default function CustomerReviews() {
                                 ))}
                             </div>
                             <p className="mb-3 line-clamp-3 text-sm text-navy/80">
-                                "{review.quote}"
+                                &ldquo;{review.quote}&rdquo;
                             </p>
                             <p className="text-xs font-medium text-warm-gray">
                                 {review.name} · {review.country}

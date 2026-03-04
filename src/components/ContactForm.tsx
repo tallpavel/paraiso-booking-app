@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { ContactFormData } from '../types';
+import { useI18n } from '../i18n';
 
 const initialForm: ContactFormData = {
     name: '',
@@ -14,22 +15,23 @@ interface FieldError {
     message?: string;
 }
 
-function validate(data: ContactFormData): FieldError {
-    const errors: FieldError = {};
-    if (!data.name.trim()) errors.name = 'Please enter your name';
-    if (!data.email.trim()) {
-        errors.email = 'Please enter your email';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-        errors.email = 'Please enter a valid email address';
-    }
-    if (!data.message.trim()) errors.message = 'Please enter a message';
-    return errors;
-}
-
 export default function ContactForm() {
+    const { t } = useI18n();
     const [form, setForm] = useState<ContactFormData>(initialForm);
     const [errors, setErrors] = useState<FieldError>({});
     const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+
+    const validate = (data: ContactFormData): FieldError => {
+        const errs: FieldError = {};
+        if (!data.name.trim()) errs.name = t('contact.errorName');
+        if (!data.email.trim()) {
+            errs.email = t('contact.errorEmail');
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+            errs.email = t('contact.errorEmailInvalid');
+        }
+        if (!data.message.trim()) errs.message = t('contact.errorMessage');
+        return errs;
+    };
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -50,7 +52,6 @@ export default function ContactForm() {
         }
         setStatus('sending');
 
-        // Simulate send — replace with emailjs or API call
         const subject = encodeURIComponent(
             `Inquiry from ${form.name} — Verónica's Flat`,
         );
@@ -71,14 +72,13 @@ export default function ContactForm() {
                     {/* Info */}
                     <div>
                         <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-[0.15em] text-ocean">
-                            Get in Touch
+                            {t('contact.label')}
                         </span>
                         <h2 className="mb-4 font-heading text-3xl font-bold text-navy sm:text-4xl">
-                            We'd Love to Hear From You
+                            {t('contact.title')}
                         </h2>
                         <p className="mb-8 text-lg leading-relaxed text-warm-gray">
-                            Have a question about the flat, the area, or your trip? Send us a
-                            message and we'll reply within 24 hours.
+                            {t('contact.subtitle')}
                         </p>
 
                         <div className="space-y-6">
@@ -87,7 +87,7 @@ export default function ContactForm() {
                                     📍
                                 </div>
                                 <div>
-                                    <h3 className="mb-1 font-semibold text-navy">Address</h3>
+                                    <h3 className="mb-1 font-semibold text-navy">{t('contact.address')}</h3>
                                     <p className="text-sm text-warm-gray">
                                         Avenida Adeje 300, č. 16<br />
                                         38678 Playa Paraíso, Tenerife, Spain
@@ -99,7 +99,7 @@ export default function ContactForm() {
                                     ✉️
                                 </div>
                                 <div>
-                                    <h3 className="mb-1 font-semibold text-navy">Email</h3>
+                                    <h3 className="mb-1 font-semibold text-navy">{t('contact.email')}</h3>
                                     <a
                                         href="mailto:info@veronicas-flat.com"
                                         className="text-sm text-ocean transition-colors hover:text-ocean-dark"
@@ -113,10 +113,10 @@ export default function ContactForm() {
                                     🌐
                                 </div>
                                 <div>
-                                    <h3 className="mb-1 font-semibold text-navy">Location</h3>
+                                    <h3 className="mb-1 font-semibold text-navy">{t('contact.location')}</h3>
                                     <p className="text-sm text-warm-gray">
-                                        Southern Tenerife, Canary Islands<br />
-                                        15 min from Tenerife South Airport (TFS)
+                                        {t('contact.locationValue')}<br />
+                                        {t('contact.locationExtra')}
                                     </p>
                                 </div>
                             </div>
@@ -131,7 +131,7 @@ export default function ContactForm() {
                     >
                         <div className="mb-6">
                             <label htmlFor="contact-name" className="mb-2 block text-sm font-semibold text-navy">
-                                Name <span className="text-coral">*</span>
+                                {t('contact.name')} <span className="text-coral">*</span>
                             </label>
                             <input
                                 type="text"
@@ -140,7 +140,7 @@ export default function ContactForm() {
                                 value={form.name}
                                 onChange={handleChange}
                                 autoComplete="name"
-                                placeholder="Your full name…"
+                                placeholder={t('contact.namePlaceholder')}
                                 className={`w-full rounded-xl border bg-white px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean ${errors.name ? 'border-coral' : 'border-sand'
                                     }`}
                             />
@@ -151,7 +151,7 @@ export default function ContactForm() {
 
                         <div className="mb-6">
                             <label htmlFor="contact-email" className="mb-2 block text-sm font-semibold text-navy">
-                                Email <span className="text-coral">*</span>
+                                {t('contact.email')} <span className="text-coral">*</span>
                             </label>
                             <input
                                 type="email"
@@ -160,7 +160,7 @@ export default function ContactForm() {
                                 value={form.email}
                                 onChange={handleChange}
                                 autoComplete="email"
-                                placeholder="you@example.com…"
+                                placeholder={t('contact.emailPlaceholder')}
                                 spellCheck={false}
                                 className={`w-full rounded-xl border bg-white px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean ${errors.email ? 'border-coral' : 'border-sand'
                                     }`}
@@ -172,7 +172,7 @@ export default function ContactForm() {
 
                         <div className="mb-6">
                             <label htmlFor="contact-phone" className="mb-2 block text-sm font-semibold text-navy">
-                                Phone <span className="text-warm-gray">(optional)</span>
+                                {t('contact.phone')} <span className="text-warm-gray">{t('contact.phoneOptional')}</span>
                             </label>
                             <input
                                 type="tel"
@@ -181,14 +181,14 @@ export default function ContactForm() {
                                 value={form.phone}
                                 onChange={handleChange}
                                 autoComplete="tel"
-                                placeholder="+34 …"
+                                placeholder={t('contact.phonePlaceholder')}
                                 className="w-full rounded-xl border border-sand bg-white px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean"
                             />
                         </div>
 
                         <div className="mb-6">
                             <label htmlFor="contact-message" className="mb-2 block text-sm font-semibold text-navy">
-                                Message <span className="text-coral">*</span>
+                                {t('contact.message')} <span className="text-coral">*</span>
                             </label>
                             <textarea
                                 id="contact-message"
@@ -196,7 +196,7 @@ export default function ContactForm() {
                                 value={form.message}
                                 onChange={handleChange}
                                 rows={4}
-                                placeholder="Tell us about your trip or ask a question…"
+                                placeholder={t('contact.messagePlaceholder')}
                                 className={`w-full resize-none rounded-xl border bg-white px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean ${errors.message ? 'border-coral' : 'border-sand'
                                     }`}
                             />
@@ -211,15 +211,15 @@ export default function ContactForm() {
                             className="w-full rounded-full bg-ocean py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 hover:bg-ocean-dark hover:shadow-xl disabled:cursor-wait disabled:opacity-70"
                         >
                             {status === 'sending'
-                                ? 'Sending…'
+                                ? t('contact.sending')
                                 : status === 'sent'
-                                    ? '✓ Message Sent!'
-                                    : 'Send Message'}
+                                    ? t('contact.messageSent')
+                                    : t('contact.send')}
                         </button>
 
                         {status === 'sent' && (
                             <p className="mt-3 text-center text-sm text-ocean" role="status" aria-live="polite">
-                                Thank you! We'll get back to you within 24 hours.
+                                {t('contact.thanks')}
                             </p>
                         )}
                     </form>

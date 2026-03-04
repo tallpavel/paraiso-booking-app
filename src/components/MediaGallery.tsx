@@ -1,18 +1,21 @@
 import { useState, useCallback } from 'react';
 import { galleryItems } from '../data';
+import { useI18n } from '../i18n';
+import type { TranslationKey } from '../i18n';
 
 type Category = 'all' | 'interior' | 'exterior' | 'pool' | 'beach' | 'terrace';
 
-const CATEGORIES: { label: string; value: Category }[] = [
-    { label: 'All', value: 'all' },
-    { label: 'Interior', value: 'interior' },
-    { label: 'Terrace', value: 'terrace' },
-    { label: 'Pool', value: 'pool' },
-    { label: 'Beach', value: 'beach' },
-    { label: 'Views', value: 'exterior' },
+const CATEGORIES: { labelKey: TranslationKey; value: Category }[] = [
+    { labelKey: 'gallery.all', value: 'all' },
+    { labelKey: 'gallery.interior', value: 'interior' },
+    { labelKey: 'gallery.terrace', value: 'terrace' },
+    { labelKey: 'gallery.pool', value: 'pool' },
+    { labelKey: 'gallery.beach', value: 'beach' },
+    { labelKey: 'gallery.views', value: 'exterior' },
 ];
 
 export default function MediaGallery() {
+    const { t } = useI18n();
     const [activeCategory, setActiveCategory] = useState<Category>('all');
     const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -39,13 +42,13 @@ export default function MediaGallery() {
                 {/* Header */}
                 <div className="mb-12 text-center">
                     <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-[0.15em] text-ocean">
-                        Gallery
+                        {t('gallery.label')}
                     </span>
                     <h2 className="mb-4 font-heading text-3xl font-bold text-navy sm:text-4xl md:text-5xl">
-                        Take a Look Inside
+                        {t('gallery.title')}
                     </h2>
                     <p className="mx-auto max-w-2xl text-lg text-warm-gray">
-                        Explore every corner of the flat and the stunning Playa Paraíso surroundings.
+                        {t('gallery.subtitle')}
                     </p>
                 </div>
 
@@ -61,7 +64,7 @@ export default function MediaGallery() {
                                     : 'bg-white text-navy hover:bg-ocean/10'
                                 }`}
                         >
-                            {cat.label}
+                            {t(cat.labelKey)}
                         </button>
                     ))}
                 </div>

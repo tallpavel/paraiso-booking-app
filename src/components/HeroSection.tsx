@@ -1,4 +1,8 @@
+import { useI18n } from '../i18n';
+
 export default function HeroSection() {
+    const { t } = useI18n();
+
     return (
         <section
             id="hero"
@@ -20,17 +24,16 @@ export default function HeroSection() {
             {/* Content */}
             <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
                 <span className="mb-6 inline-block rounded-full border border-white/30 bg-white/10 px-5 py-2 text-xs font-medium uppercase tracking-[0.2em] text-white/90 backdrop-blur-sm">
-                    Playa Paraíso · Tenerife
+                    {t('hero.badge')}
                 </span>
 
                 <h1 className="mb-6 font-heading text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
-                    Your Dream Escape in{' '}
-                    <span className="text-coral">Playa Paraíso</span>
+                    {t('hero.title')}{' '}
+                    <span className="text-coral">{t('hero.titleHighlight')}</span>
                 </h1>
 
                 <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-white/85 sm:text-xl">
-                    Wake up to ocean views, year-round sunshine, and the serenity of
-                    southern Tenerife. Book directly&nbsp;— no agency fees.
+                    {t('hero.subtitle')}
                 </p>
 
                 <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -38,13 +41,13 @@ export default function HeroSection() {
                         href="#booking"
                         className="rounded-full bg-coral px-8 py-4 text-lg font-semibold text-white shadow-2xl transition-all duration-200 hover:bg-coral-dark hover:shadow-3xl hover:-translate-y-0.5"
                     >
-                        Check Availability
+                        {t('hero.cta')}
                     </a>
                     <a
                         href="#gallery"
                         className="rounded-full border-2 border-white/40 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:border-white hover:bg-white/10"
                     >
-                        Explore the Flat
+                        {t('hero.explore')}
                     </a>
                 </div>
 
@@ -57,7 +60,7 @@ export default function HeroSection() {
                             </svg>
                         ))}
                     </div>
-                    <span className="text-sm">5.0 · Loved by 120+ guests</span>
+                    <span className="text-sm">5.0 · {t('hero.trust')}</span>
                 </div>
             </div>
 

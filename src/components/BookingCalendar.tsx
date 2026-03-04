@@ -1,9 +1,21 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useI18n } from '../i18n';
 
-const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
-const MONTHS = [
+const DAYS_EN = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
+const DAYS_ES = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'] as const;
+const DAYS_CS = ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'] as const;
+
+const MONTHS_EN = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December',
+] as const;
+const MONTHS_ES = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+] as const;
+const MONTHS_CS = [
+    'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
+    'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec',
 ] as const;
 
 function getDaysInMonth(year: number, month: number): Date[] {
@@ -28,15 +40,8 @@ function isBetween(date: Date, start: Date, end: Date): boolean {
     return date > start && date < end;
 }
 
-function formatDate(date: Date): string {
-    return date.toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    });
-}
-
 export default function BookingCalendar() {
+    const { t, locale } = useI18n();
     const today = useMemo(() => new Date(), []);
     const [currentMonth, setCurrentMonth] = useState(today.getMonth());
     const [currentYear, setCurrentYear] = useState(today.getFullYear());
@@ -44,6 +49,21 @@ export default function BookingCalendar() {
     const [checkOut, setCheckOut] = useState<Date | null>(null);
     const [guests, setGuests] = useState(2);
     const [submitted, setSubmitted] = useState(false);
+
+    const DAYS = locale === 'es' ? DAYS_ES : locale === 'cs' ? DAYS_CS : DAYS_EN;
+    const MONTHS = locale === 'es' ? MONTHS_ES : locale === 'cs' ? MONTHS_CS : MONTHS_EN;
+
+    const formatDate = useCallback(
+        (date: Date): string => {
+            const loc = locale === 'es' ? 'es-ES' : locale === 'cs' ? 'cs-CZ' : 'en-GB';
+            return date.toLocaleDateString(loc, {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+            });
+        },
+        [locale],
+    );
 
     const days = useMemo(
         () => getDaysInMonth(currentYear, currentMonth),
@@ -101,14 +121,13 @@ export default function BookingCalendar() {
                 {/* Header */}
                 <div className="mb-16 text-center">
                     <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-[0.15em] text-ocean">
-                        Availability
+                        {t('booking.label')}
                     </span>
                     <h2 className="mb-4 font-heading text-3xl font-bold text-navy sm:text-4xl md:text-5xl">
-                        Book Your Stay
+                        {t('booking.title')}
                     </h2>
                     <p className="mx-auto max-w-2xl text-lg text-warm-gray">
-                        Select your dates and we'll get back to you within 24 hours to
-                        confirm your reservation. Book directly for the best price.
+                        {t('booking.subtitle')}
                     </p>
                 </div>
 
@@ -153,7 +172,6 @@ export default function BookingCalendar() {
 
                         {/* Days Grid */}
                         <div className="grid grid-cols-7 gap-1">
-                            {/* Empty cells for offset */}
                             {Array.from({ length: firstDayOffset }).map((_, i) => (
                                 <div key={`empty-${i}`} />
                             ))}
@@ -172,14 +190,14 @@ export default function BookingCalendar() {
                                         disabled={isPast}
                                         onClick={() => handleDayClick(day)}
                                         className={`relative rounded-lg py-2.5 text-sm font-medium transition-all duration-150 ${isPast
-                                                ? 'cursor-not-allowed text-navy/20'
-                                                : isCheckIn || isCheckOut
-                                                    ? 'bg-ocean text-white shadow-md'
-                                                    : isInRange
-                                                        ? 'bg-ocean/15 text-ocean'
-                                                        : isToday
-                                                            ? 'font-bold text-ocean ring-1 ring-ocean/30'
-                                                            : 'text-navy hover:bg-sand'
+                                            ? 'cursor-not-allowed text-navy/20'
+                                            : isCheckIn || isCheckOut
+                                                ? 'bg-ocean text-white shadow-md'
+                                                : isInRange
+                                                    ? 'bg-ocean/15 text-ocean'
+                                                    : isToday
+                                                        ? 'font-bold text-ocean ring-1 ring-ocean/30'
+                                                        : 'text-navy hover:bg-sand'
                                             }`}
                                     >
                                         {day.getDate()}
@@ -192,24 +210,24 @@ export default function BookingCalendar() {
                     {/* Booking Summary */}
                     <div className="flex flex-col gap-6 rounded-3xl bg-white p-6 shadow-lg sm:p-8">
                         <h3 className="font-heading text-xl font-bold text-navy">
-                            Your Stay
+                            {t('booking.yourStay')}
                         </h3>
 
                         <div className="space-y-4">
                             <div className="rounded-xl bg-sand-light p-4">
                                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
-                                    Check-in
+                                    {t('booking.checkIn')}
                                 </label>
                                 <p className="font-medium text-navy">
-                                    {checkIn ? formatDate(checkIn) : 'Select date…'}
+                                    {checkIn ? formatDate(checkIn) : t('booking.selectDate')}
                                 </p>
                             </div>
                             <div className="rounded-xl bg-sand-light p-4">
                                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
-                                    Check-out
+                                    {t('booking.checkOut')}
                                 </label>
                                 <p className="font-medium text-navy">
-                                    {checkOut ? formatDate(checkOut) : 'Select date…'}
+                                    {checkOut ? formatDate(checkOut) : t('booking.selectDate')}
                                 </p>
                             </div>
                             <div className="rounded-xl bg-sand-light p-4">
@@ -217,7 +235,7 @@ export default function BookingCalendar() {
                                     htmlFor="guest-count"
                                     className="mb-1 block text-xs font-semibold uppercase tracking-wide text-warm-gray"
                                 >
-                                    Guests
+                                    {t('booking.guests')}
                                 </label>
                                 <select
                                     id="guest-count"
@@ -227,7 +245,7 @@ export default function BookingCalendar() {
                                 >
                                     {[1, 2, 3, 4, 5, 6].map((n) => (
                                         <option key={n} value={n}>
-                                            {n} Guest{n > 1 ? 's' : ''}
+                                            {n} {n > 1 ? t('booking.guests_plural') : t('booking.guest')}
                                         </option>
                                     ))}
                                 </select>
@@ -236,7 +254,9 @@ export default function BookingCalendar() {
 
                         {nights > 0 && (
                             <div className="rounded-xl border border-ocean/20 bg-ocean/5 p-4 text-center">
-                                <p className="text-2xl font-bold text-ocean">{nights} night{nights > 1 ? 's' : ''}</p>
+                                <p className="text-2xl font-bold text-ocean">
+                                    {nights} {nights > 1 ? t('booking.nights') : t('booking.night')}
+                                </p>
                                 <p className="text-sm text-warm-gray">
                                     {formatDate(checkIn!)} → {formatDate(checkOut!)}
                                 </p>
@@ -248,15 +268,15 @@ export default function BookingCalendar() {
                             onClick={handleSubmit}
                             disabled={!checkIn || !checkOut}
                             className={`mt-auto w-full rounded-full py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 ${checkIn && checkOut
-                                    ? 'bg-coral hover:bg-coral-dark hover:shadow-xl'
-                                    : 'cursor-not-allowed bg-navy/20'
+                                ? 'bg-coral hover:bg-coral-dark hover:shadow-xl'
+                                : 'cursor-not-allowed bg-navy/20'
                                 }`}
                         >
-                            {submitted ? '✓ Request Sent!' : 'Request Booking'}
+                            {submitted ? t('booking.sent') : t('booking.request')}
                         </button>
 
                         <p className="text-center text-xs text-warm-gray">
-                            No payment required — we'll confirm availability first.
+                            {t('booking.noPayment')}
                         </p>
                     </div>
                 </div>
