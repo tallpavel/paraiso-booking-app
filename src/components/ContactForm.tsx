@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ContactFormData } from '../types';
 import { useI18n } from '../i18n';
+import { sendContactMessage } from '../api';
 
 const initialForm: ContactFormData = {
     name: '',
@@ -43,7 +44,7 @@ export default function ContactForm() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const errs = validate(form);
         if (Object.keys(errs).length > 0) {
@@ -52,17 +53,21 @@ export default function ContactForm() {
         }
         setStatus('sending');
 
-        const subject = encodeURIComponent(
-            `Inquiry from ${form.name} — Verónica's Flat`,
-        );
-        const body = encodeURIComponent(
-            `Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone || 'N/A'}\n\n${form.message}`,
-        );
-        window.location.href = `mailto:info@veronicas-flat.com?subject=${subject}&body=${body}`;
+        try {
+            await sendContactMessage({
+                name: form.name.trim(),
+                email: form.email.trim(),
+                phone: form.phone.trim() || undefined,
+                message: form.message.trim(),
+            });
 
-        setStatus('sent');
-        setForm(initialForm);
-        setTimeout(() => setStatus('idle'), 5000);
+            setStatus('sent');
+            setForm(initialForm);
+            setTimeout(() => setStatus('idle'), 5000);
+        } catch {
+            setStatus('error');
+            setTimeout(() => setStatus('idle'), 5000);
+        }
     };
 
     return (
@@ -220,6 +225,11 @@ export default function ContactForm() {
                         {status === 'sent' && (
                             <p className="mt-3 text-center text-sm text-ocean" role="status" aria-live="polite">
                                 {t('contact.thanks')}
+                            </p>
+                        )}
+                        {status === 'error' && (
+                            <p className="mt-3 text-center text-sm text-coral" role="alert" aria-live="polite">
+                                {t('contact.errorServer')}
                             </p>
                         )}
                     </form>

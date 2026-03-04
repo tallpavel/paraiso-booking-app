@@ -109,6 +109,7 @@ const translations = {
         'contact.errorEmail': 'Please enter your email',
         'contact.errorEmailInvalid': 'Please enter a valid email address',
         'contact.errorMessage': 'Please enter a message',
+        'contact.errorServer': 'Something went wrong. Please try again later.',
         'contact.viewMap': 'View on Google Maps',
 
         // Footer
@@ -226,6 +227,7 @@ const translations = {
         'contact.errorEmail': 'Por favor, introduce tu correo electrónico',
         'contact.errorEmailInvalid': 'Por favor, introduce un correo electrónico válido',
         'contact.errorMessage': 'Por favor, escribe un mensaje',
+        'contact.errorServer': 'Algo salió mal. Inténtalo de nuevo más tarde.',
         'contact.viewMap': 'Ver en Google Maps',
 
         // Footer
@@ -343,6 +345,7 @@ const translations = {
         'contact.errorEmail': 'Prosím, zadejte svůj e-mail',
         'contact.errorEmailInvalid': 'Prosím, zadejte platnou e-mailovou adresu',
         'contact.errorMessage': 'Prosím, napište zprávu',
+        'contact.errorServer': 'Něco se pokazilo. Zkuste to prosím později.',
         'contact.viewMap': 'Zobrazit na Google Maps',
 
         // Footer

@@ -79,3 +79,33 @@ export async function fetchConfirmedReservations(): Promise<ConfirmedReservation
     return res.json();
 }
 
+// ── Contact Form ─────────────────────────────────────────────────────
+
+export interface ContactPayload {
+    name: string;
+    email: string;
+    phone?: string;
+    message: string;
+}
+
+/**
+ * Send a contact form message via the backend (email delivery).
+ */
+export async function sendContactMessage(
+    data: ContactPayload,
+): Promise<{ message: string }> {
+    const res = await fetch(`${API_BASE}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+        const body: ApiError = await res.json().catch(() => ({
+            message: 'Failed to send message. Please try again.',
+        }));
+        throw body;
+    }
+
+    return res.json();
+}
