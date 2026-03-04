@@ -8,16 +8,24 @@ export default function HeroSection() {
             id="hero"
             className="relative flex min-h-screen items-center justify-center overflow-hidden"
         >
-            {/* Background Image */}
+            {/* Background Video */}
             <div className="absolute inset-0">
-                <img
-                    src="/hero-bg.jpg"
-                    alt="Aerial view of Playa Paraíso coastline in Tenerife"
-                    width={1920}
-                    height={1080}
+                <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    poster="/hero-bg.jpg"
                     className="h-full w-full object-cover"
-                    fetchPriority="high"
-                />
+                >
+                    <source src="/hero-video.mp4" type="video/mp4" />
+                    {/* Fallback image if video is not supported */}
+                    <img
+                        src="/hero-bg.jpg"
+                        alt="Aerial view of Playa Paraíso coastline in Tenerife"
+                        className="h-full w-full object-cover"
+                    />
+                </video>
                 <div className="absolute inset-0 bg-gradient-to-b from-navy/60 via-navy/40 to-navy/70" />
             </div>
 
