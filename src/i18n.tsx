@@ -83,6 +83,9 @@ const translations = {
         'booking.errorDates': 'Please select check-in and check-out dates',
         'booking.sending': 'Sending…',
         'booking.errorServer': 'Something went wrong. Please try again.',
+        'booking.from': 'From',
+        'booking.total': 'Total',
+        'booking.minNights': 'Minimum stay is 3 nights',
 
         // Contact
         'contact.label': 'Get in Touch',
@@ -201,6 +204,9 @@ const translations = {
         'booking.errorDates': 'Por favor, selecciona las fechas de entrada y salida',
         'booking.sending': 'Enviando…',
         'booking.errorServer': 'Algo salió mal. Inténtalo de nuevo.',
+        'booking.from': 'Desde',
+        'booking.total': 'Total',
+        'booking.minNights': 'La estancia mínima es de 3 noches',
 
         // Contact
         'contact.label': 'Contacto',
@@ -319,6 +325,9 @@ const translations = {
         'booking.errorDates': 'Prosím, vyberte datum příjezdu a odjezdu',
         'booking.sending': 'Odesílání…',
         'booking.errorServer': 'Něco se pokazilo. Zkuste to prosím znovu.',
+        'booking.from': 'Od',
+        'booking.total': 'Celkem',
+        'booking.minNights': 'Minimální pobyt jsou 3 noci',
 
         // Contact
         'contact.label': 'Kontaktujte Nás',

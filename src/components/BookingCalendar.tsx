@@ -1,53 +1,36 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useI18n } from '../i18n';
-import { createReservation, fetchConfirmedReservations } from '../api';
+import { createReservation, fetchConfirmedReservations, fetchDailyRates } from '../api';
 import type { ConfirmedReservation } from '../api';
+import flatpickr from 'flatpickr';
+import type { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
+import 'flatpickr/dist/flatpickr.min.css';
 
-const DAYS_EN = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
-const DAYS_ES = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'] as const;
-const DAYS_CS = ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'] as const;
-
-const MONTHS_EN = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+// ── Seasonal nightly rates (€) ───────────────────────────────────────
+// Index 0 = January … 11 = December (midpoint of the recommended range)
+const NIGHTLY_RATES: readonly number[] = [
+    150,  // Jan  (140–160)
+    175,  // Feb  (160–190)
+    165,  // Mar  (150–180)
+    155,  // Apr  (140–170)
+    145,  // May  (130–160)
+    155,  // Jun  (140–170)
+    180,  // Jul  (160–200)
+    190,  // Aug  (170–210)
+    160,  // Sep  (140–180)
+    150,  // Oct  (130–170)
+    145,  // Nov  (130–160)
+    180,  // Dec  (160–200)
 ] as const;
-const MONTHS_ES = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-] as const;
-const MONTHS_CS = [
-    'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
-    'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec',
-] as const;
 
-function getDaysInMonth(year: number, month: number): Date[] {
-    const days: Date[] = [];
-    const date = new Date(year, month, 1);
-    while (date.getMonth() === month) {
-        days.push(new Date(date));
-        date.setDate(date.getDate() + 1);
-    }
-    return days;
-}
+const MIN_NIGHTS = 3;
 
-function isSameDay(a: Date, b: Date): boolean {
-    return (
-        a.getFullYear() === b.getFullYear() &&
-        a.getMonth() === b.getMonth() &&
-        a.getDate() === b.getDate()
-    );
-}
-
-function isBetween(date: Date, start: Date, end: Date): boolean {
-    return date > start && date < end;
-}
-
-/** Turn a Date into a 'YYYY-MM-DD' key for the booked-dates Set. */
+/** Turn a Date into a 'YYYY-MM-DD' key. */
 function toDateKey(d: Date): string {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-/** Expand a confirmed reservation into every day between checkIn and checkOut (inclusive of checkIn, exclusive of checkOut). */
+/** Expand confirmed reservations into a Set of booked day keys. */
 function expandBookedDays(reservations: ConfirmedReservation[]): Set<string> {
     const set = new Set<string>();
     for (const r of reservations) {
@@ -62,14 +45,28 @@ function expandBookedDays(reservations: ConfirmedReservation[]): Set<string> {
     return set;
 }
 
-/** Check whether any day in [start, end) overlaps the booked set. */
-function rangeOverlapsBooked(start: Date, end: Date, booked: Set<string>): boolean {
-    const cursor = new Date(start);
-    while (cursor < end) {
-        if (booked.has(toDateKey(cursor))) return true;
+/** Get the nightly rate for a specific date. Custom overrides take priority. */
+function getRateForDate(d: Date, customRates: Map<string, number>): number {
+    const key = toDateKey(d);
+    if (customRates.has(key)) return customRates.get(key)!;
+    return NIGHTLY_RATES[d.getMonth()];
+}
+
+/** Calculate total price for a stay. */
+function calculateStayPrice(checkIn: Date, checkOut: Date, customRates: Map<string, number>): { total: number; avgPerNight: number; nights: number } {
+    let total = 0;
+    let nightCount = 0;
+    const cursor = new Date(checkIn);
+    while (cursor < checkOut) {
+        total += getRateForDate(cursor, customRates);
+        nightCount++;
         cursor.setDate(cursor.getDate() + 1);
     }
-    return false;
+    return {
+        total,
+        avgPerNight: nightCount > 0 ? Math.round(total / nightCount) : 0,
+        nights: nightCount,
+    };
 }
 
 interface FormErrors {
@@ -80,14 +77,13 @@ interface FormErrors {
 
 export default function BookingCalendar() {
     const { t, locale } = useI18n();
-    const today = useMemo(() => new Date(), []);
-    const [currentMonth, setCurrentMonth] = useState(today.getMonth());
-    const [currentYear, setCurrentYear] = useState(today.getFullYear());
+
+    // ── Date selection state ──────────────────────────────────────────
     const [checkIn, setCheckIn] = useState<Date | null>(null);
     const [checkOut, setCheckOut] = useState<Date | null>(null);
     const [guests, setGuests] = useState(2);
 
-    // ── Guest details & form state ────────────────────────────────────
+    // ── Guest details & form state ───────────────────────────────────
     const [guestName, setGuestName] = useState('');
     const [guestEmail, setGuestEmail] = useState('');
     const [errors, setErrors] = useState<FormErrors>({});
@@ -97,23 +93,120 @@ export default function BookingCalendar() {
     // ── Confirmed reservations → booked dates ────────────────────────
     const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
 
+    // ── Custom daily rates from API ───────────────────────────────
+    const [customRates, setCustomRates] = useState<Map<string, number>>(new Map());
+    const [dataReady, setDataReady] = useState(false);
+
     useEffect(() => {
         let cancelled = false;
-        fetchConfirmedReservations()
-            .then((data) => {
-                if (!cancelled) {
-                    setBookedDates(expandBookedDays(data));
-                }
-            })
-            .catch((err) => {
-                console.warn('Could not load confirmed reservations:', err);
-            });
+
+        // Fetch booked dates and custom daily rates in parallel
+        Promise.all([
+            fetchConfirmedReservations().catch(() => []),
+            fetchDailyRates().catch(() => []),
+        ]).then(([confirmed, rates]) => {
+            if (cancelled) return;
+            setBookedDates(expandBookedDays(confirmed));
+
+            // Build custom rates map: 'YYYY-MM-DD' → price
+            // Extract date key directly from ISO string to avoid timezone shifts
+            const map = new Map<string, number>();
+            for (const r of rates) {
+                // r.date is like "2026-03-22T00:00:00.000Z" — take just YYYY-MM-DD
+                const key = r.date.slice(0, 10);
+                map.set(key, r.price);
+            }
+            setCustomRates(map);
+            setDataReady(true);
+        });
+
         return () => { cancelled = true; };
     }, []);
 
-    const DAYS = locale === 'es' ? DAYS_ES : locale === 'cs' ? DAYS_CS : DAYS_EN;
-    const MONTHS = locale === 'es' ? MONTHS_ES : locale === 'cs' ? MONTHS_CS : MONTHS_EN;
+    // ── Flatpickr refs ───────────────────────────────────────────────
+    const calendarRef = useRef<HTMLDivElement>(null);
+    const fpRef = useRef<FlatpickrInstance | null>(null);
 
+    // ── Locale mapping for Flatpickr ─────────────────────────────────
+    const flatpickrLocale = useMemo(() => {
+        // We only need firstDayOfWeek: 1 (Monday) for all locales
+        return { firstDayOfWeek: 1 as const };
+    }, []);
+
+    // ── Initialize Flatpickr (only after data is loaded) ───────────────
+    useEffect(() => {
+        if (!calendarRef.current || !dataReady) return;
+
+        const bookedSet = bookedDates;
+
+        const fp = flatpickr(calendarRef.current, {
+            mode: 'range',
+            minDate: 'today',
+            dateFormat: 'Y-m-d',
+            inline: true,
+            showMonths: 1,
+            locale: flatpickrLocale,
+            disable: [
+                function (date: Date) {
+                    return bookedSet.has(toDateKey(date));
+                },
+            ],
+
+            onDayCreate(_dObj: Date[], _dStr: string, _fp: FlatpickrInstance, dayElem: HTMLElement) {
+                const dayEl = dayElem as HTMLElement & { dateObj: Date };
+                const cellDate = dayEl.dateObj;
+                const rate = getRateForDate(cellDate, customRates);
+                const isBooked = bookedSet.has(toDateKey(cellDate));
+
+                const priceSpan = document.createElement('span');
+                priceSpan.className = 'fp-day-price';
+
+                if (isBooked) {
+                    priceSpan.textContent = '—';
+                    priceSpan.classList.add('fp-day-price--booked');
+                } else {
+                    priceSpan.textContent = `€${rate}`;
+                }
+
+                dayElem.appendChild(priceSpan);
+            },
+
+            onChange(selectedDates: Date[]) {
+                if (selectedDates.length === 2) {
+                    setCheckIn(selectedDates[0]);
+                    setCheckOut(selectedDates[1]);
+                    if (errors.dates) {
+                        setErrors((prev) => ({ ...prev, dates: undefined }));
+                    }
+                } else if (selectedDates.length === 1) {
+                    setCheckIn(selectedDates[0]);
+                    setCheckOut(null);
+                } else {
+                    setCheckIn(null);
+                    setCheckOut(null);
+                }
+            },
+        });
+
+        fpRef.current = fp;
+
+        return () => {
+            fp.destroy();
+            fpRef.current = null;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dataReady, bookedDates, customRates, flatpickrLocale]);
+
+    // ── Pricing ──────────────────────────────────────────────────────
+    const pricing = useMemo(() => {
+        if (!checkIn || !checkOut) return null;
+        return calculateStayPrice(checkIn, checkOut, customRates);
+    }, [checkIn, checkOut, customRates]);
+
+    const nights = pricing?.nights ?? 0;
+    const isBelowMinimum = nights > 0 && nights < MIN_NIGHTS;
+
+    // ── Formatting ───────────────────────────────────────────────────
     const formatDate = useCallback(
         (date: Date): string => {
             const loc = locale === 'es' ? 'es-ES' : locale === 'cs' ? 'cs-CZ' : 'en-GB';
@@ -126,69 +219,6 @@ export default function BookingCalendar() {
         [locale],
     );
 
-    const days = useMemo(
-        () => getDaysInMonth(currentYear, currentMonth),
-        [currentYear, currentMonth],
-    );
-
-    const firstDayOffset = days[0]?.getDay() ?? 0;
-
-    const navigate = useCallback(
-        (dir: 1 | -1) => {
-            let m = currentMonth + dir;
-            let y = currentYear;
-            if (m > 11) { m = 0; y++; }
-            if (m < 0) { m = 11; y--; }
-            setCurrentMonth(m);
-            setCurrentYear(y);
-        },
-        [currentMonth, currentYear],
-    );
-
-    /** Check if a specific day is inside a confirmed booking. */
-    const isDayBooked = useCallback(
-        (day: Date): boolean => bookedDates.has(toDateKey(day)),
-        [bookedDates],
-    );
-
-    const handleDayClick = useCallback(
-        (day: Date) => {
-            if (day < today) return;
-            if (isDayBooked(day)) return; // can't select a booked day
-
-            if (!checkIn || (checkIn && checkOut)) {
-                setCheckIn(day);
-                setCheckOut(null);
-            } else {
-                if (day > checkIn) {
-                    // Before confirming check-out, verify the range doesn't overlap booked dates
-                    if (rangeOverlapsBooked(checkIn, day, bookedDates)) {
-                        // Start fresh — the range would cross a booking
-                        setCheckIn(day);
-                        setCheckOut(null);
-                    } else {
-                        setCheckOut(day);
-                    }
-                } else {
-                    setCheckIn(day);
-                    setCheckOut(null);
-                }
-            }
-            // Clear dates error when user picks a date
-            if (errors.dates) {
-                setErrors((prev) => ({ ...prev, dates: undefined }));
-            }
-        },
-        [checkIn, checkOut, today, errors.dates, isDayBooked, bookedDates],
-    );
-
-    const nights =
-        checkIn && checkOut
-            ? Math.ceil(
-                (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24),
-            )
-            : 0;
-
     // ── Validation ───────────────────────────────────────────────────
     const validate = (): FormErrors => {
         const errs: FormErrors = {};
@@ -199,6 +229,7 @@ export default function BookingCalendar() {
             errs.email = t('booking.errorEmailInvalid');
         }
         if (!checkIn || !checkOut) errs.dates = t('booking.errorDates');
+        if (isBelowMinimum) errs.dates = t('booking.minNights');
         return errs;
     };
 
@@ -225,15 +256,18 @@ export default function BookingCalendar() {
                 guestEmail: guestEmail.trim(),
                 checkIn: checkIn!.toISOString(),
                 checkOut: checkOut!.toISOString(),
+                nights: pricing!.nights,
+                totalPrice: pricing!.total,
             });
 
             setStatus('sent');
-            // Reset form after success
             setGuestName('');
             setGuestEmail('');
             setCheckIn(null);
             setCheckOut(null);
             setGuests(2);
+            // Clear Flatpickr selection
+            fpRef.current?.clear();
             // Re-fetch confirmed reservations to update blocked days
             fetchConfirmedReservations()
                 .then((data) => setBookedDates(expandBookedDays(data)))
@@ -250,8 +284,6 @@ export default function BookingCalendar() {
             setTimeout(() => setStatus('idle'), 6000);
         }
     };
-
-    const isReady = checkIn && checkOut && guestName.trim() && guestEmail.trim();
 
     return (
         <section id="booking" className="bg-sand-light py-20 sm:py-28">
@@ -270,84 +302,15 @@ export default function BookingCalendar() {
                 </div>
 
                 <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1fr_380px]">
-                    {/* Calendar */}
-                    <div className="rounded-3xl bg-white p-6 shadow-lg sm:p-8">
-                        {/* Month Navigation */}
-                        <div className="mb-6 flex items-center justify-between">
-                            <button
-                                type="button"
-                                onClick={() => navigate(-1)}
-                                className="rounded-lg p-2 text-navy transition-colors hover:bg-sand"
-                                aria-label="Previous month"
-                            >
-                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </button>
-                            <h3 className="font-heading text-xl font-bold text-navy">
-                                {MONTHS[currentMonth]} {currentYear}
-                            </h3>
-                            <button
-                                type="button"
-                                onClick={() => navigate(1)}
-                                className="rounded-lg p-2 text-navy transition-colors hover:bg-sand"
-                                aria-label="Next month"
-                            >
-                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </button>
-                        </div>
-
-                        {/* Day Headers */}
-                        <div className="mb-2 grid grid-cols-7 gap-1 text-center">
-                            {DAYS.map((d) => (
-                                <span key={d} className="py-2 text-xs font-semibold uppercase tracking-wide text-warm-gray">
-                                    {d}
-                                </span>
-                            ))}
-                        </div>
-
-                        {/* Days Grid */}
-                        <div className="grid grid-cols-7 gap-1">
-                            {Array.from({ length: firstDayOffset }).map((_, i) => (
-                                <div key={`empty-${i}`} />
-                            ))}
-                            {days.map((day) => {
-                                const isPast = day < today && !isSameDay(day, today);
-                                const isBooked = isDayBooked(day);
-                                const isDisabled = isPast || isBooked;
-                                const isCheckIn = checkIn ? isSameDay(day, checkIn) : false;
-                                const isCheckOut = checkOut ? isSameDay(day, checkOut) : false;
-                                const isInRange =
-                                    checkIn && checkOut ? isBetween(day, checkIn, checkOut) : false;
-                                const isToday = isSameDay(day, today);
-
-                                return (
-                                    <button
-                                        key={day.toISOString()}
-                                        type="button"
-                                        disabled={isDisabled}
-                                        onClick={() => handleDayClick(day)}
-                                        title={isBooked ? 'Booked' : undefined}
-                                        className={`relative rounded-lg py-2.5 text-sm font-medium transition-all duration-150 ${isDisabled
-                                            ? isBooked
-                                                ? 'cursor-not-allowed bg-coral/10 text-coral/40 line-through'
-                                                : 'cursor-not-allowed text-navy/20'
-                                            : isCheckIn || isCheckOut
-                                                ? 'bg-ocean text-white shadow-md'
-                                                : isInRange
-                                                    ? 'bg-ocean/15 text-ocean'
-                                                    : isToday
-                                                        ? 'font-bold text-ocean ring-1 ring-ocean/30'
-                                                        : 'text-navy hover:bg-sand'
-                                            }`}
-                                    >
-                                        {day.getDate()}
-                                    </button>
-                                );
-                            })}
-                        </div>
+                    {/* Calendar — Flatpickr container */}
+                    <div className="flatpickr-booking-wrapper rounded-3xl bg-white p-6 shadow-lg sm:p-8">
+                        {!dataReady ? (
+                            <div className="flex items-center justify-center py-20">
+                                <div className="h-8 w-8 animate-spin rounded-full border-4 border-ocean/20 border-t-ocean" />
+                            </div>
+                        ) : (
+                            <div ref={calendarRef} />
+                        )}
 
                         {errors.dates && (
                             <p className="mt-3 text-center text-xs text-coral" role="alert">
@@ -449,14 +412,40 @@ export default function BookingCalendar() {
                             </div>
                         </div>
 
-                        {nights > 0 && (
-                            <div className="rounded-xl border border-ocean/20 bg-ocean/5 p-4 text-center">
-                                <p className="text-2xl font-bold text-ocean">
+                        {nights > 0 && pricing && (
+                            <div className={`rounded-xl border p-4 ${isBelowMinimum
+                                ? 'border-coral/30 bg-coral/5'
+                                : 'border-ocean/20 bg-ocean/5'
+                                }`}>
+                                {/* Nights count */}
+                                <p className={`text-center text-2xl font-bold ${isBelowMinimum ? 'text-coral' : 'text-ocean'
+                                    }`}>
                                     {nights} {nights > 1 ? t('booking.nights') : t('booking.night')}
                                 </p>
-                                <p className="text-sm text-warm-gray">
+                                <p className="mb-3 text-center text-sm text-warm-gray">
                                     {formatDate(checkIn!)} → {formatDate(checkOut!)}
                                 </p>
+
+                                {/* Minimum nights warning */}
+                                {isBelowMinimum && (
+                                    <p className="mb-3 text-center text-xs font-semibold text-coral">
+                                        ⚠ {t('booking.minNights')}
+                                    </p>
+                                )}
+
+                                {/* Price breakdown */}
+                                {!isBelowMinimum && (
+                                    <div className="space-y-2 border-t border-ocean/10 pt-3">
+                                        <div className="flex justify-between text-sm text-warm-gray">
+                                            <span>€{pricing.avgPerNight} × {nights} {nights > 1 ? t('booking.nights') : t('booking.night')}</span>
+                                            <span>€{pricing.total}</span>
+                                        </div>
+                                        <div className="flex justify-between border-t border-ocean/10 pt-2 text-base font-bold text-navy">
+                                            <span>{t('booking.total')}</span>
+                                            <span>€{pricing.total}</span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -477,11 +466,11 @@ export default function BookingCalendar() {
                         <button
                             type="button"
                             onClick={handleSubmit}
-                            disabled={status === 'sending'}
+                            disabled={status === 'sending' || isBelowMinimum}
                             className={`mt-auto w-full rounded-full py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 ${status === 'sending'
                                 ? 'cursor-wait bg-ocean/60'
-                                : isReady
-                                    ? 'bg-coral hover:bg-coral-dark hover:shadow-xl'
+                                : isBelowMinimum
+                                    ? 'cursor-not-allowed bg-navy/20'
                                     : 'bg-coral hover:bg-coral-dark hover:shadow-xl'
                                 }`}
                         >
@@ -489,7 +478,9 @@ export default function BookingCalendar() {
                                 ? t('booking.sending')
                                 : status === 'sent'
                                     ? t('booking.sent')
-                                    : t('booking.request')}
+                                    : pricing && !isBelowMinimum
+                                        ? `${t('booking.request')} · €${pricing.total}`
+                                        : t('booking.request')}
                         </button>
 
                         <p className="text-center text-xs text-warm-gray">

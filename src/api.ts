@@ -6,6 +6,8 @@ export interface ReservationPayload {
     guestEmail: string;
     checkIn: string;   // ISO date string
     checkOut: string;   // ISO date string
+    nights: number;
+    totalPrice: number;
 }
 
 export interface Reservation extends ReservationPayload {
@@ -77,6 +79,44 @@ export async function fetchConfirmedReservations(): Promise<ConfirmedReservation
     }
 
     return res.json();
+}
+
+// ── Daily Rates (custom per-day pricing) ─────────────────────────────
+
+export interface DailyRate {
+    _id: string;
+    date: string;      // ISO date string
+    price: number;
+    note: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+/**
+ * Fetch custom daily prices. Returns rates for up to 12 months ahead.
+ */
+export async function fetchDailyRates(): Promise<DailyRate[]> {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1; // 1-indexed
+
+    // Fetch current month + next 11 months in parallel
+    const fetches: Promise<DailyRate[]>[] = [];
+    const cacheBust = Date.now(); // prevent browser caching
+    for (let i = 0; i < 12; i++) {
+        let m = month + i;
+        let y = year;
+        if (m > 12) { m -= 12; y++; }
+
+        fetches.push(
+            fetch(`${API_BASE}/daily-rates?year=${y}&month=${m}&_t=${cacheBust}`)
+                .then((r) => (r.ok ? r.json() : []))
+                .catch(() => []),
+        );
+    }
+
+    const results = await Promise.all(fetches);
+    return results.flat();
 }
 
 // ── Contact Form ─────────────────────────────────────────────────────

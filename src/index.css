@@ -27,7 +27,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
   text-wrap: balance;
 }
@@ -35,4 +40,195 @@ h1, h2, h3, h4, h5, h6 {
 ::selection {
   background-color: var(--color-ocean);
   color: white;
+}
+
+/* ── Flatpickr Theme Overrides ──────────────────────────────────────── */
+
+/* Container */
+.flatpickr-booking-wrapper .flatpickr-calendar {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  font-family: var(--font-body) !important;
+}
+
+.flatpickr-booking-wrapper .flatpickr-innerContainer {
+  width: 100% !important;
+}
+
+.flatpickr-booking-wrapper .flatpickr-rContainer,
+.flatpickr-booking-wrapper .flatpickr-days,
+.flatpickr-booking-wrapper .dayContainer {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 100% !important;
+}
+
+/* Month header */
+.flatpickr-booking-wrapper .flatpickr-months {
+  margin-bottom: 8px;
+}
+
+.flatpickr-booking-wrapper .flatpickr-current-month {
+  font-family: var(--font-heading) !important;
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  color: var(--color-navy) !important;
+}
+
+.flatpickr-booking-wrapper .flatpickr-months .flatpickr-prev-month,
+.flatpickr-booking-wrapper .flatpickr-months .flatpickr-next-month {
+  color: var(--color-navy) !important;
+  fill: var(--color-navy) !important;
+  padding: 8px !important;
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+
+.flatpickr-booking-wrapper .flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-booking-wrapper .flatpickr-months .flatpickr-next-month:hover {
+  background: var(--color-sand) !important;
+}
+
+.flatpickr-booking-wrapper .flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-booking-wrapper .flatpickr-months .flatpickr-next-month svg {
+  fill: var(--color-navy) !important;
+}
+
+/* Weekday header */
+.flatpickr-booking-wrapper .flatpickr-weekdays {
+  margin-bottom: 4px;
+}
+
+.flatpickr-booking-wrapper span.flatpickr-weekday {
+  color: var(--color-warm-gray) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em;
+}
+
+/* ── Day cells ──────────────────────────────────────────────────────── */
+.flatpickr-booking-wrapper .flatpickr-day {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 52px !important;
+  max-width: none !important;
+  line-height: 1.2 !important;
+  border-radius: 10px !important;
+  border: none !important;
+  font-weight: 500 !important;
+  color: var(--color-navy) !important;
+  transition: all 0.15s !important;
+}
+
+.flatpickr-booking-wrapper .flatpickr-day:hover {
+  background: var(--color-sand) !important;
+  border: none !important;
+}
+
+/* Today */
+.flatpickr-booking-wrapper .flatpickr-day.today:not(.selected):not(.startRange):not(.endRange) {
+  border: none !important;
+  font-weight: 700 !important;
+  color: var(--color-ocean) !important;
+  box-shadow: inset 0 0 0 1.5px rgba(26, 140, 170, 0.3);
+}
+
+/* Selected endpoints (check-in / check-out) */
+.flatpickr-booking-wrapper .flatpickr-day.selected,
+.flatpickr-booking-wrapper .flatpickr-day.startRange,
+.flatpickr-booking-wrapper .flatpickr-day.endRange {
+  background: var(--color-ocean) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(26, 140, 170, 0.35) !important;
+  font-weight: 600 !important;
+}
+
+.flatpickr-booking-wrapper .flatpickr-day.selected:hover,
+.flatpickr-booking-wrapper .flatpickr-day.startRange:hover,
+.flatpickr-booking-wrapper .flatpickr-day.endRange:hover {
+  background: var(--color-ocean-dark) !important;
+}
+
+/* In-range (between check-in and check-out) */
+.flatpickr-booking-wrapper .flatpickr-day.inRange {
+  background: rgba(26, 140, 170, 0.12) !important;
+  color: var(--color-ocean) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Disabled / past days */
+.flatpickr-booking-wrapper .flatpickr-day.flatpickr-disabled,
+.flatpickr-booking-wrapper .flatpickr-day.flatpickr-disabled:hover {
+  color: rgba(44, 62, 80, 0.2) !important;
+  background: transparent !important;
+  text-decoration: line-through;
+  cursor: not-allowed !important;
+}
+
+/* Previous / next month days */
+.flatpickr-booking-wrapper .flatpickr-day.prevMonthDay,
+.flatpickr-booking-wrapper .flatpickr-day.nextMonthDay {
+  color: rgba(44, 62, 80, 0.2) !important;
+}
+
+/* ── Price label inside each day ────────────────────────────────────── */
+.fp-day-price {
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+  margin-top: 1px;
+  pointer-events: none;
+  color: var(--color-ocean);
+  opacity: 0.7;
+}
+
+/* Price hides on disabled / past days */
+.flatpickr-day.flatpickr-disabled .fp-day-price,
+.flatpickr-day.prevMonthDay .fp-day-price,
+.flatpickr-day.nextMonthDay .fp-day-price {
+  display: none;
+}
+
+/* Booked day price placeholder */
+.fp-day-price--booked {
+  color: var(--color-coral) !important;
+  opacity: 0.4;
+}
+
+/* Price inside selected days */
+.flatpickr-day.selected .fp-day-price,
+.flatpickr-day.startRange .fp-day-price,
+.flatpickr-day.endRange .fp-day-price {
+  color: rgba(255, 255, 255, 0.7);
+  opacity: 1;
+}
+
+/* Price inside in-range days */
+.flatpickr-day.inRange .fp-day-price {
+  color: var(--color-ocean);
+  opacity: 0.5;
+}
+
+/* ── Remove the default year dropdown arrow ─────────────────────────── */
+.flatpickr-booking-wrapper .numInputWrapper:hover,
+.flatpickr-booking-wrapper .numInputWrapper span {
+  display: none !important;
+}
+
+.flatpickr-booking-wrapper .flatpickr-current-month .numInputWrapper {
+  width: 5ch;
+}
+
+.flatpickr-booking-wrapper .flatpickr-current-month input.cur-year {
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  color: var(--color-navy) !important;
 }
