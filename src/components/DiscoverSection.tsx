@@ -43,7 +43,7 @@ export default function DiscoverSection() {
     }, []);
 
     return (
-        <section id="discover" className="bg-sand-light py-20 sm:py-28">
+        <section id="discover" className="bg-white py-20 sm:py-28">
             <div className="mx-auto max-w-7xl px-6">
                 {/* Header */}
                 <div className="mb-12 text-center">

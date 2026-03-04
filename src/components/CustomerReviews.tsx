@@ -61,7 +61,7 @@ export default function CustomerReviews() {
     );
 
     return (
-        <section id="reviews" className="bg-white py-20 sm:py-28">
+        <section id="reviews" className="bg-[#f7f5f0] py-20 sm:py-28">
             <div className="mx-auto max-w-7xl px-6">
                 {/* Header */}
                 <div className="mb-12 text-center">

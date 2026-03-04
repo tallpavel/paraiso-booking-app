@@ -7,6 +7,7 @@ const translations = {
         // Header / Nav
         'nav.amenities': 'Amenities',
         'nav.gallery': 'Gallery',
+        'nav.discover': 'Explore',
         'nav.reviews': 'Reviews',
         'nav.book': 'Book Now',
         'nav.contact': 'Contact',
@@ -183,6 +184,7 @@ const translations = {
         // Header / Nav
         'nav.amenities': 'Comodidades',
         'nav.gallery': 'Galería',
+        'nav.discover': 'Explorar',
         'nav.reviews': 'Opiniones',
         'nav.book': 'Reservar',
         'nav.contact': 'Contacto',
@@ -359,6 +361,7 @@ const translations = {
         // Header / Nav
         'nav.amenities': 'Vybavení',
         'nav.gallery': 'Galerie',
+        'nav.discover': 'Objevte',
         'nav.reviews': 'Recenze',
         'nav.book': 'Rezervovat',
         'nav.contact': 'Kontakt',
@@ -545,11 +548,17 @@ const I18nContext = createContext<I18nContextType | null>(null);
 export function I18nProvider({ children }: { children: ReactNode }) {
     const [locale, setLocaleState] = useState<Locale>(() => {
         if (typeof window !== 'undefined') {
+            // If user previously chose a language, respect it
             const saved = localStorage.getItem('locale') as Locale | null;
             if (saved === 'en' || saved === 'es' || saved === 'cs') return saved;
-            const browserLang = navigator.language.slice(0, 2);
-            if (browserLang === 'cs') return 'cs';
-            return browserLang === 'es' ? 'es' : 'en';
+
+            // Auto-detect from browser languages (reflects user's country/region)
+            const langs = navigator.languages ?? [navigator.language];
+            for (const lang of langs) {
+                const code = lang.toLowerCase();
+                if (code.startsWith('cs')) return 'cs';  // Czech Republic
+                if (code.startsWith('es')) return 'es';  // Spain / Latin America
+            }
         }
         return 'en';
     });

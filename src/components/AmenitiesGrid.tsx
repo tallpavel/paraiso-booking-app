@@ -84,19 +84,27 @@ const AMENITY_KEYS: { icon: keyof typeof icons; titleKey: TranslationKey; descKe
     { icon: 'parking', titleKey: 'amenity.parking', descKey: 'amenity.parkingDesc' },
 ];
 
-function AmenityCard({ amenity }: { amenity: (typeof AMENITY_KEYS)[number] }) {
+function AmenityCard({ amenity, index }: { amenity: (typeof AMENITY_KEYS)[number]; index: number }) {
     const { t } = useI18n();
     return (
-        <article className="group rounded-2xl border border-sand bg-sand-light p-8 transition-all duration-300 hover:-translate-y-1 hover:border-ocean/20 hover:shadow-xl">
-            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-ocean/10 text-ocean transition-all duration-300 group-hover:scale-110 group-hover:bg-ocean group-hover:text-white group-hover:shadow-lg group-hover:shadow-ocean/25">
-                <div className="h-7 w-7">
+        <article
+            className="group relative overflow-hidden rounded-2xl bg-white p-7 text-center shadow-sm ring-1 ring-navy/5 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:ring-ocean/20"
+            style={{ animationDelay: `${index * 80}ms` }}
+        >
+            {/* Icon */}
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-ocean/10 to-coral/5 text-ocean transition-all duration-500 group-hover:from-ocean group-hover:to-ocean-dark group-hover:text-white group-hover:shadow-lg group-hover:shadow-ocean/20 group-hover:scale-105">
+                <div className="h-8 w-8">
                     {icons[amenity.icon]}
                 </div>
             </div>
-            <h3 className="mb-2 font-heading text-lg font-bold text-navy">
+
+            {/* Title */}
+            <h3 className="mb-2 font-heading text-base font-bold tracking-tight text-navy sm:text-lg">
                 {t(amenity.titleKey)}
             </h3>
-            <p className="text-sm leading-relaxed text-warm-gray">
+
+            {/* Description */}
+            <p className="text-sm leading-relaxed text-warm-gray/80">
                 {t(amenity.descKey)}
             </p>
         </article>
@@ -153,9 +161,9 @@ export default function AmenitiesGrid() {
                     className="flex gap-4 overflow-x-auto px-6 pb-4 snap-x snap-mandatory"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
-                    {AMENITY_KEYS.map((amenity) => (
+                    {AMENITY_KEYS.map((amenity, i) => (
                         <div key={amenity.titleKey} className="w-[70vw] shrink-0 snap-start sm:w-[45vw]">
-                            <AmenityCard amenity={amenity} />
+                            <AmenityCard amenity={amenity} index={i} />
                         </div>
                     ))}
                 </div>
@@ -177,9 +185,9 @@ export default function AmenitiesGrid() {
 
             {/* Desktop: 4-column grid */}
             <div className="mx-auto hidden max-w-7xl px-6 lg:block">
-                <div className="grid grid-cols-4 gap-6">
-                    {AMENITY_KEYS.map((amenity) => (
-                        <AmenityCard key={amenity.titleKey} amenity={amenity} />
+                <div className="grid grid-cols-4 gap-5">
+                    {AMENITY_KEYS.map((amenity, i) => (
+                        <AmenityCard key={amenity.titleKey} amenity={amenity} index={i} />
                     ))}
                 </div>
             </div>

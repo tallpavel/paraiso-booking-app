@@ -20,6 +20,13 @@ export default function BookingCTA() {
         return () => window.removeEventListener('keydown', onKey);
     }, [open]);
 
+    // Listen for header "Book Now" button
+    useEffect(() => {
+        const handler = () => setOpen(true);
+        window.addEventListener('open-booking', handler);
+        return () => window.removeEventListener('open-booking', handler);
+    }, []);
+
     return (
         <>
             {/* CTA Section */}

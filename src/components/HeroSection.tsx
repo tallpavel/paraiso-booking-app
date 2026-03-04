@@ -31,9 +31,15 @@ export default function HeroSection() {
 
             {/* Content */}
             <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-                <span className="mb-6 inline-block rounded-full border border-white/30 bg-white/10 px-5 py-2 text-xs font-medium uppercase tracking-[0.2em] text-white/90 backdrop-blur-sm">
-                    {t('hero.badge')}
-                </span>
+                <div className="mb-8 flex justify-center">
+                    <img
+                        src="/logo.png"
+                        alt="Verónica's Flat logo"
+                        width={120}
+                        height={120}
+                        className="h-28 w-28 rounded-full object-cover shadow-2xl ring-2 ring-white/20 sm:h-32 sm:w-32"
+                    />
+                </div>
 
                 <h1 className="mb-6 font-heading text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
                     {t('hero.title')}{' '}
@@ -45,12 +51,13 @@ export default function HeroSection() {
                 </p>
 
                 <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                    <a
-                        href="#booking"
+                    <button
+                        type="button"
+                        onClick={() => window.dispatchEvent(new CustomEvent('open-booking'))}
                         className="rounded-full bg-coral px-8 py-4 text-lg font-semibold text-white shadow-2xl transition-all duration-200 hover:bg-coral-dark hover:shadow-3xl hover:-translate-y-0.5"
                     >
                         {t('hero.cta')}
-                    </a>
+                    </button>
                     <a
                         href="#gallery"
                         className="rounded-full border-2 border-white/40 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:border-white hover:bg-white/10"
@@ -73,11 +80,31 @@ export default function HeroSection() {
             </div>
 
             {/* Scroll Indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-                <svg className="h-6 w-6 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            <a
+                href="#amenities"
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/70 transition-colors hover:text-white"
+                aria-label="Scroll down"
+            >
+                {/* Desktop: Mouse icon */}
+                <div className="hidden sm:flex h-10 w-6 items-start justify-center rounded-full border-2 border-current p-1.5">
+                    <div className="h-2 w-1 rounded-full bg-current animate-scroll-dot" />
+                </div>
+
+                {/* Mobile: Double chevron + label */}
+                <div className="flex flex-col items-center sm:hidden animate-bounce">
+                    <span className="mb-1 text-[10px] font-semibold uppercase tracking-widest">Scroll</span>
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                    <svg className="h-6 w-6 -mt-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+
+                <svg className="h-4 w-4 animate-bounce hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
-            </div>
+            </a>
         </section>
     );
 }

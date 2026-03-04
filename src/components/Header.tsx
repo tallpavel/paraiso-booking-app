@@ -5,8 +5,8 @@ import type { Locale } from '../i18n';
 const NAV_KEYS = [
     { key: 'nav.amenities' as const, href: '#amenities' },
     { key: 'nav.gallery' as const, href: '#gallery' },
+    { key: 'nav.discover' as const, href: '#discover' },
     { key: 'nav.reviews' as const, href: '#reviews' },
-    { key: 'nav.book' as const, href: '#booking' },
 ];
 
 const LOCALE_FLAGS: Record<Locale, string> = { en: '🇬🇧', es: '🇪🇸', cs: '🇨🇿' };
@@ -18,11 +18,32 @@ export default function Header() {
     const { t, locale, setLocale } = useI18n();
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState('');
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 60);
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
+    }, []);
+
+    // Scroll spy: track which section is in view
+    useEffect(() => {
+        const ids = NAV_KEYS.map((l) => l.href.slice(1));
+        const observer = new IntersectionObserver(
+            (entries) => {
+                for (const entry of entries) {
+                    if (entry.isIntersecting) {
+                        setActiveSection('#' + entry.target.id);
+                    }
+                }
+            },
+            { rootMargin: '-40% 0px -50% 0px', threshold: 0 },
+        );
+        ids.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) observer.observe(el);
+        });
+        return () => observer.disconnect();
     }, []);
 
     const [langOpen, setLangOpen] = useState(false);
@@ -38,14 +59,21 @@ export default function Header() {
         return () => document.removeEventListener('mousedown', onClick);
     }, []);
 
+    const showNav = scrolled || menuOpen;
+
     return (
         <header
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showNav ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
                 }`}
         >
-            <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-                {/* Logo */}
-                <a href="#" className="flex items-center gap-3" aria-label="Verónica's Flat — Home">
+            <nav className={`mx-auto flex max-w-7xl items-center justify-between px-6 relative transition-all duration-500 ${showNav ? 'py-4' : 'py-6'}`}>
+                {/* Logo — hidden initially, appears on scroll */}
+                <a
+                    href="#"
+                    className={`flex items-center gap-3 transition-all duration-500 ${showNav ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+                        }`}
+                    aria-label="Verónica's Flat — Home"
+                >
                     <img
                         src="/logo.png"
                         alt="Verónica's Flat logo"
@@ -53,21 +81,20 @@ export default function Header() {
                         height={48}
                         className="h-12 w-12 rounded-full object-cover"
                     />
-                    <span
-                        className={`font-heading text-lg font-bold tracking-wide transition-colors duration-300 ${scrolled ? 'text-navy' : 'text-white'
-                            }`}
-                    >
+                    <span className="font-heading text-lg font-bold tracking-wide text-navy">
                         Verónica's Flat
                     </span>
                 </a>
 
                 {/* Desktop Nav */}
-                <ul className="hidden items-center gap-8 md:flex">
+                <ul className={`hidden items-center gap-8 md:flex transition-all duration-300 ${showNav ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                     {NAV_KEYS.map((link) => (
                         <li key={link.href}>
                             <a
                                 href={link.href}
-                                className={`text-sm font-medium tracking-wide transition-colors duration-200 hover:text-ocean ${scrolled ? 'text-navy' : 'text-white/90'
+                                className={`text-sm font-medium tracking-wide transition-colors duration-200 hover:text-ocean ${activeSection === link.href
+                                    ? 'text-ocean'
+                                    : scrolled ? 'text-navy' : 'text-white/90'
                                     }`}
                             >
                                 {t(link.key)}
@@ -76,7 +103,7 @@ export default function Header() {
                     ))}
                 </ul>
 
-                <div className="hidden items-center gap-3 md:flex">
+                <div className={`hidden items-center gap-3 md:flex transition-all duration-300 ${showNav ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                     {/* Language Dropdown */}
                     <div className="relative" ref={langRef}>
                         <button
@@ -134,35 +161,32 @@ export default function Header() {
                     </div>
 
                     {/* CTA */}
-                    <a
-                        href="#booking"
+                    <button
+                        type="button"
+                        onClick={() => window.dispatchEvent(new CustomEvent('open-booking'))}
                         className="rounded-full bg-coral px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-coral-dark hover:shadow-xl"
                     >
                         {t('nav.book')}
-                    </a>
+                    </button>
                 </div>
 
                 {/* Mobile Menu Button */}
                 <button
                     type="button"
                     onClick={() => setMenuOpen(!menuOpen)}
-                    className="md:hidden"
+                    className={`relative flex h-10 w-10 items-center justify-center rounded-lg md:hidden transition-all duration-300 ${showNav ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                        } ${scrolled ? 'hover:bg-sand-light' : 'hover:bg-white/10'}`}
                     aria-label={menuOpen ? 'Close menu' : 'Open menu'}
                     aria-expanded={menuOpen}
                 >
-                    <svg
-                        className={`h-7 w-7 transition-colors ${scrolled ? 'text-navy' : 'text-white'}`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                    >
-                        {menuOpen ? (
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        ) : (
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                        )}
-                    </svg>
+                    <div className="flex h-5 w-6 flex-col items-center justify-center">
+                        <span className={`block h-0.5 w-6 rounded-full transition-all duration-300 ${scrolled ? 'bg-navy' : 'bg-white'
+                            } ${menuOpen ? 'translate-y-[5px] rotate-45' : ''}`} />
+                        <span className={`mt-[4px] block h-0.5 rounded-full transition-all duration-300 ${scrolled ? 'bg-navy' : 'bg-white'
+                            } ${menuOpen ? 'w-0 opacity-0' : 'w-6 opacity-100'}`} />
+                        <span className={`mt-[4px] block h-0.5 w-6 rounded-full transition-all duration-300 ${scrolled ? 'bg-navy' : 'bg-white'
+                            } ${menuOpen ? '-translate-y-[5px] -rotate-45' : ''}`} />
+                    </div>
                 </button>
             </nav>
 
@@ -175,7 +199,8 @@ export default function Header() {
                                 <a
                                     href={link.href}
                                     onClick={() => setMenuOpen(false)}
-                                    className="block py-3 text-sm font-medium text-navy transition-colors hover:text-ocean"
+                                    className={`block py-3 text-sm font-medium transition-colors hover:text-ocean ${activeSection === link.href ? 'text-ocean' : 'text-navy'
+                                        }`}
                                 >
                                     {t(link.key)}
                                 </a>
@@ -197,13 +222,13 @@ export default function Header() {
                             ))}
                         </li>
                         <li>
-                            <a
-                                href="#booking"
-                                onClick={() => setMenuOpen(false)}
-                                className="mt-2 block rounded-full bg-coral px-6 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-coral-dark"
+                            <button
+                                type="button"
+                                onClick={() => { setMenuOpen(false); window.dispatchEvent(new CustomEvent('open-booking')); }}
+                                className="mt-2 block w-full rounded-full bg-coral px-6 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-coral-dark"
                             >
                                 {t('nav.book')}
-                            </a>
+                            </button>
                         </li>
                     </ul>
                 </div>
