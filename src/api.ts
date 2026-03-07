@@ -150,3 +150,122 @@ export async function sendContactMessage(
 
     return res.json();
 }
+
+// ── Admin API ────────────────────────────────────────────────────────
+
+function authHeaders(token: string): HeadersInit {
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+    };
+}
+
+export interface AdminStats {
+    pendingRequests: number;
+    confirmedTotal: number;
+    paymentPending: number;
+    paymentPaid: number;
+    paymentFailed: number;
+    upcomingCheckIns: number;
+}
+
+export interface ConfirmedReservationFull {
+    _id: string;
+    guestName: string;
+    guestEmail: string;
+    checkIn: string;
+    checkOut: string;
+    nights: number;
+    totalPrice: number;
+    depositAmount: number;
+    comment: string;
+    paymentStatus: 'pending' | 'paid' | 'failed';
+    stripeSessionId: string;
+    stripePaymentUrl: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export async function adminLogin(password: string): Promise<{ token: string; expiresIn: number }> {
+    const res = await fetch(`${API_BASE}/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+    });
+
+    if (!res.ok) {
+        const body: ApiError = await res.json().catch(() => ({
+            message: 'Login failed',
+        }));
+        throw body;
+    }
+
+    return res.json();
+}
+
+export async function fetchAdminStats(token: string): Promise<AdminStats> {
+    const res = await fetch(`${API_BASE}/admin/stats`, {
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch stats');
+    return res.json();
+}
+
+export async function fetchReservationsAuth(token: string): Promise<Reservation[]> {
+    const res = await fetch(`${API_BASE}/reservations`, {
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch reservations');
+    return res.json();
+}
+
+export async function fetchConfirmedReservationsFull(token: string): Promise<ConfirmedReservationFull[]> {
+    const res = await fetch(`${API_BASE}/reservations-confirmed`, {
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch confirmed reservations');
+    return res.json();
+}
+
+export async function confirmReservation(
+    token: string,
+    id: string,
+): Promise<{ message: string; confirmed: ConfirmedReservationFull; paymentUrl: string; emailSent: boolean }> {
+    const res = await fetch(`${API_BASE}/reservations/${id}/confirm`, {
+        method: 'POST',
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) {
+        const body: ApiError = await res.json().catch(() => ({
+            message: 'Failed to confirm reservation',
+        }));
+        throw body;
+    }
+
+    return res.json();
+}
+
+export async function deleteReservationRequest(token: string, id: string): Promise<{ message: string }> {
+    const res = await fetch(`${API_BASE}/reservations/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) throw new Error('Failed to delete reservation request');
+    return res.json();
+}
+
+export async function deleteConfirmedReservation(token: string, id: string): Promise<{ message: string }> {
+    const res = await fetch(`${API_BASE}/reservations-confirmed/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) throw new Error('Failed to cancel confirmed reservation');
+    return res.json();
+}
+

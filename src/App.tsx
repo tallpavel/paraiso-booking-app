@@ -1,4 +1,6 @@
 import './index.css';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import AmenitiesGrid from './components/AmenitiesGrid';
@@ -9,8 +11,10 @@ import CustomerReviews from './components/CustomerReviews';
 import BookingCTA from './components/BookingCTA';
 import FloatingContactButton from './components/FloatingContactButton';
 import Footer from './components/Footer';
+import AdminLogin from './components/admin/AdminLogin';
+import AdminLayout from './components/admin/AdminLayout';
 
-export default function App() {
+function PublicSite() {
   return (
     <>
       <a
@@ -35,3 +39,25 @@ export default function App() {
   );
 }
 
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
+  return <>{children}</>;
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<PublicSite />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route
+        path="/admin/*"
+        element={
+          <ProtectedRoute>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  );
+}
