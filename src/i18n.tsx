@@ -95,6 +95,10 @@ const translations = {
         'reviews.label': 'Guest Reviews',
         'reviews.title': 'What Our Guests Say',
         'reviews.count': 'reviews',
+        'reviews.basedOn': 'Based on',
+        'reviews.viewAll': 'View on Trustpilot',
+        'reviews.verified': 'Verified',
+        'reviews.readMore': 'Read all reviews on Trustpilot',
 
         // Booking CTA
         'bookingCta.title': 'Ready for Your Paradise Getaway?',
@@ -272,6 +276,10 @@ const translations = {
         'reviews.label': 'Opiniones de Huéspedes',
         'reviews.title': 'Lo que Dicen Nuestros Huéspedes',
         'reviews.count': 'opiniones',
+        'reviews.basedOn': 'Basado en',
+        'reviews.viewAll': 'Ver en Trustpilot',
+        'reviews.verified': 'Verificado',
+        'reviews.readMore': 'Leer todas las reseñas en Trustpilot',
 
         // CTA de Reserva
         'bookingCta.title': '¿Listo para Tu Escapada al Paraíso?',
@@ -449,6 +457,10 @@ const translations = {
         'reviews.label': 'Recenze Hostů',
         'reviews.title': 'Co Říkají Naši Hosté',
         'reviews.count': 'recenzí',
+        'reviews.basedOn': 'Na základě',
+        'reviews.viewAll': 'Zobrazit na Trustpilot',
+        'reviews.verified': 'Ověřeno',
+        'reviews.readMore': 'Přečíst všechny recenze na Trustpilot',
 
         // CTA Rezervace
         'bookingCta.title': 'Připraveni na Rajskou Dovolenou?',

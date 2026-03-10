@@ -1,173 +1,184 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { reviews } from '../data';
+import { useEffect, useRef } from 'react';
 import { useI18n } from '../i18n';
 
-export default function CustomerReviews() {
-    const { t } = useI18n();
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(true);
-    const [activeIndex, setActiveIndex] = useState(0);
+/* ─────────────────────────────────────────────────────────────────────
+   CONFIGURATION — Replace these with your real Trustpilot values
+   once you register at https://business.trustpilot.com
+   ───────────────────────────────────────────────────────────────────── */
+const TRUSTPILOT_URL = 'https://www.trustpilot.com/review/example.com';
+const BUSINESS_UNIT_ID = '46a7e93b0000ff00059f3827'; // placeholder — replace with your real ID
 
-    const averageRating = (
-        reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-    ).toFixed(1);
-
-    // ── Scroll tracking ──────────────────────────────────────────────
-    const updateScrollState = useCallback(() => {
-        const el = scrollRef.current;
-        if (!el) return;
-        setCanScrollLeft(el.scrollLeft > 10);
-        setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
-
-        // Determine active card based on scroll position
-        const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 20 : 1;
-        const idx = Math.round(el.scrollLeft / cardWidth);
-        setActiveIndex(Math.min(idx, reviews.length - 1));
-    }, []);
-
-    useEffect(() => {
-        const el = scrollRef.current;
-        if (!el) return;
-        updateScrollState();
-        el.addEventListener('scroll', updateScrollState, { passive: true });
-        window.addEventListener('resize', updateScrollState);
-        return () => {
-            el.removeEventListener('scroll', updateScrollState);
-            window.removeEventListener('resize', updateScrollState);
-        };
-    }, [updateScrollState]);
-
-    const scroll = useCallback((dir: 'left' | 'right') => {
-        const el = scrollRef.current;
-        if (!el) return;
-        const amount = el.clientWidth * 0.7;
-        el.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
-    }, []);
-
-    const scrollToIndex = useCallback((index: number) => {
-        const el = scrollRef.current;
-        if (!el) return;
-        const card = el.children[index] as HTMLElement;
-        if (card) {
-            el.scrollTo({ left: card.offsetLeft - 24, behavior: 'smooth' });
-        }
-    }, []);
-
-    const StarIcon = ({ className = 'h-5 w-5 text-yellow-400' }: { className?: string }) => (
-        <svg className={className} fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+/* ── Trustpilot Star (official green) ──────────────────────────────── */
+function TrustpilotStar({ filled = true, size = 20 }: { filled?: boolean; size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect width="24" height="24" rx="2" fill={filled ? '#00b67a' : '#dcdce6'} />
+            <path
+                d="M12 16.77L15.09 18.5l-.81-3.52L17 12.51l-3.58-.31L12 9l-1.42 3.2L7 12.51l2.72 2.47-.81 3.52L12 16.77z"
+                fill="#fff"
+            />
         </svg>
     );
+}
+
+/* ── Trustpilot Logo ───────────────────────────────────────────────── */
+function TrustpilotLogo({ className = '' }: { className?: string }) {
+    return (
+        <svg className={className} viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Trustpilot">
+            <g>
+                <rect x="0" y="5" width="40" height="40" rx="4" fill="#00b67a" />
+                <path
+                    d="M20 33.54L27.27 37l-1.41-8.27L32 22.91l-8.36-.72L20 15l-3.64 7.19L8 22.91l6.14 5.82L12.73 37 20 33.54z"
+                    fill="#fff"
+                />
+                <path d="M26.14 30.37l-.73-3.13L20 33.54l6.14-3.17z" fill="#005128" opacity="0.7" />
+            </g>
+            <g fill="#191919">
+                <text x="48" y="34" fontFamily="Outfit, system-ui, sans-serif" fontSize="22" fontWeight="700" letterSpacing="-0.5">
+                    Trustpilot
+                </text>
+            </g>
+        </svg>
+    );
+}
+
+/* ── Star Row ──────────────────────────────────────────────────────── */
+function StarRow({ rating, size = 20 }: { rating: number; size?: number }) {
+    return (
+        <div className="flex gap-0.5">
+            {[...Array(5)].map((_, i) => (
+                <TrustpilotStar key={i} filled={i < rating} size={size} />
+            ))}
+        </div>
+    );
+}
+
+/* ── TrustBox Widget Hook ──────────────────────────────────────────── */
+function useTrustpilotWidget(ref: React.RefObject<HTMLDivElement | null>) {
+    useEffect(() => {
+        // Load the Trustpilot bootstrap script once
+        const scriptId = 'trustpilot-widget-script';
+        if (!document.getElementById(scriptId)) {
+            const script = document.createElement('script');
+            script.id = scriptId;
+            script.src = 'https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js';
+            script.async = true;
+            document.head.appendChild(script);
+        }
+
+        // When script loads, initialize the widget
+        const init = () => {
+            if (ref.current && (window as Record<string, unknown>).Trustpilot) {
+                (window as Record<string, unknown> & { Trustpilot: { loadFromElement: (el: HTMLElement, reload?: boolean) => void } })
+                    .Trustpilot.loadFromElement(ref.current, true);
+            }
+        };
+
+        const existingScript = document.getElementById(scriptId);
+        if (existingScript) {
+            existingScript.addEventListener('load', init);
+        }
+        // Try immediately in case script already loaded
+        init();
+
+        return () => {
+            existingScript?.removeEventListener('load', init);
+        };
+    }, [ref]);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   COMPONENT
+   ══════════════════════════════════════════════════════════════════════ */
+export default function CustomerReviews() {
+    const { t, locale } = useI18n();
+    const widgetRef = useRef<HTMLDivElement>(null);
+    useTrustpilotWidget(widgetRef);
+
+    const localeMap: Record<string, string> = { en: 'en-GB', es: 'es-ES', cs: 'cs-CZ' };
+    const tpLocale = localeMap[locale] || 'en-GB';
 
     return (
         <section id="reviews" className="bg-[#f7f5f0] py-20 sm:py-28">
             <div className="mx-auto max-w-7xl px-6">
                 {/* Header */}
-                <div className="mb-12 text-center">
+                <div className="mb-14 text-center">
                     <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-[0.15em] text-ocean">
                         {t('reviews.label')}
                     </span>
-                    <h2 className="mb-4 font-heading text-3xl font-bold text-navy sm:text-4xl md:text-5xl">
+                    <h2 className="mb-6 font-heading text-3xl font-bold text-navy sm:text-4xl md:text-5xl">
                         {t('reviews.title')}
                     </h2>
-                    <div className="flex items-center justify-center gap-3">
-                        <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                                <StarIcon key={i} className="h-6 w-6 text-yellow-400" />
-                            ))}
+
+                    {/* Trustpilot summary badge */}
+                    <div className="mx-auto inline-flex flex-col items-center gap-3 rounded-2xl border border-[#e0ddd5] bg-white px-8 py-5 shadow-sm sm:flex-row sm:gap-5">
+                        <a href={TRUSTPILOT_URL} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-80">
+                            <TrustpilotLogo className="h-8 w-auto sm:h-9" />
+                        </a>
+                        <div className="hidden h-8 w-px bg-[#e0ddd5] sm:block" />
+                        <div className="flex flex-col items-center gap-1.5 sm:items-start">
+                            <div className="flex items-center gap-2.5">
+                                <StarRow rating={5} size={22} />
+                            </div>
+                            <p className="text-xs font-medium text-warm-gray">
+                                <a
+                                    href={TRUSTPILOT_URL}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[#00b67a] underline-offset-2 transition-colors hover:underline"
+                                >
+                                    {t('reviews.viewAll')}
+                                </a>
+                            </p>
                         </div>
-                        <span className="text-lg font-semibold text-navy">{averageRating}</span>
-                        <span className="text-warm-gray">· {reviews.length} {t('reviews.count')}</span>
                     </div>
                 </div>
-            </div>
 
-            {/* Carousel */}
-            <div className="relative mx-auto max-w-[100vw]">
-                {/* Left arrow */}
-                {canScrollLeft && (
-                    <button
-                        type="button"
-                        onClick={() => scroll('left')}
-                        className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-3 shadow-lg backdrop-blur-sm transition-all hover:bg-white hover:shadow-xl sm:left-6"
-                        aria-label="Scroll left"
-                    >
-                        <svg className="h-5 w-5 text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-                )}
-
-                {/* Right arrow */}
-                {canScrollRight && (
-                    <button
-                        type="button"
-                        onClick={() => scroll('right')}
-                        className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-3 shadow-lg backdrop-blur-sm transition-all hover:bg-white hover:shadow-xl sm:right-6"
-                        aria-label="Scroll right"
-                    >
-                        <svg className="h-5 w-5 text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                )}
-
-                {/* Scrollable track */}
+                {/* ── Official Trustpilot TrustBox Widget ─────────────────────── */}
                 <div
-                    ref={scrollRef}
-                    className="flex gap-5 overflow-x-auto px-6 pb-4 snap-x snap-mandatory"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    ref={widgetRef}
+                    className="trustpilot-widget"
+                    data-locale={tpLocale}
+                    data-template-id="53aa8912dec7e10d38f59f36"  /* Carousel */
+                    data-businessunit-id={BUSINESS_UNIT_ID}
+                    data-style-height="140px"
+                    data-style-width="100%"
+                    data-theme="light"
+                    data-stars="4,5"
+                    data-review-languages={locale}
                 >
-                    {reviews.map((review) => (
-                        <article
-                            key={review.id}
-                            className="w-[340px] shrink-0 snap-start rounded-2xl border border-sand bg-sand-light p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:w-[400px]"
-                        >
-                            {/* Quote icon */}
-                            <svg className="mb-4 h-8 w-8 text-ocean/20" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H0z" />
-                            </svg>
-
-                            {/* Quote text */}
-                            <blockquote className="mb-5 text-sm leading-relaxed text-navy/80 sm:text-base">
-                                &ldquo;{review.quote}&rdquo;
-                            </blockquote>
-
-                            {/* Stars */}
-                            <div className="mb-4 flex">
-                                {[...Array(review.rating)].map((_, i) => (
-                                    <StarIcon key={i} className="h-4 w-4 text-yellow-400" />
-                                ))}
-                            </div>
-
-                            {/* Author */}
-                            <div className="flex items-center gap-3 border-t border-sand pt-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ocean/10 text-sm font-bold text-ocean">
-                                    {review.name.charAt(0)}
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-navy">{review.name}</p>
-                                    <p className="text-xs text-warm-gray">{review.country} · {review.date}</p>
-                                </div>
-                            </div>
-                        </article>
-                    ))}
+                    {/* Fallback link shown while widget loads */}
+                    <a
+                        href={TRUSTPILOT_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-sm text-warm-gray transition-colors hover:text-[#00b67a]"
+                    >
+                        {t('reviews.readMore')}
+                    </a>
                 </div>
             </div>
 
-            {/* Dots */}
-            <div className="mt-6 flex justify-center gap-2">
-                {reviews.map((_, i) => (
-                    <button
-                        key={i}
-                        type="button"
-                        onClick={() => scrollToIndex(i)}
-                        className={`h-2.5 w-2.5 rounded-full transition-all duration-200 ${i === activeIndex ? 'scale-125 bg-ocean' : 'bg-navy/15 hover:bg-navy/30'
-                            }`}
-                        aria-label={`Go to review ${i + 1}`}
-                    />
-                ))}
+            {/* Trustpilot footer CTA */}
+            <div className="mx-auto mt-12 max-w-7xl px-6 text-center">
+                <a
+                    href={TRUSTPILOT_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-2.5 rounded-full border border-[#e0ddd5] bg-white px-6 py-3 text-sm font-semibold text-navy shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#00b67a]/30 hover:shadow-md"
+                >
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                        <rect width="24" height="24" rx="4" fill="#00b67a" />
+                        <path
+                            d="M12 16.77L15.09 18.5l-.81-3.52L17 12.51l-3.58-.31L12 9l-1.42 3.2L7 12.51l2.72 2.47-.81 3.52L12 16.77z"
+                            fill="#fff"
+                        />
+                    </svg>
+                    {t('reviews.readMore')}
+                    <svg className="h-4 w-4 text-warm-gray transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[#00b67a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </a>
             </div>
         </section>
     );
