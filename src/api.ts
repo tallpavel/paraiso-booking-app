@@ -4,6 +4,7 @@ const API_BASE = '/api';
 export interface ReservationPayload {
     guestName: string;
     guestEmail: string;
+    guestPhone: string;
     checkIn: string;   // ISO date string
     checkOut: string;   // ISO date string
     nights: number;
@@ -64,6 +65,7 @@ export interface ConfirmedReservation {
     _id: string;
     guestName: string;
     guestEmail: string;
+    guestPhone?: string;
     checkIn: string;
     checkOut: string;
     createdAt: string;
@@ -175,6 +177,7 @@ export interface ConfirmedReservationFull {
     _id: string;
     guestName: string;
     guestEmail: string;
+    guestPhone?: string;
     checkIn: string;
     checkOut: string;
     nights: number;
@@ -186,6 +189,10 @@ export interface ConfirmedReservationFull {
     stripePaymentUrl: string;
     status?: 'active' | 'cancelled' | 'completed';
     cancelledAt?: string;
+    checkedIn?: boolean;
+    checkedInAt?: string;
+    checkInStatus?: 'pending' | 'sent' | 'completed';
+    checkInToken?: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -243,6 +250,97 @@ export async function fetchArchivedReservations(token: string): Promise<Confirme
     return res.json();
 }
 
+export async function toggleCheckIn(token: string, id: string): Promise<ConfirmedReservationFull> {
+    const res = await fetch(`${API_BASE}/reservations-confirmed/${id}/checkin`, {
+        method: 'PATCH',
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) throw new Error('Failed to toggle check-in status');
+    return res.json();
+}
+
+export async function sendCheckInEmail(token: string, reservationId: string): Promise<{ message: string; checkInUrl: string }> {
+    const res = await fetch(`${API_BASE}/checkin/send/${reservationId}`, {
+        method: 'POST',
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({ message: 'Failed to send check-in email' }));
+        throw body;
+    }
+    return res.json();
+}
+
+export interface CheckInDetails {
+    guestName: string;
+    guestEmail: string;
+    checkIn: string;
+    checkOut: string;
+    guests: CheckInGuest[];
+    submittedAt: string | null;
+    checkInUrl: string;
+    updatedAt: string;
+}
+
+export async function fetchCheckInDetails(token: string, reservationId: string): Promise<CheckInDetails> {
+    const res = await fetch(`${API_BASE}/checkin/reservation/${reservationId}`, {
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({ message: 'No check-in data found' }));
+        throw body;
+    }
+    return res.json();
+}
+
+export interface CheckInGuest {
+    _id?: string;
+    fullName: string;
+    dateOfBirth: string;
+    nationality: string;
+    documentType: 'passport' | 'id_card' | 'driving_license';
+    documentNumber: string;
+}
+
+export interface CheckInFormData {
+    guestName: string;
+    guestEmail: string;
+    checkIn: string;
+    checkOut: string;
+    guests: CheckInGuest[];
+    submittedAt: string | null;
+}
+
+export async function fetchCheckInData(checkInToken: string): Promise<CheckInFormData> {
+    const res = await fetch(`${API_BASE}/checkin/${checkInToken}`);
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({ message: 'Check-in link not found' }));
+        throw body;
+    }
+    return res.json();
+}
+
+export async function submitCheckInData(
+    checkInToken: string,
+    guests: CheckInGuest[],
+    turnstileToken?: string,
+): Promise<{ message: string; guests: CheckInGuest[]; submittedAt: string }> {
+    const res = await fetch(`${API_BASE}/checkin/${checkInToken}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guests, turnstileToken }),
+    });
+
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({ message: 'Failed to submit check-in data' }));
+        throw body;
+    }
+    return res.json();
+}
+
 export async function confirmReservation(
     token: string,
     id: string,
@@ -287,6 +385,7 @@ export async function deleteConfirmedReservation(token: string, id: string): Pro
 export interface UpdateReservationPayload {
     guestName?: string;
     guestEmail?: string;
+    guestPhone?: string;
     checkIn?: string;
     checkOut?: string;
     nights?: number;

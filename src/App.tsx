@@ -13,6 +13,7 @@ import FloatingContactButton from './components/FloatingContactButton';
 import Footer from './components/Footer';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminLayout from './components/admin/AdminLayout';
+import CheckInForm from './components/CheckInForm';
 
 function PublicSite() {
   return (
@@ -49,6 +50,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<PublicSite />} />
+      <Route path="/checkin/:token" element={<CheckInForm />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route
         path="/admin/*"

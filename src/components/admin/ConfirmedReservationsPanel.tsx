@@ -2,14 +2,17 @@ import { useState } from 'react';
 import { useAdminData } from '../../hooks/useAdminData';
 import EditReservationModal from './EditReservationModal';
 import ConfirmDialog from './ConfirmDialog';
+import CheckInDetailsModal from './CheckInDetailsModal';
 import type { ConfirmedReservationFull } from '../../api';
 
 export default function ConfirmedReservationsPanel() {
-    const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed } = useAdminData();
+    const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed, handleSendCheckIn } = useAdminData();
     const [cancelState, setCancelState] = useState<Record<string, 'cancelling' | 'done' | 'error'>>({});
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'paid' | 'failed'>('all');
     const [editing, setEditing] = useState<ConfirmedReservationFull | null>(null);
     const [cancelling, setCancelling] = useState<ConfirmedReservationFull | null>(null);
+    const [sendingCheckIn, setSendingCheckIn] = useState<Record<string, boolean>>({});
+    const [viewingCheckIn, setViewingCheckIn] = useState<ConfirmedReservationFull | null>(null);
 
     const filtered = filterStatus === 'all'
         ? confirmed
@@ -91,10 +94,23 @@ export default function ConfirmedReservationsPanel() {
                                     <div>
                                         <h3 className="admin-card__name">{c.guestName}</h3>
                                         <p className="admin-card__email">{c.guestEmail}</p>
+                                        {c.guestPhone && <p className="admin-card__email">📞 {c.guestPhone}</p>}
                                     </div>
-                                    <span className={`admin-badge admin-badge--${c.paymentStatus}`}>
-                                        {c.paymentStatus}
-                                    </span>
+                                    <div className="admin-card__badges">
+                                        {(c.checkInStatus === 'sent') && (
+                                            <span className="admin-badge admin-badge--checkin-sent">
+                                                ✉ Check-in Sent
+                                            </span>
+                                        )}
+                                        {(c.checkInStatus === 'completed') && (
+                                            <span className="admin-badge admin-badge--checkedin">
+                                                ✓ Checked In
+                                            </span>
+                                        )}
+                                        <span className={`admin-badge admin-badge--${c.paymentStatus}`}>
+                                            {c.paymentStatus}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="admin-card__details">
@@ -147,6 +163,47 @@ export default function ConfirmedReservationsPanel() {
                                 </p>
 
                                 <div className="admin-card__actions">
+                                    {(() => {
+                                        const ciStatus = c.checkInStatus || 'pending';
+                                        const isSending = sendingCheckIn[c._id];
+                                        if (ciStatus === 'completed') {
+                                            return (
+                                                <button
+                                                    onClick={() => setViewingCheckIn(c)}
+                                                    className="admin-btn admin-btn--checkedin"
+                                                >
+                                                    ☑ Checked In
+                                                </button>
+                                            );
+                                        }
+                                        return (
+                                            <>
+                                                <button
+                                                    onClick={async () => {
+                                                        setSendingCheckIn(prev => ({ ...prev, [c._id]: true }));
+                                                        try { await handleSendCheckIn(c._id); } catch {}
+                                                        setSendingCheckIn(prev => ({ ...prev, [c._id]: false }));
+                                                    }}
+                                                    disabled={isSending || state === 'cancelling' || state === 'done'}
+                                                    className={`admin-btn ${ciStatus === 'sent' ? 'admin-btn--checkin-sent' : 'admin-btn--checkin'}`}
+                                                >
+                                                    {isSending
+                                                        ? 'Sending…'
+                                                        : ciStatus === 'sent'
+                                                            ? '↻ Resend Check-in'
+                                                            : '✉ Send Check-in'}
+                                                </button>
+                                                {ciStatus === 'sent' && (
+                                                    <button
+                                                        onClick={() => setViewingCheckIn(c)}
+                                                        className="admin-btn admin-btn--outline"
+                                                    >
+                                                        📋 View Check-in
+                                                    </button>
+                                                )}
+                                            </>
+                                        );
+                                    })()}
                                     <button
                                         onClick={() => setEditing(c)}
                                         disabled={state === 'cancelling' || state === 'done'}
@@ -159,7 +216,7 @@ export default function ConfirmedReservationsPanel() {
                                         disabled={state === 'cancelling' || state === 'done'}
                                         className="admin-btn admin-btn--reject"
                                     >
-                                        {state === 'cancelling' ? 'Cancelling…' : '✕ Cancel Reservation'}
+                                        {state === 'cancelling' ? 'Cancelling…' : '✕ Cancel'}
                                     </button>
                                 </div>
 
@@ -199,6 +256,14 @@ export default function ConfirmedReservationsPanel() {
                     allConfirmed={confirmed}
                     onSave={handleUpdateConfirmed}
                     onClose={() => setEditing(null)}
+                />
+            )}
+
+            {viewingCheckIn && (
+                <CheckInDetailsModal
+                    reservationId={viewingCheckIn._id}
+                    guestName={viewingCheckIn.guestName}
+                    onClose={() => setViewingCheckIn(null)}
                 />
             )}
         </div>

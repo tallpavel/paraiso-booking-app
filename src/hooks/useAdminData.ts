@@ -9,6 +9,8 @@ import {
     deleteConfirmedReservation,
     updateReservationRequest,
     updateConfirmedReservation,
+    toggleCheckIn,
+    sendCheckInEmail,
     type AdminStats,
     type Reservation,
     type ConfirmedReservationFull,
@@ -30,6 +32,8 @@ interface AdminActions {
     handleCancelConfirmed: (id: string) => Promise<void>;
     handleUpdateRequest: (id: string, data: UpdateReservationPayload) => Promise<void>;
     handleUpdateConfirmed: (id: string, data: UpdateReservationPayload) => Promise<void>;
+    handleToggleCheckIn: (id: string) => Promise<void>;
+    handleSendCheckIn: (id: string) => Promise<void>;
 }
 
 export function useAdminData(): AdminData & AdminActions {
@@ -101,9 +105,21 @@ export function useAdminData(): AdminData & AdminActions {
         await refresh();
     }, [token, refresh]);
 
+    const handleToggleCheckIn = useCallback(async (id: string) => {
+        if (!token) throw new Error('Not authenticated');
+        await toggleCheckIn(token, id);
+        await refresh();
+    }, [token, refresh]);
+
+    const handleSendCheckIn = useCallback(async (id: string) => {
+        if (!token) throw new Error('Not authenticated');
+        await sendCheckInEmail(token, id);
+        await refresh();
+    }, [token, refresh]);
+
     return {
         stats, requests, confirmed, isLoading, error,
         refresh, handleConfirm, handleRejectRequest, handleCancelConfirmed,
-        handleUpdateRequest, handleUpdateConfirmed,
+        handleUpdateRequest, handleUpdateConfirmed, handleToggleCheckIn, handleSendCheckIn,
     };
 }

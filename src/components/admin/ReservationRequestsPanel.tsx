@@ -87,6 +87,7 @@ export default function ReservationRequestsPanel() {
                                     <div>
                                         <h3 className="admin-card__name">{req.guestName}</h3>
                                         <p className="admin-card__email">{req.guestEmail}</p>
+                                        {req.guestPhone && <p className="admin-card__email">📞 {req.guestPhone}</p>}
                                     </div>
                                     <span className="admin-badge admin-badge--pending">Pending</span>
                                 </div>

@@ -719,6 +719,201 @@ h6 {
   font-weight: 600;
   color: #f5f0e8;
   margin: 0 0 1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.admin-section__date {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(245, 240, 232, 0.35);
+  letter-spacing: 0.02em;
+}
+
+/* ── Check-in Section ────────────────────────────────────────────────── */
+.admin-checkin-section {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.admin-checkin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.admin-checkin-group__title {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(245, 240, 232, 0.4);
+  margin: 0 0 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.admin-checkin-group__icon {
+  font-size: 1rem;
+}
+
+.admin-checkin-group__count {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(245, 240, 232, 0.5);
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  margin-left: auto;
+}
+
+/* ── Check-in Card ───────────────────────────────────────────────── */
+.admin-checkin-card {
+  background: #1a1f2e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.5rem;
+  border-left: 3px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-checkin-card--arriving { border-left-color: #4ead6b; }
+.admin-checkin-card--departing { border-left-color: #d4a24e; }
+.admin-checkin-card--staying { border-left-color: #5ba8c8; }
+.admin-checkin-card--upcoming { border-left-color: rgba(245, 240, 232, 0.15); }
+
+.admin-checkin-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-checkin-card__name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #f5f0e8;
+  margin: 0;
+}
+
+.admin-checkin-card__email {
+  font-size: 0.72rem;
+  color: rgba(245, 240, 232, 0.35);
+  margin: 0;
+}
+
+.admin-checkin-card__badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.admin-checkin-card__badge--arriving {
+  background: rgba(78, 173, 107, 0.1);
+  color: #4ead6b;
+}
+
+.admin-checkin-card__badge--departing {
+  background: rgba(212, 162, 78, 0.1);
+  color: #d4a24e;
+}
+
+.admin-checkin-card__badge--staying {
+  background: rgba(91, 168, 200, 0.1);
+  color: #5ba8c8;
+}
+
+.admin-checkin-card__badge--upcoming {
+  background: rgba(245, 240, 232, 0.05);
+  color: rgba(245, 240, 232, 0.5);
+}
+
+.admin-checkin-card__dates {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: rgba(245, 240, 232, 0.6);
+}
+
+.admin-checkin-card__arrow {
+  color: rgba(245, 240, 232, 0.2);
+}
+
+.admin-checkin-card__nights {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  color: rgba(245, 240, 232, 0.4);
+  margin-left: auto;
+}
+
+/* Progress bar for currently staying */
+.admin-checkin-card__progress {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.admin-checkin-card__progress-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.admin-checkin-card__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5ba8c8, #4ead6b);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.admin-checkin-card__progress-label {
+  font-size: 0.68rem;
+  color: rgba(245, 240, 232, 0.35);
+  white-space: nowrap;
+}
+
+/* Check-in empty state */
+.admin-checkin-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.admin-checkin-empty__icon {
+  font-size: 2rem;
+  margin: 0 0 0.5rem;
+}
+
+.admin-checkin-empty__text {
+  color: rgba(245, 240, 232, 0.5);
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.admin-checkin-empty__hint {
+  color: rgba(245, 240, 232, 0.25);
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.admin-empty-state__hint {
+  color: rgba(245, 240, 232, 0.25);
+  font-size: 0.8rem;
+  margin: 0.25rem 0 0;
 }
 
 /* ── Tables ──────────────────────────────────────────────────────────── */
@@ -1004,6 +1199,119 @@ h6 {
 
 .admin-btn--reject:hover:not(:disabled) {
   background: rgba(224, 124, 90, 0.2);
+}
+
+.admin-btn--checkin {
+  background: rgba(224, 124, 90, 0.08);
+  color: #e07c5a;
+  border: 1px solid rgba(224, 124, 90, 0.2);
+}
+
+.admin-btn--checkin:hover:not(:disabled) {
+  background: rgba(224, 124, 90, 0.15);
+  color: #e07c5a;
+}
+
+.admin-btn--checkedin {
+  background: rgba(78, 173, 107, 0.12);
+  color: #4ead6b;
+  border: 1px solid rgba(78, 173, 107, 0.25);
+}
+
+.admin-btn--checkedin:hover:not(:disabled) {
+  background: rgba(78, 173, 107, 0.18);
+  color: #4ead6b;
+  cursor: pointer;
+}
+
+.admin-btn--checkin-sent {
+  background: rgba(212, 162, 78, 0.08);
+  color: #d4a24e;
+  border: 1px solid rgba(212, 162, 78, 0.2);
+}
+
+.admin-btn--checkin-sent:hover:not(:disabled) {
+  background: rgba(212, 162, 78, 0.15);
+  color: #d4a24e;
+}
+
+.admin-badge--checkedin {
+  background: rgba(78, 173, 107, 0.12);
+  color: #4ead6b;
+}
+
+.admin-badge--checkin-sent {
+  background: rgba(212, 162, 78, 0.12);
+  color: #d4a24e;
+}
+
+.admin-card__badges {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Check-in toggle on dashboard cards ────────────────────────────── */
+.admin-checkin-card__footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.admin-checkin-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(245, 240, 232, 0.4);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.admin-checkin-toggle:hover {
+  background: rgba(224, 124, 90, 0.1);
+  color: #e07c5a;
+  border-color: rgba(224, 124, 90, 0.25);
+}
+
+.admin-checkin-toggle--checked {
+  background: rgba(78, 173, 107, 0.1);
+  color: #4ead6b;
+  border-color: rgba(78, 173, 107, 0.25);
+}
+
+.admin-checkin-toggle--checked:hover {
+  background: rgba(78, 173, 107, 0.15);
+  color: #4ead6b;
+  cursor: pointer;
+}
+
+.admin-checkin-toggle--sent {
+  background: rgba(212, 162, 78, 0.08);
+  color: #d4a24e;
+  border-color: rgba(212, 162, 78, 0.2);
+}
+
+.admin-checkin-toggle--sent:hover {
+  background: rgba(212, 162, 78, 0.12);
+  color: #d4a24e;
+}
+
+.admin-checkin-toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-checkin-card__checkin-time {
+  font-size: 0.65rem;
+  color: rgba(245, 240, 232, 0.25);
 }
 
 /* ── Filters ─────────────────────────────────────────────────────────── */
@@ -1494,4 +1802,528 @@ h6 {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Public Check-In Form Page
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.checkin-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0f1419 100%);
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.checkin-container {
+  width: 100%;
+  max-width: 640px;
+}
+
+/* Header */
+.checkin-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.checkin-header__title {
+  font-family: var(--font-heading, 'Georgia', serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #f5f0e8;
+  margin: 0 0 0.4rem;
+}
+
+.checkin-header__subtitle {
+  color: rgba(245, 240, 232, 0.4);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Summary */
+.checkin-summary {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.checkin-summary__greeting {
+  color: #f5f0e8;
+  font-size: 1rem;
+  margin: 0 0 0.8rem;
+}
+
+.checkin-summary__dates {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(245, 240, 232, 0.7);
+  margin-bottom: 0.8rem;
+}
+
+.checkin-summary__arrow {
+  color: rgba(245, 240, 232, 0.3);
+}
+
+.checkin-summary__hint {
+  color: rgba(245, 240, 232, 0.5);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.checkin-summary__submitted {
+  color: #4ead6b;
+  font-size: 0.8rem;
+  margin: 0.6rem 0 0;
+}
+
+/* Guest card */
+.checkin-guest-card {
+  background: #1a1f2e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.checkin-guest-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.checkin-guest-card__header h3 {
+  color: #f5f0e8;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.checkin-guest-card__remove {
+  background: transparent;
+  border: 1px solid rgba(224, 124, 90, 0.2);
+  color: #e07c5a;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.checkin-guest-card__remove:hover {
+  background: rgba(224, 124, 90, 0.1);
+}
+
+/* Fields */
+.checkin-field {
+  margin-bottom: 0.9rem;
+  flex: 1;
+}
+
+.checkin-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.checkin-label {
+  display: block;
+  color: rgba(245, 240, 232, 0.5);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.01em;
+}
+
+.checkin-input {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #f5f0e8;
+  font-size: 0.88rem;
+  font-family: inherit;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.checkin-input::placeholder {
+  color: rgba(245, 240, 232, 0.2);
+}
+
+.checkin-input:focus {
+  outline: none;
+  border-color: rgba(78, 173, 107, 0.4);
+}
+
+.checkin-input--error {
+  border-color: #e07c5a;
+}
+
+.checkin-select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f5f0e8' fill-opacity='0.4' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+
+.checkin-select option {
+  background: #1a1f2e;
+  color: #f5f0e8;
+}
+
+.checkin-field-error {
+  color: #e07c5a;
+  font-size: 0.72rem;
+  margin: 0.25rem 0 0;
+}
+
+/* Buttons */
+.checkin-btn {
+  display: block;
+  width: 100%;
+  padding: 0.85rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.checkin-btn--add {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  color: rgba(245, 240, 232, 0.5);
+  margin-bottom: 1.5rem;
+}
+
+.checkin-btn--add:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(245, 240, 232, 0.7);
+}
+
+.checkin-btn--submit {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #ffffff;
+  margin-top: 1rem;
+}
+
+.checkin-btn--submit:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.checkin-btn--submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.checkin-btn--outline {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(245, 240, 232, 0.6);
+  margin-top: 1rem;
+}
+
+.checkin-btn--outline:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(245, 240, 232, 0.9);
+}
+
+/* API errors */
+.checkin-api-errors {
+  background: rgba(224, 124, 90, 0.08);
+  border: 1px solid rgba(224, 124, 90, 0.2);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.checkin-api-errors p {
+  color: #e07c5a;
+  font-size: 0.82rem;
+  margin: 0.2rem 0;
+}
+
+/* Loading */
+.checkin-loading {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.checkin-spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 1rem;
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-top-color: #4ead6b;
+  border-radius: 50%;
+  animation: checkin-spin 0.8s linear infinite;
+}
+
+@keyframes checkin-spin {
+  to { transform: rotate(360deg); }
+}
+
+.checkin-loading p {
+  color: rgba(245, 240, 232, 0.5);
+  font-size: 0.9rem;
+}
+
+/* Error card */
+.checkin-error-card {
+  background: #1a1f2e;
+  border: 1px solid rgba(224, 124, 90, 0.15);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  max-width: 400px;
+  margin: 4rem auto;
+}
+
+.checkin-error-card__icon {
+  font-size: 2.5rem;
+  margin: 0 0 1rem;
+}
+
+.checkin-error-card h1 {
+  color: #f5f0e8;
+  font-size: 1.3rem;
+  margin: 0 0 0.5rem;
+}
+
+.checkin-error-card p {
+  color: rgba(245, 240, 232, 0.5);
+  font-size: 0.9rem;
+}
+
+/* Success card */
+.checkin-success-card {
+  background: #1a1f2e;
+  border: 1px solid rgba(78, 173, 107, 0.15);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  max-width: 480px;
+  margin: 4rem auto;
+}
+
+.checkin-success-card__icon {
+  font-size: 2.5rem;
+  margin: 0 0 1rem;
+}
+
+.checkin-success-card h1 {
+  color: #f5f0e8;
+  font-size: 1.5rem;
+  margin: 0 0 0.8rem;
+}
+
+.checkin-success-card p {
+  color: rgba(245, 240, 232, 0.6);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.checkin-success-card__details {
+  background: rgba(78, 173, 107, 0.06);
+  border: 1px solid rgba(78, 173, 107, 0.12);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  margin: 1.2rem 0;
+  text-align: left;
+}
+
+.checkin-success-card__details p {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+}
+
+.checkin-success-card__hint {
+  color: rgba(245, 240, 232, 0.35) !important;
+  font-size: 0.8rem !important;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .checkin-field-row { grid-template-columns: 1fr; }
+  .checkin-header__title { font-size: 1.4rem; }
+  .checkin-page { padding: 1rem 0.5rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Check-In Details Modal (Admin)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.checkin-details-modal {
+  max-width: 560px;
+}
+
+.checkin-details-loading {
+  text-align: center;
+  padding: 2rem;
+}
+
+.checkin-details-loading p {
+  color: rgba(245, 240, 232, 0.5);
+  font-size: 0.85rem;
+}
+
+/* Summary */
+.checkin-details-summary {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.checkin-details-summary__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0;
+}
+
+.checkin-details-summary__row + .checkin-details-summary__row {
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.checkin-details-summary__label {
+  font-size: 0.75rem;
+  color: rgba(245, 240, 232, 0.4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.checkin-details-summary__value {
+  font-size: 0.85rem;
+  color: #f5f0e8;
+  font-weight: 500;
+}
+
+.checkin-details-summary__value--green {
+  color: #4ead6b;
+}
+
+.checkin-details-link {
+  font-size: 0.8rem;
+  color: #5ba8c8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.checkin-details-link:hover {
+  text-decoration: underline;
+}
+
+/* Guests list */
+.checkin-details-guests__title {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(245, 240, 232, 0.5);
+  margin: 0 0 0.75rem;
+}
+
+.checkin-details-guest-card {
+  display: flex;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.checkin-details-guest-card__number {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  background: rgba(78, 173, 107, 0.1);
+  color: #4ead6b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.checkin-details-guest-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.checkin-details-guest-card__name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #f5f0e8;
+  margin: 0 0 0.6rem;
+}
+
+.checkin-details-guest-card__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.checkin-details-guest-card__label {
+  display: block;
+  font-size: 0.65rem;
+  color: rgba(245, 240, 232, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.15rem;
+}
+
+.checkin-details-guest-card__value {
+  display: block;
+  font-size: 0.82rem;
+  color: rgba(245, 240, 232, 0.75);
+  font-weight: 500;
+}
+
+.checkin-details-guest-card__value--mono {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  letter-spacing: 0.05em;
+}
+
+/* Empty state */
+.checkin-details-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.checkin-details-empty__icon {
+  font-size: 2rem;
+  margin: 0 0 0.5rem;
+}
+
+.checkin-details-empty__text {
+  color: rgba(245, 240, 232, 0.5);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0 0 0.25rem;
+}
+
+.checkin-details-empty__hint {
+  color: rgba(245, 240, 232, 0.3);
+  font-size: 0.8rem;
+  margin: 0;
 }

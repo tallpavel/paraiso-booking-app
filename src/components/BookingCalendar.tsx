@@ -57,6 +57,7 @@ function calculateStayPrice(checkIn: Date, checkOut: Date, customRates: Map<stri
 interface FormErrors {
     name?: string;
     email?: string;
+    phone?: string;
     dates?: string;
 }
 
@@ -116,6 +117,7 @@ export default function BookingCalendar() {
     const [guests, setGuests] = useState(2);
     const [guestName, setGuestName] = useState('');
     const [guestEmail, setGuestEmail] = useState('');
+    const [guestPhone, setGuestPhone] = useState('');
     const [comment, setComment] = useState('');
     const [errors, setErrors] = useState<FormErrors>({});
     const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
@@ -234,6 +236,9 @@ export default function BookingCalendar() {
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
             errs.email = t('booking.errorEmailInvalid');
         }
+        if (!guestPhone.trim() || guestPhone.trim().length < 6) {
+            errs.phone = t('booking.errorPhone');
+        }
         return errs;
     };
 
@@ -280,6 +285,7 @@ export default function BookingCalendar() {
             await createReservation({
                 guestName: guestName.trim(),
                 guestEmail: guestEmail.trim(),
+                guestPhone: guestPhone.trim(),
                 checkIn: checkIn!.toISOString(),
                 checkOut: checkOut!.toISOString(),
                 nights: pricing!.nights,
@@ -294,6 +300,7 @@ export default function BookingCalendar() {
             setTimeout(() => {
                 setGuestName('');
                 setGuestEmail('');
+                setGuestPhone('');
                 setComment('');
                 setCheckIn(null);
                 setCheckOut(null);
@@ -493,6 +500,23 @@ export default function BookingCalendar() {
                                     {errors.email && <p className="mt-1 text-xs text-coral" role="alert">{errors.email}</p>}
                                 </div>
 
+                                {/* Phone */}
+                                <div>
+                                    <label htmlFor="booking-phone" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
+                                        {t('booking.phone')} <span className="text-coral">*</span>
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        id="booking-phone"
+                                        value={guestPhone}
+                                        onChange={(e) => { setGuestPhone(e.target.value); handleFieldChange('phone'); }}
+                                        autoComplete="tel"
+                                        placeholder={t('booking.phonePlaceholder')}
+                                        className={`w-full rounded-xl border bg-sand-light px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean ${errors.phone ? 'border-coral' : 'border-sand'}`}
+                                    />
+                                    {errors.phone && <p className="mt-1 text-xs text-coral" role="alert">{errors.phone}</p>}
+                                </div>
+
                                 {/* Guests */}
                                 <div>
                                     <label htmlFor="guest-count" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
@@ -589,6 +613,10 @@ export default function BookingCalendar() {
                                     <div>
                                         <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.email')}</p>
                                         <p className="text-sm font-medium text-navy">{guestEmail}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.phone')}</p>
+                                        <p className="text-sm font-medium text-navy">{guestPhone}</p>
                                     </div>
                                     <div>
                                         <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.guests')}</p>
