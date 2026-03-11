@@ -7,9 +7,12 @@ import {
     confirmReservation,
     deleteReservationRequest,
     deleteConfirmedReservation,
+    updateReservationRequest,
+    updateConfirmedReservation,
     type AdminStats,
     type Reservation,
     type ConfirmedReservationFull,
+    type UpdateReservationPayload,
 } from '../api';
 
 interface AdminData {
@@ -25,6 +28,8 @@ interface AdminActions {
     handleConfirm: (id: string) => Promise<{ paymentUrl: string; emailSent: boolean }>;
     handleRejectRequest: (id: string) => Promise<void>;
     handleCancelConfirmed: (id: string) => Promise<void>;
+    handleUpdateRequest: (id: string, data: UpdateReservationPayload) => Promise<void>;
+    handleUpdateConfirmed: (id: string, data: UpdateReservationPayload) => Promise<void>;
 }
 
 export function useAdminData(): AdminData & AdminActions {
@@ -84,8 +89,21 @@ export function useAdminData(): AdminData & AdminActions {
         await refresh();
     }, [token, refresh]);
 
+    const handleUpdateRequest = useCallback(async (id: string, data: UpdateReservationPayload) => {
+        if (!token) throw new Error('Not authenticated');
+        await updateReservationRequest(token, id, data);
+        await refresh();
+    }, [token, refresh]);
+
+    const handleUpdateConfirmed = useCallback(async (id: string, data: UpdateReservationPayload) => {
+        if (!token) throw new Error('Not authenticated');
+        await updateConfirmedReservation(token, id, data);
+        await refresh();
+    }, [token, refresh]);
+
     return {
         stats, requests, confirmed, isLoading, error,
         refresh, handleConfirm, handleRejectRequest, handleCancelConfirmed,
+        handleUpdateRequest, handleUpdateConfirmed,
     };
 }

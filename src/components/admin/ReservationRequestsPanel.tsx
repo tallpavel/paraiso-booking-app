@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import { useAdminData } from '../../hooks/useAdminData';
+import EditReservationModal from './EditReservationModal';
+import ConfirmDialog from './ConfirmDialog';
+import type { Reservation } from '../../api';
 
 export default function ReservationRequestsPanel() {
-    const { requests, isLoading, error, refresh, handleConfirm, handleRejectRequest } = useAdminData();
+    const { requests, confirmed, isLoading, error, refresh, handleConfirm, handleRejectRequest, handleUpdateRequest } = useAdminData();
     const [actionState, setActionState] = useState<Record<string, 'confirming' | 'rejecting' | 'done' | 'error'>>({});
     const [confirmResult, setConfirmResult] = useState<{ id: string; paymentUrl: string; emailSent: boolean } | null>(null);
+    const [editing, setEditing] = useState<Reservation | null>(null);
+    const [rejecting, setRejecting] = useState<Reservation | null>(null);
 
     async function onConfirm(id: string) {
         setActionState(s => ({ ...s, [id]: 'confirming' }));
@@ -18,13 +23,14 @@ export default function ReservationRequestsPanel() {
     }
 
     async function onReject(id: string) {
-        if (!window.confirm('Reject this reservation request? This cannot be undone.')) return;
         setActionState(s => ({ ...s, [id]: 'rejecting' }));
         try {
             await handleRejectRequest(id);
             setActionState(s => ({ ...s, [id]: 'done' }));
+            setRejecting(null);
         } catch {
             setActionState(s => ({ ...s, [id]: 'error' }));
+            setRejecting(null);
         }
     }
 
@@ -117,6 +123,13 @@ export default function ReservationRequestsPanel() {
 
                                 <div className="admin-card__actions">
                                     <button
+                                        onClick={() => setEditing(req)}
+                                        disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
+                                        className="admin-btn admin-btn--outline"
+                                    >
+                                        ✎ Edit
+                                    </button>
+                                    <button
                                         onClick={() => onConfirm(req._id)}
                                         disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
                                         className="admin-btn admin-btn--confirm"
@@ -124,7 +137,7 @@ export default function ReservationRequestsPanel() {
                                         {state === 'confirming' ? 'Confirming…' : '✓ Confirm & Send Payment'}
                                     </button>
                                     <button
-                                        onClick={() => onReject(req._id)}
+                                        onClick={() => setRejecting(req)}
                                         disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
                                         className="admin-btn admin-btn--reject"
                                     >
@@ -139,6 +152,35 @@ export default function ReservationRequestsPanel() {
                         );
                     })}
                 </div>
+            )}
+
+            {rejecting && (
+                <ConfirmDialog
+                    title="Reject Request"
+                    message="Are you sure you want to reject this reservation request? This action cannot be undone."
+                    details={[
+                        { label: 'Guest', value: rejecting.guestName },
+                        { label: 'Email', value: rejecting.guestEmail },
+                        { label: 'Dates', value: `${rejecting.checkIn} → ${rejecting.checkOut}` },
+                        { label: 'Nights', value: String(rejecting.nights) },
+                        { label: 'Total', value: `€${rejecting.totalPrice}` },
+                    ]}
+                    confirmLabel="✕ Reject Request"
+                    confirmVariant="danger"
+                    isLoading={actionState[rejecting._id] === 'rejecting'}
+                    onConfirm={() => onReject(rejecting._id)}
+                    onCancel={() => setRejecting(null)}
+                />
+            )}
+
+            {editing && (
+                <EditReservationModal
+                    reservation={editing}
+                    type="request"
+                    allConfirmed={confirmed}
+                    onSave={handleUpdateRequest}
+                    onClose={() => setEditing(null)}
+                />
             )}
         </div>
     );

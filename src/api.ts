@@ -184,6 +184,8 @@ export interface ConfirmedReservationFull {
     paymentStatus: 'pending' | 'paid' | 'failed';
     stripeSessionId: string;
     stripePaymentUrl: string;
+    status?: 'active' | 'cancelled' | 'completed';
+    cancelledAt?: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -232,6 +234,15 @@ export async function fetchConfirmedReservationsFull(token: string): Promise<Con
     return res.json();
 }
 
+export async function fetchArchivedReservations(token: string): Promise<ConfirmedReservationFull[]> {
+    const res = await fetch(`${API_BASE}/reservations-confirmed/archived/list`, {
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch archived reservations');
+    return res.json();
+}
+
 export async function confirmReservation(
     token: string,
     id: string,
@@ -268,6 +279,62 @@ export async function deleteConfirmedReservation(token: string, id: string): Pro
     });
 
     if (!res.ok) throw new Error('Failed to cancel confirmed reservation');
+    return res.json();
+}
+
+// ── Update Reservation (Request) ─────────────────────────────────────
+
+export interface UpdateReservationPayload {
+    guestName?: string;
+    guestEmail?: string;
+    checkIn?: string;
+    checkOut?: string;
+    nights?: number;
+    totalPrice?: number;
+    comment?: string;
+}
+
+export async function updateReservationRequest(
+    token: string,
+    id: string,
+    data: UpdateReservationPayload,
+): Promise<Reservation> {
+    const res = await fetch(`${API_BASE}/reservations/${id}`, {
+        method: 'PATCH',
+        headers: authHeaders(token),
+        body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+        const body: ApiError = await res.json().catch(() => ({
+            message: 'Failed to update reservation',
+        }));
+        throw body;
+    }
+
+    return res.json();
+}
+
+// ── Update Confirmed Reservation ─────────────────────────────────────
+
+export async function updateConfirmedReservation(
+    token: string,
+    id: string,
+    data: UpdateReservationPayload,
+): Promise<ConfirmedReservationFull> {
+    const res = await fetch(`${API_BASE}/reservations-confirmed/${id}`, {
+        method: 'PATCH',
+        headers: authHeaders(token),
+        body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+        const body: ApiError = await res.json().catch(() => ({
+            message: 'Failed to update confirmed reservation',
+        }));
+        throw body;
+    }
+
     return res.json();
 }
 

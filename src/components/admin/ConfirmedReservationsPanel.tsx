@@ -1,23 +1,29 @@
 import { useState } from 'react';
 import { useAdminData } from '../../hooks/useAdminData';
+import EditReservationModal from './EditReservationModal';
+import ConfirmDialog from './ConfirmDialog';
+import type { ConfirmedReservationFull } from '../../api';
 
 export default function ConfirmedReservationsPanel() {
-    const { confirmed, isLoading, error, refresh, handleCancelConfirmed } = useAdminData();
+    const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed } = useAdminData();
     const [cancelState, setCancelState] = useState<Record<string, 'cancelling' | 'done' | 'error'>>({});
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'paid' | 'failed'>('all');
+    const [editing, setEditing] = useState<ConfirmedReservationFull | null>(null);
+    const [cancelling, setCancelling] = useState<ConfirmedReservationFull | null>(null);
 
     const filtered = filterStatus === 'all'
         ? confirmed
         : confirmed.filter(c => c.paymentStatus === filterStatus);
 
     async function onCancel(id: string) {
-        if (!window.confirm('Cancel this confirmed reservation? This cannot be undone.')) return;
         setCancelState(s => ({ ...s, [id]: 'cancelling' }));
         try {
             await handleCancelConfirmed(id);
             setCancelState(s => ({ ...s, [id]: 'done' }));
+            setCancelling(null);
         } catch {
             setCancelState(s => ({ ...s, [id]: 'error' }));
+            setCancelling(null);
         }
     }
 
@@ -142,7 +148,14 @@ export default function ConfirmedReservationsPanel() {
 
                                 <div className="admin-card__actions">
                                     <button
-                                        onClick={() => onCancel(c._id)}
+                                        onClick={() => setEditing(c)}
+                                        disabled={state === 'cancelling' || state === 'done'}
+                                        className="admin-btn admin-btn--outline"
+                                    >
+                                        ✎ Edit
+                                    </button>
+                                    <button
+                                        onClick={() => setCancelling(c)}
                                         disabled={state === 'cancelling' || state === 'done'}
                                         className="admin-btn admin-btn--reject"
                                     >
@@ -157,6 +170,36 @@ export default function ConfirmedReservationsPanel() {
                         );
                     })}
                 </div>
+            )}
+
+            {cancelling && (
+                <ConfirmDialog
+                    title="Cancel Reservation"
+                    message="Are you sure you want to cancel this confirmed reservation? This action cannot be undone."
+                    details={[
+                        { label: 'Guest', value: cancelling.guestName },
+                        { label: 'Email', value: cancelling.guestEmail },
+                        { label: 'Dates', value: `${cancelling.checkIn} → ${cancelling.checkOut}` },
+                        { label: 'Nights', value: String(cancelling.nights) },
+                        { label: 'Total', value: `€${cancelling.totalPrice}` },
+                        { label: 'Payment', value: cancelling.paymentStatus },
+                    ]}
+                    confirmLabel="✕ Cancel Reservation"
+                    confirmVariant="danger"
+                    isLoading={cancelState[cancelling._id] === 'cancelling'}
+                    onConfirm={() => onCancel(cancelling._id)}
+                    onCancel={() => setCancelling(null)}
+                />
+            )}
+
+            {editing && (
+                <EditReservationModal
+                    reservation={editing}
+                    type="confirmed"
+                    allConfirmed={confirmed}
+                    onSave={handleUpdateConfirmed}
+                    onClose={() => setEditing(null)}
+                />
             )}
         </div>
     );

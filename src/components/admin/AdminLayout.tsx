@@ -4,11 +4,13 @@ import { useAuth } from '../../context/AuthContext';
 import AdminDashboard from './AdminDashboard';
 import ReservationRequestsPanel from './ReservationRequestsPanel';
 import ConfirmedReservationsPanel from './ConfirmedReservationsPanel';
+import ArchivedReservationsPanel from './ArchivedReservationsPanel';
 
 const NAV_ITEMS = [
     { to: '/admin', label: 'Overview', icon: '◈' },
     { to: '/admin/requests', label: 'Requests', icon: '◇' },
     { to: '/admin/confirmed', label: 'Confirmed', icon: '◆' },
+    { to: '/admin/history', label: 'History', icon: '▣' },
 ];
 
 export default function AdminLayout() {
@@ -82,6 +84,7 @@ export default function AdminLayout() {
                     <Route index element={<AdminDashboard />} />
                     <Route path="requests" element={<ReservationRequestsPanel />} />
                     <Route path="confirmed" element={<ConfirmedReservationsPanel />} />
+                    <Route path="history" element={<ArchivedReservationsPanel />} />
                     <Route path="*" element={<Navigate to="/admin" replace />} />
                 </Routes>
             </main>
