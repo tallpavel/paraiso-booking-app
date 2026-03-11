@@ -54,6 +54,12 @@ function StarRow({ rating, size = 20 }: { rating: number; size?: number }) {
 }
 
 /* ── TrustBox Widget Hook ──────────────────────────────────────────── */
+interface WindowWithTrustpilot extends Window {
+    Trustpilot?: {
+        loadFromElement: (el: HTMLElement, reload?: boolean) => void;
+    };
+}
+
 function useTrustpilotWidget(ref: React.RefObject<HTMLDivElement | null>) {
     useEffect(() => {
         // Load the Trustpilot bootstrap script once
@@ -68,9 +74,9 @@ function useTrustpilotWidget(ref: React.RefObject<HTMLDivElement | null>) {
 
         // When script loads, initialize the widget
         const init = () => {
-            if (ref.current && (window as Record<string, unknown>).Trustpilot) {
-                (window as Record<string, unknown> & { Trustpilot: { loadFromElement: (el: HTMLElement, reload?: boolean) => void } })
-                    .Trustpilot.loadFromElement(ref.current, true);
+            const tp = (window as WindowWithTrustpilot).Trustpilot;
+            if (ref.current && tp) {
+                tp.loadFromElement(ref.current, true);
             }
         };
 

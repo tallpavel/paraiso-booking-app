@@ -90,13 +90,17 @@ export default function LocationMap() {
 
                 {/* Map + sidebar */}
                 <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
-                    {/* Illustrated map */}
-                    <div className="group relative overflow-hidden rounded-2xl shadow-lg">
-                        <img
-                            src="/location-map.png"
-                            alt={t('map.title')}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    {/* Google Maps embed */}
+                    <div className="relative overflow-hidden rounded-2xl shadow-lg" style={{ minHeight: '400px' }}>
+                        <iframe
+                            title={t('map.title')}
+                            src="https://www.google.com/maps?q=Paraiso+Del+Sur+Apartments,+Adeje,+Tenerife&output=embed"
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0, position: 'absolute', inset: 0 }}
+                            allowFullScreen
                             loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
                         />
                     </div>
 

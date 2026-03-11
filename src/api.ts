@@ -9,6 +9,7 @@ export interface ReservationPayload {
     nights: number;
     totalPrice: number;
     comment?: string;
+    turnstileToken?: string;
 }
 
 export interface Reservation extends ReservationPayload {
@@ -127,6 +128,7 @@ export interface ContactPayload {
     email: string;
     phone?: string;
     message: string;
+    turnstileToken?: string;
 }
 
 /**

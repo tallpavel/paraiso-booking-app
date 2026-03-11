@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useI18n } from '../i18n';
 import { createReservation, fetchConfirmedReservations, fetchDailyRates } from '../api';
 import type { ConfirmedReservation } from '../api';
+import { useSpamProtection } from '../hooks/useSpamProtection';
 import flatpickr from 'flatpickr';
 import type { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -119,6 +120,7 @@ export default function BookingCalendar() {
     const [errors, setErrors] = useState<FormErrors>({});
     const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
     const [serverError, setServerError] = useState('');
+    const spam = useSpamProtection('booking-form');
 
     // ── API data ─────────────────────────────────────────────────────
     const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
@@ -262,6 +264,15 @@ export default function BookingCalendar() {
 
     // ── Submit ───────────────────────────────────────────────────────
     const handleSubmit = async () => {
+        // Spam protection check
+        const spamCheck = spam.validate();
+        if (!spamCheck.ok) {
+            setStatus('error');
+            setServerError(spamCheck.reason || 'Security check failed.');
+            setTimeout(() => setStatus('idle'), 6000);
+            return;
+        }
+
         setStatus('sending');
         setServerError('');
 
@@ -274,9 +285,11 @@ export default function BookingCalendar() {
                 nights: pricing!.nights,
                 totalPrice: pricing!.total,
                 comment: comment.trim() || undefined,
+                turnstileToken: spamCheck.turnstileToken,
             });
 
             setStatus('sent');
+            spam.reset();
             // Reset after 4 seconds
             setTimeout(() => {
                 setGuestName('');
@@ -513,6 +526,8 @@ export default function BookingCalendar() {
                                         className="w-full resize-none rounded-xl border border-sand bg-sand-light px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean"
                                     />
                                 </div>
+
+                                {spam.honeypotField}
                             </div>
 
                             {/* Navigation */}

@@ -365,6 +365,37 @@ h6 {
   color: rgba(245, 240, 232, 0.2);
 }
 
+.admin-login__input-wrapper {
+  position: relative;
+}
+
+.admin-login__input-wrapper .admin-login__input {
+  width: 100%;
+  padding-right: 2.75rem;
+}
+
+.admin-login__toggle-pw {
+  position: absolute;
+  right: 0.65rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(245, 240, 232, 0.3);
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.admin-login__toggle-pw:hover {
+  color: rgba(245, 240, 232, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .admin-login__button {
   background: linear-gradient(135deg, #1a8caa, #157a95);
   color: white;

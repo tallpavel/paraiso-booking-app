@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { ContactFormData } from '../types';
 import { useI18n } from '../i18n';
 import { sendContactMessage } from '../api';
+import { useSpamProtection } from '../hooks/useSpamProtection';
 
 const initialForm: ContactFormData = {
     name: '',
@@ -21,6 +22,7 @@ export default function ContactForm() {
     const [form, setForm] = useState<ContactFormData>(initialForm);
     const [errors, setErrors] = useState<FieldError>({});
     const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+    const spam = useSpamProtection('contact-form');
 
     const validate = (data: ContactFormData): FieldError => {
         const errs: FieldError = {};
@@ -51,6 +53,15 @@ export default function ContactForm() {
             setErrors(errs);
             return;
         }
+
+        // Spam protection check
+        const spamCheck = spam.validate();
+        if (!spamCheck.ok) {
+            setStatus('error');
+            setTimeout(() => setStatus('idle'), 5000);
+            return;
+        }
+
         setStatus('sending');
 
         try {
@@ -59,10 +70,12 @@ export default function ContactForm() {
                 email: form.email.trim(),
                 phone: form.phone.trim() || undefined,
                 message: form.message.trim(),
+                turnstileToken: spamCheck.turnstileToken,
             });
 
             setStatus('sent');
             setForm(initialForm);
+            spam.reset();
             setTimeout(() => setStatus('idle'), 5000);
         } catch {
             setStatus('error');
@@ -219,6 +232,8 @@ export default function ContactForm() {
                                 <p className="mt-1 text-xs text-coral" role="alert">{errors.message}</p>
                             )}
                         </div>
+
+                        {spam.honeypotField}
 
                         <button
                             type="submit"
