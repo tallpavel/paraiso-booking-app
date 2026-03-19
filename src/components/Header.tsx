@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import type { Locale } from '../i18n';
 
@@ -16,9 +17,15 @@ const LOCALE_ORDER: Locale[] = ['en', 'es', 'cs'];
 
 export default function Header() {
     const { t, locale, setLocale } = useI18n();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const isHome = location.pathname === '/';
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('');
+
+    // Build full href: on homepage use bare hash, elsewhere prefix with /
+    const resolveHref = (hash: string) => isHome ? hash : `/${hash}`;
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 60);
@@ -69,7 +76,7 @@ export default function Header() {
             <nav className={`mx-auto flex max-w-7xl items-center justify-between px-6 relative transition-all duration-500 ${showNav ? 'py-4' : 'py-6'}`}>
                 {/* Logo — hidden initially, appears on scroll */}
                 <a
-                    href="#hero"
+                    href={resolveHref('#hero')}
                     className={`flex items-center gap-3 transition-all duration-500 ${showNav ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
                         }`}
                     aria-label="Verónica's Flat — Home"
@@ -91,7 +98,7 @@ export default function Header() {
                     {NAV_KEYS.map((link) => (
                         <li key={link.href}>
                             <a
-                                href={link.href}
+                                href={resolveHref(link.href)}
                                 className={`text-sm font-medium tracking-wide transition-colors duration-200 hover:text-ocean ${activeSection === link.href
                                     ? 'text-ocean'
                                     : scrolled ? 'text-navy' : 'text-white/90'
@@ -163,7 +170,14 @@ export default function Header() {
                     {/* CTA */}
                     <button
                         type="button"
-                        onClick={() => window.dispatchEvent(new CustomEvent('open-booking'))}
+                        onClick={() => {
+                            if (!isHome) {
+                                navigate('/');
+                                setTimeout(() => window.dispatchEvent(new CustomEvent('open-booking')), 300);
+                            } else {
+                                window.dispatchEvent(new CustomEvent('open-booking'));
+                            }
+                        }}
                         className="rounded-full bg-coral px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-coral-dark hover:shadow-xl"
                     >
                         {t('nav.book')}
@@ -197,7 +211,7 @@ export default function Header() {
                         {NAV_KEYS.map((link) => (
                             <li key={link.href}>
                                 <a
-                                    href={link.href}
+                                    href={resolveHref(link.href)}
                                     onClick={() => setMenuOpen(false)}
                                     className={`block py-3 text-sm font-medium transition-colors hover:text-ocean ${activeSection === link.href ? 'text-ocean' : 'text-navy'
                                         }`}
@@ -224,7 +238,15 @@ export default function Header() {
                         <li>
                             <button
                                 type="button"
-                                onClick={() => { setMenuOpen(false); window.dispatchEvent(new CustomEvent('open-booking')); }}
+                                onClick={() => {
+                                    setMenuOpen(false);
+                                    if (!isHome) {
+                                        navigate('/');
+                                        setTimeout(() => window.dispatchEvent(new CustomEvent('open-booking')), 300);
+                                    } else {
+                                        window.dispatchEvent(new CustomEvent('open-booking'));
+                                    }
+                                }}
                                 className="mt-2 block w-full rounded-full bg-coral px-6 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-coral-dark"
                             >
                                 {t('nav.book')}

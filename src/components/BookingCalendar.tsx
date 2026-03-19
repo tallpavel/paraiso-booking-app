@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { createReservation, fetchConfirmedReservations, fetchDailyRates, fetchBlockedDates, fetchSeasonalRates } from '../api';
 import type { ConfirmedReservation } from '../api';
@@ -275,6 +276,22 @@ export default function BookingCalendar() {
         if (step > 1) setStep(step - 1);
     };
 
+    const closeConfirmation = useCallback(() => {
+        setGuestName('');
+        setGuestEmail('');
+        setGuestPhone('');
+        setComment('');
+        setCheckIn(null);
+        setCheckOut(null);
+        setGuests(2);
+        setStep(1);
+        setStatus('idle');
+        fpRef.current?.clear();
+        fetchConfirmedReservations()
+            .then((data) => setBookedDates(expandBookedDays(data)))
+            .catch(() => { });
+    }, []);
+
     // ── Submit ───────────────────────────────────────────────────────
     const handleSubmit = async () => {
         // Spam protection check
@@ -304,22 +321,6 @@ export default function BookingCalendar() {
 
             setStatus('sent');
             spam.reset();
-            // Reset after 4 seconds
-            setTimeout(() => {
-                setGuestName('');
-                setGuestEmail('');
-                setGuestPhone('');
-                setComment('');
-                setCheckIn(null);
-                setCheckOut(null);
-                setGuests(2);
-                setStep(1);
-                setStatus('idle');
-                fpRef.current?.clear();
-                fetchConfirmedReservations()
-                    .then((data) => setBookedDates(expandBookedDays(data)))
-                    .catch(() => { });
-            }, 4000);
         } catch (err: unknown) {
             setStatus('error');
             const apiErr = err as { message?: string; errors?: string[] };
@@ -600,120 +601,195 @@ export default function BookingCalendar() {
                     {/* ═══════════════════════════════════════════════════ */}
                     {step === 3 && (
                         <div>
-                            <h3 className="mb-6 text-center font-heading text-xl font-bold text-navy">
-                                {t('booking.stepConfirmTitle')}
-                            </h3>
+                            {/* ── CONFIRMATION VIEW ── */}
+                            {status === 'sent' ? (
+                                <div className="animate-[fadeInUp_0.5s_ease-out]">
+                                    {/* Animated checkmark */}
+                                    <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-200">
+                                        <svg className="h-10 w-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M5 13l4 4L19 7" className="animate-[drawCheck_0.5s_ease-out_0.3s_both]" style={{ strokeDasharray: 24, strokeDashoffset: 24 }} />
+                                        </svg>
+                                    </div>
 
-                            {/* Summary card */}
-                            <div className="space-y-4 rounded-2xl bg-sand-light p-6">
-                                {/* Dates */}
-                                <div className="flex items-start justify-between">
-                                    <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">
-                                            {t('booking.checkIn')}
-                                        </p>
-                                        <p className="text-base font-medium text-navy">{formatDate(checkIn!)}</p>
+                                    <h3 className="mb-2 text-center font-heading text-2xl font-bold text-navy">
+                                        {t('booking.sent')}
+                                    </h3>
+                                    <p className="mx-auto mb-8 max-w-sm text-center text-sm text-warm-gray">
+                                        {t('booking.sentSubtitle')}
+                                    </p>
+
+                                    {/* Summary recap card */}
+                                    <div className="mb-6 overflow-hidden rounded-2xl border border-navy/5 bg-gradient-to-br from-sand-light to-white">
+                                        <div className="border-b border-navy/5 bg-navy/[0.02] px-5 py-3">
+                                            <p className="text-xs font-bold uppercase tracking-widest text-navy/50">{t('booking.sentRef')}</p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-3 px-5 py-4 text-sm">
+                                            <div>
+                                                <p className="text-[11px] font-semibold uppercase tracking-wide text-warm-gray">{t('booking.checkIn')}</p>
+                                                <p className="font-medium text-navy">{formatDate(checkIn!)}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[11px] font-semibold uppercase tracking-wide text-warm-gray">{t('booking.checkOut')}</p>
+                                                <p className="font-medium text-navy">{formatDate(checkOut!)}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[11px] font-semibold uppercase tracking-wide text-warm-gray">{t('booking.guests')}</p>
+                                                <p className="font-medium text-navy">{guests} {guests > 1 ? t('booking.guests_plural') : t('booking.guest')}</p>
+                                            </div>
+                                            {pricing && (
+                                                <div className="text-right">
+                                                    <p className="text-[11px] font-semibold uppercase tracking-wide text-warm-gray">{t('booking.total')}</p>
+                                                    <p className="text-lg font-bold text-navy">€{pricing.total}</p>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="px-3 pt-3 text-warm-gray">→</div>
-                                    <div className="text-right">
-                                        <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">
-                                            {t('booking.checkOut')}
-                                        </p>
-                                        <p className="text-base font-medium text-navy">{formatDate(checkOut!)}</p>
+
+                                    {/* What happens next */}
+                                    <div className="mb-8 space-y-3">
+                                        {[
+                                            { icon: '✉️', text: t('booking.sentStep1'), delay: '0.4s' },
+                                            { icon: '🔍', text: t('booking.sentStep2'), delay: '0.55s' },
+                                            { icon: '💳', text: t('booking.sentStep3'), delay: '0.7s' },
+                                        ].map((item, i) => (
+                                            <div
+                                                key={i}
+                                                className="flex items-start gap-3 rounded-xl bg-ocean/[0.03] px-4 py-3 animate-[fadeInUp_0.4s_ease-out_both]"
+                                                style={{ animationDelay: item.delay }}
+                                            >
+                                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ocean/10 text-sm">
+                                                    {item.icon}
+                                                </span>
+                                                <p className="text-sm leading-relaxed text-navy/70">{item.text}</p>
+                                            </div>
+                                        ))}
                                     </div>
+
+                                    {/* Close button */}
+                                    <button
+                                        type="button"
+                                        onClick={closeConfirmation}
+                                        className="w-full rounded-full bg-gradient-to-r from-ocean to-ocean-dark py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:brightness-110"
+                                    >
+                                        {t('booking.sentClose')}
+                                    </button>
                                 </div>
+                            ) : (
+                                /* ── REVIEW & SUBMIT VIEW ── */
+                                <div>
+                                    <h3 className="mb-6 text-center font-heading text-xl font-bold text-navy">
+                                        {t('booking.stepConfirmTitle')}
+                                    </h3>
 
-                                <hr className="border-navy/10" />
+                                    {/* Summary card */}
+                                    <div className="space-y-4 rounded-2xl bg-sand-light p-6">
+                                        {/* Dates */}
+                                        <div className="flex items-start justify-between">
+                                            <div>
+                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">
+                                                    {t('booking.checkIn')}
+                                                </p>
+                                                <p className="text-base font-medium text-navy">{formatDate(checkIn!)}</p>
+                                            </div>
+                                            <div className="px-3 pt-3 text-warm-gray">→</div>
+                                            <div className="text-right">
+                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">
+                                                    {t('booking.checkOut')}
+                                                </p>
+                                                <p className="text-base font-medium text-navy">{formatDate(checkOut!)}</p>
+                                            </div>
+                                        </div>
 
-                                {/* Guest info */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.name')}</p>
-                                        <p className="text-sm font-medium text-navy">{guestName}</p>
+                                        <hr className="border-navy/10" />
+
+                                        {/* Guest info */}
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.name')}</p>
+                                                <p className="text-sm font-medium text-navy">{guestName}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.email')}</p>
+                                                <p className="text-sm font-medium text-navy">{guestEmail}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.phone')}</p>
+                                                <p className="text-sm font-medium text-navy">{guestPhone}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.guests')}</p>
+                                                <p className="text-sm font-medium text-navy">
+                                                    {guests} {guests > 1 ? t('booking.guests_plural') : t('booking.guest')}
+                                                </p>
+                                            </div>
+                                            {comment.trim() && (
+                                                <div>
+                                                    <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.comment')}</p>
+                                                    <p className="text-sm text-navy">{comment}</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <hr className="border-navy/10" />
+
+                                        {/* Price */}
+                                        {pricing && (
+                                            <div>
+                                                <div className="flex justify-between text-sm text-warm-gray">
+                                                    <span>€{pricing.avgPerNight} × {nights} {nights > 1 ? t('booking.nights') : t('booking.night')}</span>
+                                                    <span>€{pricing.total}</span>
+                                                </div>
+                                                <div className="mt-2 flex justify-between text-lg font-bold text-navy">
+                                                    <span>{t('booking.total')}</span>
+                                                    <span>€{pricing.total}</span>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
-                                    <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.email')}</p>
-                                        <p className="text-sm font-medium text-navy">{guestEmail}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.phone')}</p>
-                                        <p className="text-sm font-medium text-navy">{guestPhone}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.guests')}</p>
-                                        <p className="text-sm font-medium text-navy">
-                                            {guests} {guests > 1 ? t('booking.guests_plural') : t('booking.guest')}
-                                        </p>
-                                    </div>
-                                    {comment.trim() && (
-                                        <div>
-                                            <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.comment')}</p>
-                                            <p className="text-sm text-navy">{comment}</p>
+
+                                    {/* Error message */}
+                                    {status === 'error' && serverError && (
+                                        <div className="mt-4 rounded-xl border border-coral/30 bg-coral/5 p-3 text-center">
+                                            <p className="text-sm text-coral">{serverError}</p>
                                         </div>
                                     )}
-                                </div>
 
-                                <hr className="border-navy/10" />
-
-                                {/* Price */}
-                                {pricing && (
-                                    <div>
-                                        <div className="flex justify-between text-sm text-warm-gray">
-                                            <span>€{pricing.avgPerNight} × {nights} {nights > 1 ? t('booking.nights') : t('booking.night')}</span>
-                                            <span>€{pricing.total}</span>
-                                        </div>
-                                        <div className="mt-2 flex justify-between text-lg font-bold text-navy">
-                                            <span>{t('booking.total')}</span>
-                                            <span>€{pricing.total}</span>
-                                        </div>
+                                    {/* Navigation */}
+                                    <div className="mt-8 flex gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={goBack}
+                                            disabled={status === 'sending'}
+                                            className="flex-1 rounded-full border-2 border-navy/15 py-3.5 text-base font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-sand disabled:opacity-50"
+                                        >
+                                            {t('booking.back')}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleSubmit}
+                                            disabled={status === 'sending'}
+                                            className={`flex-[2] rounded-full py-3.5 text-base font-semibold text-white shadow-lg transition-all ${status === 'sending'
+                                                ? 'cursor-wait bg-ocean/60'
+                                                : 'bg-coral hover:bg-coral-dark hover:shadow-xl'
+                                                }`}
+                                        >
+                                            {status === 'sending'
+                                                ? t('booking.sending')
+                                                : `${t('booking.request')} · €${pricing!.total}`}
+                                        </button>
                                     </div>
-                                )}
-                            </div>
 
-                            {/* Error / success messages */}
-                            {status === 'error' && serverError && (
-                                <div className="mt-4 rounded-xl border border-coral/30 bg-coral/5 p-3 text-center">
-                                    <p className="text-sm text-coral">{serverError}</p>
+                                    <p className="mt-4 text-center text-xs text-warm-gray">
+                                        {t('booking.noPayment')}
+                                    </p>
+                                    <p className="mt-2 text-center text-xs text-warm-gray">
+                                        {t('booking.termsAgree')}{' '}
+                                        <Link to="/terms" target="_blank" className="text-ocean underline underline-offset-2 hover:text-ocean-dark">
+                                            {t('booking.termsLink')}
+                                        </Link>
+                                    </p>
                                 </div>
                             )}
-
-                            {status === 'sent' && (
-                                <div className="mt-4 rounded-xl border border-green-300 bg-green-50 p-4 text-center">
-                                    <p className="text-base font-semibold text-green-700">✓ {t('booking.sent')}</p>
-                                    <p className="mt-1 text-sm text-green-600">{t('booking.sentSubtitle')}</p>
-                                </div>
-                            )}
-
-                            {/* Navigation */}
-                            {status !== 'sent' && (
-                                <div className="mt-8 flex gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={goBack}
-                                        disabled={status === 'sending'}
-                                        className="flex-1 rounded-full border-2 border-navy/15 py-3.5 text-base font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-sand disabled:opacity-50"
-                                    >
-                                        {t('booking.back')}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleSubmit}
-                                        disabled={status === 'sending'}
-                                        className={`flex-[2] rounded-full py-3.5 text-base font-semibold text-white shadow-lg transition-all ${status === 'sending'
-                                            ? 'cursor-wait bg-ocean/60'
-                                            : 'bg-coral hover:bg-coral-dark hover:shadow-xl'
-                                            }`}
-                                    >
-                                        {status === 'sending'
-                                            ? t('booking.sending')
-                                            : `${t('booking.request')} · €${pricing!.total}`}
-                                    </button>
-                                </div>
-                            )}
-
-                            <p className="mt-4 text-center text-xs text-warm-gray">
-                                {t('booking.noPayment')}
-                            </p>
                         </div>
                     )}
                 </div>

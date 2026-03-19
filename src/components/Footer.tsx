@@ -1,4 +1,5 @@
 import { PROPERTY_ADDRESS } from '../data';
+import { Link } from 'react-router-dom';
 import { useI18n } from '../i18n';
 
 export default function Footer() {
@@ -136,8 +137,8 @@ export default function Footer() {
                             © {year} {t('footer.copyright')}
                         </p>
                         <div className="flex items-center gap-6 text-xs text-white/40">
-                            <a href="#" className="transition-colors hover:text-white/60">Privacy Policy</a>
-                            <a href="#" className="transition-colors hover:text-white/60">Terms of Service</a>
+                            <Link to="/terms" className="transition-colors hover:text-white/60">{t('footer.privacy')}</Link>
+                            <Link to="/terms" className="transition-colors hover:text-white/60">{t('footer.terms')}</Link>
                         </div>
                     </div>
                 </div>

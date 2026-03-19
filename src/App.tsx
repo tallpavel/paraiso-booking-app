@@ -16,6 +16,7 @@ import AdminLogin from './components/admin/AdminLogin';
 import AdminLayout from './components/admin/AdminLayout';
 import CheckInForm from './components/CheckInForm';
 import DiscoverDetailPage from './components/DiscoverDetailPage';
+import TermsPage from './components/TermsPage';
 
 function PublicSite() {
   const { hash } = useLocation();
@@ -65,6 +66,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<PublicSite />} />
       <Route path="/discover/:slug" element={<DiscoverDetailPage />} />
+      <Route path="/terms" element={<TermsPage />} />
       <Route path="/checkin/:token" element={<CheckInForm />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route

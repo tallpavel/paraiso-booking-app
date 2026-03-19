@@ -16,7 +16,12 @@ interface FieldError {
     message?: string;
 }
 
-export default function FloatingContactButton() {
+interface Props {
+    forceOpen?: boolean;
+    onForceOpenHandled?: () => void;
+}
+
+export default function FloatingContactButton({ forceOpen, onForceOpenHandled }: Props = {}) {
     const { t } = useI18n();
     const [visible, setVisible] = useState(false);
     const [pulse, setPulse] = useState(true);
@@ -46,6 +51,14 @@ export default function FloatingContactButton() {
         document.body.style.overflow = open ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
     }, [open]);
+
+    // Allow external open trigger
+    useEffect(() => {
+        if (forceOpen) {
+            setOpen(true);
+            onForceOpenHandled?.();
+        }
+    }, [forceOpen, onForceOpenHandled]);
 
     // Close on Escape
     useEffect(() => {
