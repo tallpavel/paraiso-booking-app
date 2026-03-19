@@ -1,13 +1,14 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n';
 
 const ACTIVITIES: { image: string; titleKey: TranslationKey; descKey: TranslationKey; href: string }[] = [
-    { image: '/discover/beach.png', titleKey: 'discover.beachTitle', descKey: 'discover.beachDesc', href: 'https://www.webtenerife.co.uk/what-to-do/beaches/' },
-    { image: '/discover/snorkel.png', titleKey: 'discover.snorkelTitle', descKey: 'discover.snorkelDesc', href: 'https://www.webtenerife.co.uk/what-to-do/nature/diving/' },
-    { image: '/discover/whale.png', titleKey: 'discover.whaleTitle', descKey: 'discover.whaleDesc', href: 'https://www.webtenerife.co.uk/what-to-do/nature/whale-dolphin-watching/' },
-    { image: '/discover/hiking.png', titleKey: 'discover.hikingTitle', descKey: 'discover.hikingDesc', href: 'https://www.webtenerife.co.uk/what-to-do/nature/hiking/' },
-    { image: '/discover/food.png', titleKey: 'discover.foodTitle', descKey: 'discover.foodDesc', href: 'https://www.webtenerife.co.uk/gastronomy/' },
+    { image: '/discover/beach.png', titleKey: 'discover.beachTitle', descKey: 'discover.beachDesc', href: '/discover/beaches' },
+    { image: '/discover/snorkel.png', titleKey: 'discover.snorkelTitle', descKey: 'discover.snorkelDesc', href: '/discover/snorkeling' },
+    { image: '/discover/whale.png', titleKey: 'discover.whaleTitle', descKey: 'discover.whaleDesc', href: '/discover/whales' },
+    { image: '/discover/hiking.png', titleKey: 'discover.hikingTitle', descKey: 'discover.hikingDesc', href: '/discover/hiking' },
+    { image: '/discover/food.png', titleKey: 'discover.foodTitle', descKey: 'discover.foodDesc', href: '/discover/food' },
 ];
 
 export default function DiscoverSection() {
@@ -99,11 +100,9 @@ export default function DiscoverSection() {
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {ACTIVITIES.map((activity, index) => (
-                        <a
+                        <Link
                             key={activity.titleKey}
-                            href={activity.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            to={activity.href}
                             className="group relative h-[380px] w-[340px] shrink-0 snap-start overflow-hidden rounded-2xl sm:h-[440px] sm:w-[420px]"
                         >
                             <img
@@ -140,7 +139,7 @@ export default function DiscoverSection() {
                                     </svg>
                                 </span>
                             </div>
-                        </a>
+                        </Link>
                     ))}
                 </div>
 

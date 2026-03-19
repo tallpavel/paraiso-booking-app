@@ -100,6 +100,70 @@ const translations = {
         'discover.funFact': '🌋 Playa Paraíso sits on the sunny southwest coast of Tenerife, enjoying over 300 days of sunshine per year with average temperatures of 22–28°C. Mount Teide, Spain\'s highest peak, is just a 90-minute drive away.',
         'discover.learnMore': 'Learn more',
 
+        // Discover Detail Pages — shared
+        'discoverPage.backToDiscover': 'Back to Explore',
+        'discoverPage.backHome': 'Back to Home',
+        'discoverPage.tipsTitle': 'Tips from Our Guests',
+        'discoverPage.officialGuide': 'Official Tourism Guide',
+        'discoverPage.continueExploring': 'Continue exploring',
+        'discoverPage.bookCta': 'Ready to Experience It All?',
+        'discoverPage.bookCtaSub': 'Book your stay at Verónica\'s Flat — the perfect base to explore everything Playa Paraíso has to offer.',
+
+        // Beaches
+        'discoverPage.beaches.title': 'Pristine Beaches of Playa Paraíso',
+        'discoverPage.beaches.heroDesc': 'Discover golden sands and dramatic volcanic shores just steps from your front door. Southern Tenerife\'s coastline is a sun-lover\'s paradise.',
+        'discoverPage.beaches.s1Title': 'Playa de la Enramada',
+        'discoverPage.beaches.s1Body': 'Just a 3-minute walk from the flat, this black volcanic sand beach stretches along the coast with stunning views of La Gomera. It\'s quieter than the resort beaches, making it perfect for relaxed mornings. The natural rock pools at the southern end are great for children.',
+        'discoverPage.beaches.s2Title': 'Playa del Duque',
+        'discoverPage.beaches.s2Body': 'One of the most prestigious beaches in Tenerife, Playa del Duque features fine golden sand, crystal-clear calm waters, and upscale beachfront restaurants. It\'s a 10-minute drive or a pleasant coastal walk. Sun loungers and parasols are available for rent.',
+        'discoverPage.beaches.s3Title': 'Playa de Fañabé & Playa de Torviscas',
+        'discoverPage.beaches.s3Body': 'These neighbouring beaches offer great facilities including water sports, beach bars, and lifeguards on duty year-round. The promenade connecting them is perfect for evening strolls. Both are Blue Flag certified, guaranteeing excellent water quality and services.',
+        'discoverPage.beaches.tips': 'The beaches are sunny year-round, but mornings are the quietest time to visit. Pack reef-safe sunscreen and water shoes for the volcanic rock areas. Playa de la Enramada, our nearest beach, rarely gets crowded even in peak season.',
+
+        // Snorkeling & Diving
+        'discoverPage.snorkeling.title': 'Snorkeling & Diving in Tenerife',
+        'discoverPage.snorkeling.heroDesc': 'Explore vibrant underwater worlds with sea turtles, rays, and volcanic rock formations in some of Europe\'s clearest waters.',
+        'discoverPage.snorkeling.s1Title': 'Sea Turtle Encounters',
+        'discoverPage.snorkeling.s1Body': 'The waters around Playa Paraíso are home to resident green sea turtles. Spots like El Puertito (15 minutes by car) offer almost guaranteed turtle sightings while snorkeling in shallow, calm bays. These gentle creatures are accustomed to swimmers and often come within arm\'s reach.',
+        'discoverPage.snorkeling.s2Title': 'Dive Sites for All Levels',
+        'discoverPage.snorkeling.s2Body': 'Tenerife\'s volcanic coastline creates a dramatic underwater landscape. Beginners can explore shallow reefs teeming with parrotfish, trumpetfish, and octopus. Advanced divers can visit underwater caves, volcanic arches, and even a sunken cargo ship off Los Cristianos. Several PADI-certified dive centres operate nearby.',
+        'discoverPage.snorkeling.s3Title': 'Marine Biodiversity',
+        'discoverPage.snorkeling.s3Body': 'The Canary Islands sit at the crossroads of Atlantic currents, creating a unique ecosystem. You can spot barracuda, stingrays, moray eels, and colourful nudibranchs. Between January and March, angel sharks rest on the sandy seabed — a rare sight found almost nowhere else in Europe.',
+        'discoverPage.snorkeling.tips': 'We recommend booking a guided snorkeling trip for your first outing — local guides know the best spots and currents. Bring your own mask for the best fit, but wetsuits can be rented locally. Water temperatures range from 19°C in winter to 24°C in summer.',
+
+        // Whale & Dolphin Watching
+        'discoverPage.whales.title': 'Whale & Dolphin Watching',
+        'discoverPage.whales.heroDesc': 'Tenerife is one of the world\'s best destinations for whale and dolphin watching, with resident pods visible year-round just off the southwest coast.',
+        'discoverPage.whales.s1Title': 'Resident Pilot Whales',
+        'discoverPage.whales.s1Body': 'Around 500 short-finned pilot whales live permanently in the deep waters between Tenerife and La Gomera. These social, curious animals travel in family pods of 10-30 individuals. Boat trips from Los Gigantes or Puerto Colón (both 15-20 minutes from the flat) offer sighting success rates above 95%.',
+        'discoverPage.whales.s2Title': 'Bottlenose Dolphins & More',
+        'discoverPage.whales.s2Body': 'In addition to pilot whales, the waters host large pods of bottlenose dolphins that love to ride the bow waves of boats. Seasonal visitors include spotted dolphins, sperm whales, and even blue whales during migration. Between September and November, you might spot orcas passing through.',
+        'discoverPage.whales.s3Title': 'Responsible Whale Watching',
+        'discoverPage.whales.s3Body': 'Tenerife takes marine conservation seriously. Licensed boats follow strict approach distances (60 metres minimum) and time limits. We recommend choosing operators with the "Blue Boat" certification, which guarantees sustainable practices. Smaller boats (12-20 passengers) offer a more intimate experience.',
+        'discoverPage.whales.tips': 'Morning trips (10-11am departures) tend to have calmer seas and better sightings. Bring layers — it\'s breezy on the water even on warm days. If you\'re prone to seasickness, sit at the back of the boat and watch the horizon. Most trips last 2-3 hours.',
+
+        // Hiking & Nature
+        'discoverPage.hiking.title': 'Hiking & Nature in Tenerife',
+        'discoverPage.hiking.heroDesc': 'From coastal cliff paths to the moonlike landscape of Mount Teide, Tenerife offers world-class hiking trails for every fitness level.',
+        'discoverPage.hiking.s1Title': 'Teide National Park',
+        'discoverPage.hiking.s1Body': 'A UNESCO World Heritage Site and home to Spain\'s highest peak (3,718m). The volcanic landscape feels otherworldly — lava fields, rock formations, and endemic flora. The Roques de García trail (3.5 km) is a must-do. For the summit, you\'ll need a free permit booked in advance. The cable car takes you to 3,555m with breathtaking views.',
+        'discoverPage.hiking.s2Title': 'Masca Valley',
+        'discoverPage.hiking.s2Body': 'One of Tenerife\'s most iconic hikes, this trail descends through a dramatic gorge from the mountain village of Masca to a small beach. The 4.5 km route takes 3-4 hours and rewards you with towering cliffs, endemic palms, and the deep blue Atlantic at the end. A boat takes you back to Los Gigantes. Pre-booking is required.',
+        'discoverPage.hiking.s3Title': 'Coastal & Forest Trails',
+        'discoverPage.hiking.s3Body': 'Right from Playa Paraíso, you can walk the coastal path towards Callao Salvaje or La Caleta. For lush greenery, head to Anaga Rural Park in the north — ancient laurel forests draped in mist with spectacular viewpoints. The Corona Forestal park offers pine forest trails with the scent of Canarian pines.',
+        'discoverPage.hiking.tips': 'Start early for Teide to avoid afternoon clouds. Always carry water (2L minimum for mountain hikes) and sun protection. The Masca trail requires online reservation — book at least 2 weeks ahead in peak season. We can help you arrange transport to any trailhead.',
+
+        // Local Gastronomy
+        'discoverPage.food.title': 'Local Gastronomy of Tenerife',
+        'discoverPage.food.heroDesc': 'Discover Canarian cuisine — a unique blend of Spanish, African, and Latin American flavours with the freshest local ingredients.',
+        'discoverPage.food.s1Title': 'Must-Try Dishes',
+        'discoverPage.food.s1Body': 'Start with papas arrugadas — small wrinkled potatoes boiled in heavily salted water, served with two mojos: a red spicy pepper mojo and a green cilantro mojo. Try fresh grilled fish (vieja, cherne), conejo en salmorejo (marinated rabbit), and ropa vieja (a hearty chickpea stew). For dessert, bienmesabe almond cream is unforgettable.',
+        'discoverPage.food.s2Title': 'Wine & Local Produce',
+        'discoverPage.food.s2Body': 'Tenerife has five Denominación de Origen wine regions. The volcanic soil produces distinctive wines — try a Listán Blanco (crisp white) or a Listán Negro (light red). Visit a bodega in the Orotava Valley or Tacoronte-Acentejo region. Local cheeses, especially smoked goat cheese from Arico, pair perfectly with local honey.',
+        'discoverPage.food.s3Title': 'Where to Eat Near Playa Paraíso',
+        'discoverPage.food.s3Body': 'Within walking distance, you\'ll find excellent seafood restaurants along the Enramada beach. El rincón de Juan Carlos (Michelin-starred) is a short drive in Los Gigantes. For authentic local food at great prices, try the guachinches — informal family restaurants in the wine regions that serve homemade food with their own wine.',
+        'discoverPage.food.tips': 'Ask locals for guachinche recommendations — they change frequently and are the most authentic dining experience. Canarian restaurants typically serve lunch from 1-3pm and dinner from 8-10pm. We keep a list of our favourite restaurants for guests — just ask!',
+
         // Reviews
         'reviews.label': 'Guest Reviews',
         'reviews.title': 'What Our Guests Say',
@@ -302,6 +366,70 @@ const translations = {
         'discover.funFact': '🌋 Playa Paraíso se encuentra en la soleada costa suroeste de Tenerife, disfrutando de más de 300 días de sol al año con temperaturas medias de 22–28°C. El Teide, el pico más alto de España, está a solo 90 minutos en coche.',
         'discover.learnMore': 'Saber más',
 
+        // Páginas de Descubrimiento — compartido
+        'discoverPage.backToDiscover': 'Volver a Explorar',
+        'discoverPage.backHome': 'Volver al Inicio',
+        'discoverPage.tipsTitle': 'Consejos de Nuestros Huéspedes',
+        'discoverPage.officialGuide': 'Guía Oficial de Turismo',
+        'discoverPage.continueExploring': 'Seguir explorando',
+        'discoverPage.bookCta': '¿Listo para Vivirlo Todo?',
+        'discoverPage.bookCtaSub': 'Reserva tu estancia en el apartamento de Verónica — la base perfecta para explorar todo lo que Playa Paraíso ofrece.',
+
+        // Playas
+        'discoverPage.beaches.title': 'Las Playas de Playa Paraíso',
+        'discoverPage.beaches.heroDesc': 'Descubre arenas doradas y espectaculares costas volcánicas a pocos pasos de tu puerta. La costa del sur de Tenerife es el paraíso de los amantes del sol.',
+        'discoverPage.beaches.s1Title': 'Playa de la Enramada',
+        'discoverPage.beaches.s1Body': 'A solo 3 minutos a pie del apartamento, esta playa de arena volcánica negra se extiende a lo largo de la costa con impresionantes vistas a La Gomera. Es más tranquila que las playas de los resorts, perfecta para mañanas relajadas. Las piscinas naturales del extremo sur son ideales para los niños.',
+        'discoverPage.beaches.s2Title': 'Playa del Duque',
+        'discoverPage.beaches.s2Body': 'Una de las playas más prestigiosas de Tenerife, con arena dorada fina, aguas cristalinas y restaurantes de primera línea de playa. A 10 minutos en coche o un agradable paseo costero. Tumbonas y sombrillas disponibles para alquiler.',
+        'discoverPage.beaches.s3Title': 'Playa de Fañabé y Playa de Torviscas',
+        'discoverPage.beaches.s3Body': 'Estas playas vecinas ofrecen excelentes instalaciones: deportes acuáticos, chiringuitos y socorristas durante todo el año. El paseo marítimo que las conecta es perfecto para paseos vespertinos. Ambas tienen Bandera Azul, garantía de excelente calidad del agua.',
+        'discoverPage.beaches.tips': 'Las playas disfrutan de sol todo el año, pero las mañanas son el momento más tranquilo para visitarlas. Lleva protector solar respetuoso con los corales y escarpines para las zonas de roca volcánica. Playa de la Enramada rara vez se llena incluso en temporada alta.',
+
+        // Snorkel y Buceo
+        'discoverPage.snorkeling.title': 'Snorkel y Buceo en Tenerife',
+        'discoverPage.snorkeling.heroDesc': 'Explora vibrantes mundos submarinos con tortugas marinas, rayas y formaciones rocosas volcánicas en algunas de las aguas más cristalinas de Europa.',
+        'discoverPage.snorkeling.s1Title': 'Encuentros con Tortugas Marinas',
+        'discoverPage.snorkeling.s1Body': 'Las aguas alrededor de Playa Paraíso son hogar de tortugas verdes residentes. Lugares como El Puertito (15 minutos en coche) ofrecen avistamientos casi garantizados mientras practicas snorkel en bahías poco profundas y tranquilas. Estas criaturas están acostumbradas a los bañistas.',
+        'discoverPage.snorkeling.s2Title': 'Inmersiones para Todos los Niveles',
+        'discoverPage.snorkeling.s2Body': 'La costa volcánica de Tenerife crea un paisaje submarino espectacular. Los principiantes pueden explorar arrecifes con peces loro, trompeteros y pulpos. Los buceadores avanzados pueden visitar cuevas submarinas, arcos volcánicos e incluso un barco hundido frente a Los Cristianos.',
+        'discoverPage.snorkeling.s3Title': 'Biodiversidad Marina',
+        'discoverPage.snorkeling.s3Body': 'Las Islas Canarias se encuentran en la encrucijada de corrientes atlánticas, creando un ecosistema único. Puedes avistar barracudas, rayas, morenas y coloridos nudibranquios. Entre enero y marzo, los tiburones ángel descansan en los fondos arenosos — un avistamiento raro en Europa.',
+        'discoverPage.snorkeling.tips': 'Recomendamos contratar una excursión guiada para tu primera salida — los guías locales conocen los mejores puntos y corrientes. Trae tu propia máscara, pero los trajes de neopreno se alquilan localmente. La temperatura del agua varía de 19°C en invierno a 24°C en verano.',
+
+        // Avistamiento de Ballenas
+        'discoverPage.whales.title': 'Avistamiento de Ballenas y Delfines',
+        'discoverPage.whales.heroDesc': 'Tenerife es uno de los mejores destinos del mundo para avistar ballenas y delfines, con grupos residentes visibles todo el año frente a la costa suroeste.',
+        'discoverPage.whales.s1Title': 'Calderones Residentes',
+        'discoverPage.whales.s1Body': 'Unas 500 ballenas piloto de aleta corta viven permanentemente en las aguas profundas entre Tenerife y La Gomera. Estos animales sociales viajan en grupos familiares de 10-30 individuos. Los barcos desde Los Gigantes o Puerto Colón (15-20 minutos del apartamento) ofrecen tasas de avistamiento superiores al 95%.',
+        'discoverPage.whales.s2Title': 'Delfines Mulares y Más',
+        'discoverPage.whales.s2Body': 'Además de las ballenas piloto, las aguas albergan grandes grupos de delfines mulares que adoran surfear las olas de proa de los barcos. Los visitantes estacionales incluyen delfines moteados, cachalotes e incluso ballenas azules durante la migración.',
+        'discoverPage.whales.s3Title': 'Avistamiento Responsable',
+        'discoverPage.whales.s3Body': 'Tenerife se toma en serio la conservación marina. Los barcos con licencia siguen estrictas distancias de aproximación (mínimo 60 metros). Recomendamos elegir operadores con la certificación "Barco Azul". Los barcos pequeños (12-20 pasajeros) ofrecen una experiencia más íntima.',
+        'discoverPage.whales.tips': 'Las excursiones matutinas (salidas 10-11h) suelen tener mar más tranquilo y mejores avistamientos. Lleva capas de ropa — sopla brisa en el agua incluso en días cálidos. Si tiendes a marearte, siéntate en la parte trasera del barco. La mayoría de las excursiones duran 2-3 horas.',
+
+        // Senderismo y Naturaleza
+        'discoverPage.hiking.title': 'Senderismo y Naturaleza en Tenerife',
+        'discoverPage.hiking.heroDesc': 'Desde senderos costeros hasta el paisaje lunar del Teide, Tenerife ofrece rutas de senderismo de primer nivel para todos los niveles.',
+        'discoverPage.hiking.s1Title': 'Parque Nacional del Teide',
+        'discoverPage.hiking.s1Body': 'Patrimonio de la Humanidad de la UNESCO y hogar del pico más alto de España (3.718m). El paisaje volcánico es de otro mundo — campos de lava, formaciones rocosas y flora endémica. La ruta de los Roques de García (3,5 km) es imprescindible. Para la cumbre, necesitarás un permiso gratuito reservado con antelación.',
+        'discoverPage.hiking.s2Title': 'Barranco de Masca',
+        'discoverPage.hiking.s2Body': 'Una de las rutas más icónicas de Tenerife. Este sendero desciende por un barranco espectacular desde el pueblo de Masca hasta una pequeña playa. La ruta de 4,5 km dura 3-4 horas y te recompensa con acantilados imponentes y el azul profundo del Atlántico al final. Un barco te lleva de vuelta a Los Gigantes.',
+        'discoverPage.hiking.s3Title': 'Senderos Costeros y Forestales',
+        'discoverPage.hiking.s3Body': 'Desde Playa Paraíso puedes caminar por el sendero costero hacia Callao Salvaje o La Caleta. Para vegetación exuberante, dirígete al Parque Rural de Anaga — antiguos bosques de laurisilva con espectaculares miradores. El parque Corona Forestal ofrece rutas entre pinares canarios.',
+        'discoverPage.hiking.tips': 'Madruga para el Teide y evita las nubes de la tarde. Lleva siempre agua (mínimo 2L para rutas de montaña) y protección solar. La ruta de Masca requiere reserva online — hazlo al menos 2 semanas antes en temporada alta. Podemos ayudarte a organizar el transporte.',
+
+        // Gastronomía Local
+        'discoverPage.food.title': 'Gastronomía Local de Tenerife',
+        'discoverPage.food.heroDesc': 'Descubre la cocina canaria — una mezcla única de sabores españoles, africanos y latinoamericanos con los ingredientes locales más frescos.',
+        'discoverPage.food.s1Title': 'Platos Imprescindibles',
+        'discoverPage.food.s1Body': 'Empieza con papas arrugadas — pequeñas patatas hervidas en agua muy salada, servidas con dos mojos: un mojo rojo picante y un mojo verde de cilantro. Prueba el pescado fresco a la plancha (vieja, cherne), el conejo en salmorejo y la ropa vieja. De postre, el bienmesabe de almendra es inolvidable.',
+        'discoverPage.food.s2Title': 'Vinos y Productos Locales',
+        'discoverPage.food.s2Body': 'Tenerife tiene cinco Denominaciones de Origen vinícolas. El suelo volcánico produce vinos únicos — prueba un Listán Blanco o un Listán Negro. Visita una bodega en el Valle de la Orotava o Tacoronte-Acentejo. Los quesos locales, especialmente el queso de cabra ahumado de Arico, combinan perfectamente con miel local.',
+        'discoverPage.food.s3Title': 'Dónde Comer en Playa Paraíso',
+        'discoverPage.food.s3Body': 'A distancia a pie encontrarás excelentes restaurantes de mariscos en la playa de la Enramada. El rincón de Juan Carlos (estrella Michelin) está a pocos minutos en Los Gigantes. Para comida local auténtica a buen precio, prueba los guachinches — restaurantes familiares informales en las zonas vinícolas.',
+        'discoverPage.food.tips': 'Pregunta a los locales por recomendaciones de guachinches — cambian con frecuencia y son la experiencia gastronómica más auténtica. Los restaurantes canarios sirven almuerzo de 13-15h y cena de 20-22h. Tenemos una lista de nuestros restaurantes favoritos para los huéspedes — ¡solo pregunta!',
+
         // Reviews
         'reviews.label': 'Opiniones de Huéspedes',
         'reviews.title': 'Lo que Dicen Nuestros Huéspedes',
@@ -503,6 +631,70 @@ const translations = {
         'discover.sunsetDesc': 'Sledujte slunce klesající pod hladinu Atlantiku z vaší terasy nebo z nedaleký útesů — zlatá hodinka je tu opravdu velkolepá.',
         'discover.funFact': '🌋 Playa Paraíso leží na slunném jihozápadním pobřeží Tenerife a těší se více než 300 slunečným dnům ročně s průměrnými teplotami 22–28 °C. Teide, nejvyšší hora Španělska, je jen 90 minut jízdy autem.',
         'discover.learnMore': 'Více informací',
+
+        // Stránky Průzkumu — sdílené
+        'discoverPage.backToDiscover': 'Zpět na Prozkoumat',
+        'discoverPage.backHome': 'Zpět na Úvod',
+        'discoverPage.tipsTitle': 'Tipy od Našich Hostů',
+        'discoverPage.officialGuide': 'Oficiální Turistický Průvodce',
+        'discoverPage.continueExploring': 'Pokračujte v objevování',
+        'discoverPage.bookCta': 'Připraveni to Vše Zažít?',
+        'discoverPage.bookCtaSub': 'Zarezervujte si pobyt v apartmánu Veroniky — ideální základna pro objevování všeho, co Playa Paraíso nabízí.',
+
+        // Pláže
+        'discoverPage.beaches.title': 'Nádherné Pláže Playa Paraíso',
+        'discoverPage.beaches.heroDesc': 'Objevte zlaté písky a dramatické vulkanické pobřeží jen pár kroků od vašich dveří. Pobřeží jižního Tenerife je rájem milovníků slunce.',
+        'discoverPage.beaches.s1Title': 'Playa de la Enramada',
+        'discoverPage.beaches.s1Body': 'Pouhé 3 minuty pěšky od apartmánu. Tato pláž s černým vulkanickým pískem se táhne podél pobřeží s úchvatnými výhledy na La Gomeru. Je klidnější než pláže resortů, ideální pro relaxační rána. Přírodní skalní jezírka na jižním konci jsou skvělá pro děti.',
+        'discoverPage.beaches.s2Title': 'Playa del Duque',
+        'discoverPage.beaches.s2Body': 'Jedna z nejprestižnějších pláží na Tenerife s jemným zlatým pískem, křišťálově čistou vodou a prvotřídními restauracemi na pláži. Je to 10 minut autem nebo příjemná pobřežní procházka. Lehátka a slunečníky jsou k pronájmu.',
+        'discoverPage.beaches.s3Title': 'Playa de Fañabé a Playa de Torviscas',
+        'discoverPage.beaches.s3Body': 'Tyto sousední pláže nabízejí skvělé vybavení: vodní sporty, plážové bary a plavčíky po celý rok. Promenáda, která je spojuje, je ideální pro večerní procházky. Obě mají certifikaci Modrá vlajka, tedy garanci vynikající kvality vody.',
+        'discoverPage.beaches.tips': 'Pláže jsou slunečné po celý rok, ale ráno je nejklidnější doba k návštěvě. Vezměte si opalovací krém šetrný ke korálům a boty do vody pro vulkanické skalní oblasti. Playa de la Enramada, naše nejbližší pláž, se zřídka zaplní i v hlavní sezóně.',
+
+        // Šnorchlování a Potápění
+        'discoverPage.snorkeling.title': 'Šnorchlování a Potápění na Tenerife',
+        'discoverPage.snorkeling.heroDesc': 'Prozkoumejte živé podmořské světy s mořskými želvami, rejnoky a vulkanickými skalními formacemi v jedněch z nejčistších vod Evropy.',
+        'discoverPage.snorkeling.s1Title': 'Setkání s Mořskými Želvami',
+        'discoverPage.snorkeling.s1Body': 'Vody kolem Playa Paraíso jsou domovem zelených mořských želv. Místa jako El Puertito (15 minut autem) nabízejí téměř zaručené pozorování želv při šnorchlování v mělkých, klidných zátokách. Tato jemná stvoření jsou zvyklá na plavce.',
+        'discoverPage.snorkeling.s2Title': 'Ponory pro Všechny Úrovně',
+        'discoverPage.snorkeling.s2Body': 'Vulkanické pobřeží Tenerife vytváří dramatickou podmořskou krajinu. Začátečníci mohou prozkoumávat mělké útesy plné papoušků, trubačů a chobotnic. Pokročilí potápěči mohou navštívit podmořské jeskyně, vulkanické oblouky a dokonce potopenou nákladní loď u Los Cristianos.',
+        'discoverPage.snorkeling.s3Title': 'Mořská Biodiverzita',
+        'discoverPage.snorkeling.s3Body': 'Kanárské ostrovy leží na křižovatce atlantických proudů a vytvářejí jedinečný ekosystém. Můžete spatřit barrakudy, rejnoky, murény a barevné nahožábrovce. Mezi lednem a březnem odpočívají na písčitém dně žraloci andělští — vzácný úkaz téměř nikde jinde v Evropě.',
+        'discoverPage.snorkeling.tips': 'Doporučujeme rezervovat si guideovaný šnorchlovací výlet na první pokus — místní průvodci znají nejlepší místa a proudy. Přineste si vlastní masku, ale neoprény lze pronajmout na místě. Teplota vody se pohybuje od 19°C v zimě do 24°C v létě.',
+
+        // Pozorování Velryb a Delfínů
+        'discoverPage.whales.title': 'Pozorování Velryb a Delfínů',
+        'discoverPage.whales.heroDesc': 'Tenerife je jedním z nejlepších míst na světě pro pozorování velryb a delfínů — rezidentní skupiny jsou viditelné po celý rok u jihozápadního pobřeží.',
+        'discoverPage.whales.s1Title': 'Rezidentní Kulohlavci',
+        'discoverPage.whales.s1Body': 'Přibližně 500 kulohlavců krátkoploutvých žije trvale v hlubokých vodách mezi Tenerife a La Gomerou. Tito společenští, zvídaví tvorové cestují v rodinných skupinách po 10-30 jedincích. Výlety lodí z Los Gigantes nebo Puerto Colón (15-20 minut od apartmánu) nabízejí úspěšnost pozorování nad 95 %.',
+        'discoverPage.whales.s2Title': 'Delfíni Skákaví a Další',
+        'discoverPage.whales.s2Body': 'Kromě kulohlavců hostí tyto vody velké skupiny delfínů skákavých, kteří milují surfování na vlnách lodí. Sezónní návštěvníci zahrnují delfíny skvrnitkané, vorvaně a dokonce plejtváky obrovské během migrace.',
+        'discoverPage.whales.s3Title': 'Zodpovědné Pozorování',
+        'discoverPage.whales.s3Body': 'Tenerife bere ochranu moří vážně. Licencované lodě dodržují přísné minimální vzdálenosti (60 metrů) a časové limity. Doporučujeme volit operátory s certifikací „Modrá loď". Menší lodě (12-20 pasažérů) nabízejí intimnější zážitek.',
+        'discoverPage.whales.tips': 'Ranní výlety (odjezd 10-11h) mají obvykle klidnější moře a lepší pozorování. Vezměte si vrstvy — na vodě fouká i za teplých dnů. Pokud máte sklon k mořské nemoci, sedněte si dozadu na loď. Většina výletů trvá 2-3 hodiny.',
+
+        // Turistika a Příroda
+        'discoverPage.hiking.title': 'Turistika a Příroda na Tenerife',
+        'discoverPage.hiking.heroDesc': 'Od pobřežních stezek po měsíční krajinu Teide — Tenerife nabízí turistické trasy světové úrovně pro všechny zdatnostní kategorie.',
+        'discoverPage.hiking.s1Title': 'Národní Park Teide',
+        'discoverPage.hiking.s1Body': 'Památka UNESCO a domov nejvyššího vrcholu Španělska (3 718 m). Vulkanická krajina působí nadpozemsky — lávová pole, skalní formace a endemická květena. Trasa Roques de García (3,5 km) je povinná. Na vrchol potřebujete bezplatné povolení rezervované předem. Lanovka vás vyveze na 3 555 m s dechberoucími výhledy.',
+        'discoverPage.hiking.s2Title': 'Údolí Masca',
+        'discoverPage.hiking.s2Body': 'Jedna z nejikoničtějších tras na Tenerife. Stezka klesá dramatickou soutěskou z horské vesnice Masca na malou pláž. Trasa 4,5 km trvá 3-4 hodiny a odmění vás strmými útesy, endemickými palmami a hlubokým modrem Atlantiku. Loď vás odveze zpět do Los Gigantes. Vyžaduje se online rezervace.',
+        'discoverPage.hiking.s3Title': 'Pobřežní a Lesní Stezky',
+        'discoverPage.hiking.s3Body': 'Přímo z Playa Paraíso můžete jít pobřežní stezkou směrem na Callao Salvaje nebo La Caletu. Pro bujnou zeleň zamiřte do Rurálního parku Anaga — prastaré vavřínové lesy zahalené v mlze se spektakulárními vyhlídkami. Park Corona Forestal nabízí stezky borovými lesy s vůní kanárských borovic.',
+        'discoverPage.hiking.tips': 'Na Teide vyrazte brzy ráno, abyste se vyhnuli odpoledním mrakům. Vždy si vezměte vodu (minimum 2 litry na horské túry) a ochranu proti slunci. Trasa Masca vyžaduje online rezervaci — rezervujte alespoň 2 týdny předem v hlavní sezóně. Můžeme vám pomoci zajistit dopravu na začátek trasy.',
+
+        // Místní Gastronomie
+        'discoverPage.food.title': 'Místní Gastronomie Tenerife',
+        'discoverPage.food.heroDesc': 'Poznejte kanárskou kuchyni — jedinečnou směs španělských, afrických a latinskoamerických chutí s nejčerstvějšími místními ingrediencemi.',
+        'discoverPage.food.s1Title': 'Jídla, Která Musíte Ochutnat',
+        'discoverPage.food.s1Body': 'Začněte s papas arrugadas — malými svraskalými brambory vařenými v silně slané vodě, podávanými se dvěma omáčkami mojo: červenou pikantní a zelenou kořízkovou. Ochutnejte čerstvé grilované ryby (vieja, cherne), conejo en salmorejo (marinovaný králík) a ropa vieja (sytý cizrnový guláš). Na dezert je bienmesabe mandlový krém nezapomenutelný.',
+        'discoverPage.food.s2Title': 'Víno a Místní Produkty',
+        'discoverPage.food.s2Body': 'Tenerife má pět vinařských regionů s Denominación de Origen. Vulkanická půda produkuje charakteristická vína — zkuste Listán Blanco (svěží bílé) nebo Listán Negro (lehké červené). Navštivte bodegu v údolí Orotava nebo regionu Tacoronte-Acentejo. Místní sýry, zejména uzený kozí sýr z Arico, se skvěle hodí k místnímu medu.',
+        'discoverPage.food.s3Title': 'Kde Jíst u Playa Paraíso',
+        'discoverPage.food.s3Body': 'V docházkové vzdálenosti najdete vynikající restaurace s mořskými plody na pláži Enramada. El rincón de Juan Carlos (Michelinská hvězda) je kousek v Los Gigantes. Pro autentické místní jídlo za skvělé ceny zkuste guachinches — neformální rodinné restaurace ve vinařských regionech, které servírují domácí jídlo s vlastním vínem.',
+        'discoverPage.food.tips': 'Zeptejte se místních na doporučení guachinches — často se mění a jde o ten nejautentičtější gastronomický zážitek. Kanárské restaurace obvykle servírují oběd od 13 do 15 hodin a večeři od 20 do 22 hodin. Máme seznam našich oblíbených restaurací pro hosty — stačí se zeptat!',
 
         // Reviews
         'reviews.label': 'Recenze Hostů',

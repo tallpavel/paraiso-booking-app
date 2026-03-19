@@ -1,5 +1,6 @@
 import './index.css';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
@@ -14,8 +15,21 @@ import Footer from './components/Footer';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminLayout from './components/admin/AdminLayout';
 import CheckInForm from './components/CheckInForm';
+import DiscoverDetailPage from './components/DiscoverDetailPage';
 
 function PublicSite() {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      // Small timeout to let React finish rendering all sections
+      const timer = setTimeout(() => {
+        const el = document.querySelector(hash);
+        el?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [hash]);
   return (
     <>
       <a
@@ -50,6 +64,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<PublicSite />} />
+      <Route path="/discover/:slug" element={<DiscoverDetailPage />} />
       <Route path="/checkin/:token" element={<CheckInForm />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route
