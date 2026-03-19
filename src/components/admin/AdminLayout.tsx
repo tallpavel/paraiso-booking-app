@@ -5,11 +5,15 @@ import AdminDashboard from './AdminDashboard';
 import ReservationRequestsPanel from './ReservationRequestsPanel';
 import ConfirmedReservationsPanel from './ConfirmedReservationsPanel';
 import ArchivedReservationsPanel from './ArchivedReservationsPanel';
+import BlockedDatesPanel from './BlockedDatesPanel';
+import PricingPanel from './PricingPanel';
 
 const NAV_ITEMS = [
     { to: '/admin', label: 'Overview', icon: '◈' },
     { to: '/admin/requests', label: 'Requests', icon: '◇' },
     { to: '/admin/confirmed', label: 'Confirmed', icon: '◆' },
+    { to: '/admin/blocked-dates', label: 'Blocked Days', icon: '⊘' },
+    { to: '/admin/pricing', label: 'Pricing', icon: '€' },
     { to: '/admin/history', label: 'History', icon: '▣' },
 ];
 
@@ -84,6 +88,8 @@ export default function AdminLayout() {
                     <Route index element={<AdminDashboard />} />
                     <Route path="requests" element={<ReservationRequestsPanel />} />
                     <Route path="confirmed" element={<ConfirmedReservationsPanel />} />
+                    <Route path="blocked-dates" element={<BlockedDatesPanel />} />
+                    <Route path="pricing" element={<PricingPanel />} />
                     <Route path="history" element={<ArchivedReservationsPanel />} />
                     <Route path="*" element={<Navigate to="/admin" replace />} />
                 </Routes>

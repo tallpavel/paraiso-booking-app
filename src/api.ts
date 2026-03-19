@@ -85,6 +85,43 @@ export async function fetchConfirmedReservations(): Promise<ConfirmedReservation
     return res.json();
 }
 
+// ── Seasonal Rates (monthly default pricing) ─────────────────────────
+
+export interface SeasonalRatesResponse {
+    rates: number[];
+    updatedAt: string | null;
+}
+
+/**
+ * Fetch the 12 monthly default nightly rates from the backend.
+ * The backend has its own fallback defaults — the FE never hardcodes prices.
+ */
+export async function fetchSeasonalRates(): Promise<SeasonalRatesResponse> {
+    const res = await fetch(`${API_BASE}/seasonal-rates?_t=${Date.now()}`);
+    if (!res.ok) throw new Error('Failed to fetch seasonal rates');
+    return res.json();
+}
+
+/**
+ * Admin: Update all 12 seasonal default rates.
+ */
+export async function updateSeasonalRates(token: string, rates: number[]): Promise<SeasonalRatesResponse> {
+    const res = await fetch(`${API_BASE}/seasonal-rates`, {
+        method: 'PUT',
+        headers: authHeaders(token),
+        body: JSON.stringify({ rates }),
+    });
+
+    if (!res.ok) {
+        const body: ApiError = await res.json().catch(() => ({
+            message: 'Failed to update seasonal rates',
+        }));
+        throw body;
+    }
+
+    return res.json();
+}
+
 // ── Daily Rates (custom per-day pricing) ─────────────────────────────
 
 export interface DailyRate {
@@ -121,6 +158,44 @@ export async function fetchDailyRates(): Promise<DailyRate[]> {
 
     const results = await Promise.all(fetches);
     return results.flat();
+}
+
+/**
+ * Admin: Set or update the price for a specific date.
+ */
+export async function createDailyRate(
+    token: string,
+    date: string,
+    price: number,
+    note?: string,
+): Promise<DailyRate> {
+    const res = await fetch(`${API_BASE}/daily-rates`, {
+        method: 'POST',
+        headers: authHeaders(token),
+        body: JSON.stringify({ date, price, note }),
+    });
+
+    if (!res.ok) {
+        const body: ApiError = await res.json().catch(() => ({
+            message: 'Failed to set price',
+        }));
+        throw body;
+    }
+
+    return res.json();
+}
+
+/**
+ * Admin: Delete a custom daily rate (reverts to seasonal default).
+ */
+export async function deleteDailyRate(token: string, id: string): Promise<{ message: string }> {
+    const res = await fetch(`${API_BASE}/daily-rates/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) throw new Error('Failed to delete price');
+    return res.json();
 }
 
 // ── Contact Form ─────────────────────────────────────────────────────
@@ -437,3 +512,69 @@ export async function updateConfirmedReservation(
     return res.json();
 }
 
+// ── Blocked Dates (admin-managed unavailable days) ───────────────────
+
+export interface BlockedDate {
+    _id: string;
+    date: string;       // ISO date string (YYYY-MM-DD)
+    reason?: string;    // optional note (e.g. "Maintenance", "Personal use")
+    createdAt: string;
+    updatedAt: string;
+}
+
+/**
+ * Public: Fetch all blocked dates so the booking calendar can disable them.
+ */
+export async function fetchBlockedDates(): Promise<BlockedDate[]> {
+    const res = await fetch(`${API_BASE}/blocked-dates`);
+    if (!res.ok) return [];  // Graceful fallback — don't break the calendar
+    return res.json();
+}
+
+/**
+ * Admin: Fetch all blocked dates with full details.
+ */
+export async function fetchBlockedDatesAdmin(token: string): Promise<BlockedDate[]> {
+    const res = await fetch(`${API_BASE}/blocked-dates`, {
+        headers: authHeaders(token),
+    });
+    if (!res.ok) throw new Error('Failed to fetch blocked dates');
+    return res.json();
+}
+
+/**
+ * Admin: Block a specific date.
+ */
+export async function createBlockedDate(
+    token: string,
+    date: string,
+    reason?: string,
+): Promise<BlockedDate> {
+    const res = await fetch(`${API_BASE}/blocked-dates`, {
+        method: 'POST',
+        headers: authHeaders(token),
+        body: JSON.stringify({ date, reason }),
+    });
+
+    if (!res.ok) {
+        const body: ApiError = await res.json().catch(() => ({
+            message: 'Failed to block date',
+        }));
+        throw body;
+    }
+
+    return res.json();
+}
+
+/**
+ * Admin: Unblock a specific date by its ID.
+ */
+export async function deleteBlockedDate(token: string, id: string): Promise<{ message: string }> {
+    const res = await fetch(`${API_BASE}/blocked-dates/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) throw new Error('Failed to unblock date');
+    return res.json();
+}

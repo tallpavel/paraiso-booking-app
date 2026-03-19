@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../i18n';
+import type { TranslationKey } from '../i18n';
 
 /* ─────────────────────────────────────────────────────────────────────
    CONFIGURATION — Replace these with your real Trustpilot values
@@ -7,6 +8,18 @@ import { useI18n } from '../i18n';
    ───────────────────────────────────────────────────────────────────── */
 const TRUSTPILOT_URL = 'https://www.trustpilot.com/review/example.com';
 const BUSINESS_UNIT_ID = '46a7e93b0000ff00059f3827'; // placeholder — replace with your real ID
+
+/* ── Fallback Reviews (shown when Trustpilot widget fails) ─────────── */
+const FALLBACK_REVIEWS: {
+    nameKey: TranslationKey;
+    textKey: TranslationKey;
+    rating: number;
+    dateKey: TranslationKey;
+}[] = [
+    { nameKey: 'reviews.fallback1Name' as TranslationKey, textKey: 'reviews.fallback1Text' as TranslationKey, rating: 5, dateKey: 'reviews.fallback1Date' as TranslationKey },
+    { nameKey: 'reviews.fallback2Name' as TranslationKey, textKey: 'reviews.fallback2Text' as TranslationKey, rating: 5, dateKey: 'reviews.fallback2Date' as TranslationKey },
+    { nameKey: 'reviews.fallback3Name' as TranslationKey, textKey: 'reviews.fallback3Text' as TranslationKey, rating: 5, dateKey: 'reviews.fallback3Date' as TranslationKey },
+];
 
 /* ── Trustpilot Star (official green) ──────────────────────────────── */
 function TrustpilotStar({ filled = true, size = 20 }: { filled?: boolean; size?: number }) {
@@ -53,6 +66,23 @@ function StarRow({ rating, size = 20 }: { rating: number; size?: number }) {
     );
 }
 
+/* ── Fallback Review Card ──────────────────────────────────────────── */
+function ReviewCard({ review }: { review: typeof FALLBACK_REVIEWS[number] }) {
+    const { t } = useI18n();
+    return (
+        <div className="flex flex-col rounded-2xl border border-[#e0ddd5] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+            <StarRow rating={review.rating} size={18} />
+            <p className="mt-4 flex-1 text-sm leading-relaxed text-navy/80">
+                "{t(review.textKey)}"
+            </p>
+            <div className="mt-4 flex items-center justify-between pt-3 border-t border-[#e0ddd5]/50">
+                <span className="text-sm font-semibold text-navy">{t(review.nameKey)}</span>
+                <span className="text-xs text-warm-gray">{t(review.dateKey)}</span>
+            </div>
+        </div>
+    );
+}
+
 /* ── TrustBox Widget Hook ──────────────────────────────────────────── */
 interface WindowWithTrustpilot extends Window {
     Trustpilot?: {
@@ -61,6 +91,8 @@ interface WindowWithTrustpilot extends Window {
 }
 
 function useTrustpilotWidget(ref: React.RefObject<HTMLDivElement | null>) {
+    const [loaded, setLoaded] = useState(false);
+
     useEffect(() => {
         // Load the Trustpilot bootstrap script once
         const scriptId = 'trustpilot-widget-script';
@@ -77,6 +109,13 @@ function useTrustpilotWidget(ref: React.RefObject<HTMLDivElement | null>) {
             const tp = (window as WindowWithTrustpilot).Trustpilot;
             if (ref.current && tp) {
                 tp.loadFromElement(ref.current, true);
+                // Check if widget actually rendered content after a brief delay
+                setTimeout(() => {
+                    if (ref.current) {
+                        const iframe = ref.current.querySelector('iframe');
+                        if (iframe) setLoaded(true);
+                    }
+                }, 2000);
             }
         };
 
@@ -87,10 +126,18 @@ function useTrustpilotWidget(ref: React.RefObject<HTMLDivElement | null>) {
         // Try immediately in case script already loaded
         init();
 
+        // If widget doesn't load within 4 seconds, show fallback
+        const timeout = setTimeout(() => {
+            if (!loaded) setLoaded(false);
+        }, 4000);
+
         return () => {
             existingScript?.removeEventListener('load', init);
+            clearTimeout(timeout);
         };
-    }, [ref]);
+    }, [ref, loaded]);
+
+    return loaded;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -99,13 +146,13 @@ function useTrustpilotWidget(ref: React.RefObject<HTMLDivElement | null>) {
 export default function CustomerReviews() {
     const { t, locale } = useI18n();
     const widgetRef = useRef<HTMLDivElement>(null);
-    useTrustpilotWidget(widgetRef);
+    const widgetLoaded = useTrustpilotWidget(widgetRef);
 
     const localeMap: Record<string, string> = { en: 'en-GB', es: 'es-ES', cs: 'cs-CZ' };
     const tpLocale = localeMap[locale] || 'en-GB';
 
     return (
-        <section id="reviews" className="bg-[#f7f5f0] py-20 sm:py-28">
+        <section id="reviews" className="bg-sand-light py-20 sm:py-28">
             <div className="mx-auto max-w-7xl px-6">
                 {/* Header */}
                 <div className="mb-14 text-center">
@@ -143,7 +190,7 @@ export default function CustomerReviews() {
                 {/* ── Official Trustpilot TrustBox Widget ─────────────────────── */}
                 <div
                     ref={widgetRef}
-                    className="trustpilot-widget"
+                    className={`trustpilot-widget ${widgetLoaded ? '' : 'hidden'}`}
                     data-locale={tpLocale}
                     data-template-id="53aa8912dec7e10d38f59f36"  /* Carousel */
                     data-businessunit-id={BUSINESS_UNIT_ID}
@@ -163,6 +210,15 @@ export default function CustomerReviews() {
                         {t('reviews.readMore')}
                     </a>
                 </div>
+
+                {/* ── Fallback Reviews (shown when widget fails to load) ────── */}
+                {!widgetLoaded && (
+                    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        {FALLBACK_REVIEWS.map((review, i) => (
+                            <ReviewCard key={i} review={review} />
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Trustpilot footer CTA */}

@@ -86,25 +86,38 @@ const AMENITY_KEYS: { icon: keyof typeof icons; titleKey: TranslationKey; descKe
 
 function AmenityCard({ amenity, index }: { amenity: (typeof AMENITY_KEYS)[number]; index: number }) {
     const { t } = useI18n();
+    const padded = String(index + 1).padStart(2, '0');
+
     return (
         <article
-            className="group relative overflow-hidden rounded-2xl bg-white p-7 text-center shadow-sm ring-1 ring-navy/5 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:ring-ocean/20"
-            style={{ animationDelay: `${index * 80}ms` }}
+            className="amenity-card group relative overflow-hidden rounded-2xl bg-white p-7 text-left ring-1 ring-navy/5 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:ring-ocean/30"
+            style={{ animationDelay: `${index * 100}ms` }}
         >
-            {/* Icon */}
-            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-ocean/10 to-coral/5 text-ocean transition-all duration-500 group-hover:from-ocean group-hover:to-ocean-dark group-hover:text-white group-hover:shadow-lg group-hover:shadow-ocean/20 group-hover:scale-105">
-                <div className="h-8 w-8">
+            {/* Faint editorial index number */}
+            <span
+                className="pointer-events-none absolute -right-2 -top-3 font-heading text-[5rem] font-bold leading-none text-navy/[0.03] transition-colors duration-500 group-hover:text-ocean/[0.07]"
+                aria-hidden="true"
+            >
+                {padded}
+            </span>
+
+            {/* Accent line */}
+            <div className="absolute left-0 top-0 h-full w-1 origin-top scale-y-0 rounded-r-full bg-gradient-to-b from-ocean to-ocean/50 transition-transform duration-500 group-hover:scale-y-100" />
+
+            {/* Icon container */}
+            <div className="relative mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-ocean/8 to-ocean/3 text-ocean transition-all duration-500 group-hover:from-ocean group-hover:to-ocean-dark group-hover:text-white group-hover:shadow-lg group-hover:shadow-ocean/25 group-hover:scale-110">
+                <div className="h-7 w-7">
                     {icons[amenity.icon]}
                 </div>
             </div>
 
             {/* Title */}
-            <h3 className="mb-2 font-heading text-base font-bold tracking-tight text-navy sm:text-lg">
+            <h3 className="mb-2 font-heading text-lg font-bold tracking-tight text-navy">
                 {t(amenity.titleKey)}
             </h3>
 
             {/* Description */}
-            <p className="text-sm leading-relaxed text-warm-gray/80">
+            <p className="text-sm leading-relaxed text-warm-gray">
                 {t(amenity.descKey)}
             </p>
         </article>
@@ -115,11 +128,25 @@ export default function AmenitiesGrid() {
     const { t } = useI18n();
     const scrollRef = useRef<HTMLDivElement>(null);
     const [activeIdx, setActiveIdx] = useState(0);
+    const sectionRef = useRef<HTMLElement>(null);
+    const [isVisible, setIsVisible] = useState(false);
+
+    // Intersection observer for scroll-triggered fade-in
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
+            { threshold: 0.15 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
 
     const updateActiveIdx = useCallback(() => {
         const el = scrollRef.current;
         if (!el || !el.firstElementChild) return;
-        const cardWidth = (el.firstElementChild as HTMLElement).offsetWidth + 16; // gap-4 = 16px
+        const cardWidth = (el.firstElementChild as HTMLElement).offsetWidth + 16;
         setActiveIdx(Math.round(el.scrollLeft / cardWidth));
     }, []);
 
@@ -138,17 +165,32 @@ export default function AmenitiesGrid() {
     }, []);
 
     return (
-        <section id="amenities" className="bg-white py-20 sm:py-28">
+        <section
+            id="amenities"
+            ref={sectionRef}
+            className="relative bg-white py-20 sm:py-28 overflow-hidden"
+        >
+            {/* Subtle background texture */}
+            <div className="pointer-events-none absolute inset-0 opacity-[0.015]" style={{
+                backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)',
+                backgroundSize: '32px 32px',
+            }} />
+
             {/* Section Header */}
-            <div className="mx-auto max-w-7xl px-6">
-                <div className="mb-16 text-center">
-                    <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-[0.15em] text-ocean">
-                        {t('amenities.label')}
-                    </span>
-                    <h2 className="mb-4 font-heading text-3xl font-bold text-navy sm:text-4xl md:text-5xl">
+            <div className="relative mx-auto max-w-7xl px-6">
+                <div className={`mb-16 transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+                    {/* Decorative line */}
+                    <div className="mx-auto mb-6 flex items-center justify-center gap-4">
+                        <div className="h-px w-12 bg-gradient-to-r from-transparent to-ocean/40" />
+                        <span className="text-sm font-semibold uppercase tracking-[0.2em] text-ocean">
+                            {t('amenities.label')}
+                        </span>
+                        <div className="h-px w-12 bg-gradient-to-l from-transparent to-ocean/40" />
+                    </div>
+                    <h2 className="mb-4 text-center font-heading text-3xl font-bold text-navy sm:text-4xl md:text-5xl">
                         {t('amenities.title')}
                     </h2>
-                    <p className="mx-auto max-w-2xl text-lg text-warm-gray">
+                    <p className="mx-auto max-w-2xl text-center text-lg leading-relaxed text-warm-gray">
                         {t('amenities.subtitle')}
                     </p>
                 </div>
@@ -162,7 +204,7 @@ export default function AmenitiesGrid() {
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {AMENITY_KEYS.map((amenity, i) => (
-                        <div key={amenity.titleKey} className="w-[70vw] shrink-0 snap-start sm:w-[45vw]">
+                        <div key={amenity.titleKey} className="w-[75vw] shrink-0 snap-start sm:w-[45vw]">
                             <AmenityCard amenity={amenity} index={i} />
                         </div>
                     ))}
@@ -183,16 +225,20 @@ export default function AmenitiesGrid() {
                 </div>
             </div>
 
-            {/* Desktop: 4-column grid */}
-            <div className="mx-auto hidden max-w-7xl px-6 lg:block">
+            {/* Desktop: 4-column grid with staggered reveal */}
+            <div className="relative mx-auto hidden max-w-7xl px-6 lg:block">
                 <div className="grid grid-cols-4 gap-5">
                     {AMENITY_KEYS.map((amenity, i) => (
-                        <AmenityCard key={amenity.titleKey} amenity={amenity} index={i} />
+                        <div
+                            key={amenity.titleKey}
+                            className={`transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}
+                            style={{ transitionDelay: `${200 + i * 80}ms` }}
+                        >
+                            <AmenityCard amenity={amenity} index={i} />
+                        </div>
                     ))}
                 </div>
             </div>
         </section>
     );
 }
-
-

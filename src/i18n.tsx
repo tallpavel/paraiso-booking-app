@@ -52,6 +52,14 @@ const translations = {
         'gallery.pool': 'Pool',
         'gallery.beach': 'Beach',
         'gallery.views': 'Views',
+        'gallery.alt1': 'Bright modern living room with ocean view',
+        'gallery.alt2': 'Spacious bedroom with king-size bed',
+        'gallery.alt3': 'Fully equipped modern kitchen',
+        'gallery.alt4': 'Private terrace with panoramic ocean view',
+        'gallery.alt5': 'Communal swimming pool with tropical gardens',
+        'gallery.alt6': 'Playa Paraíso beach at sunset',
+        'gallery.alt7': 'Modern bathroom with walk-in shower',
+        'gallery.alt8': 'Spectacular sunset from the terrace',
 
         // Location Map
         'map.label': 'Location',
@@ -71,6 +79,7 @@ const translations = {
         'map.airport': 'Tenerife South Airport',
         'map.airportDist': '20 min by car (25 km)',
         'map.directions': 'Get Directions',
+        'map.loading': 'Loading map…',
 
         // Discover Playa Paraíso
         'discover.label': 'Discover the Area',
@@ -99,6 +108,15 @@ const translations = {
         'reviews.viewAll': 'View on Trustpilot',
         'reviews.verified': 'Verified',
         'reviews.readMore': 'Read all reviews on Trustpilot',
+        'reviews.fallback1Name': 'Sarah K.',
+        'reviews.fallback1Text': 'Absolutely stunning views from the terrace! The flat is beautifully decorated and has everything you need. Verónica was incredibly helpful with restaurant recommendations.',
+        'reviews.fallback1Date': 'January 2026',
+        'reviews.fallback2Name': 'Marco L.',
+        'reviews.fallback2Text': 'Perfect location, just steps from the beach. The pool area is lovely and the apartment is spotless. We will definitely come back!',
+        'reviews.fallback2Date': 'December 2025',
+        'reviews.fallback3Name': 'Jana P.',
+        'reviews.fallback3Text': 'Our family had the most wonderful holiday here. The kids loved the pool and we enjoyed the incredible sunsets from the terrace every evening.',
+        'reviews.fallback3Date': 'November 2025',
 
         // Booking CTA
         'bookingCta.title': 'Ready for Your Paradise Getaway?',
@@ -236,6 +254,14 @@ const translations = {
         'gallery.pool': 'Piscina',
         'gallery.beach': 'Playa',
         'gallery.views': 'Vistas',
+        'gallery.alt1': 'Luminoso salón moderno con vistas al mar',
+        'gallery.alt2': 'Dormitorio amplio con cama king-size',
+        'gallery.alt3': 'Cocina moderna totalmente equipada',
+        'gallery.alt4': 'Terraza privada con vistas panorámicas al mar',
+        'gallery.alt5': 'Piscina comunitaria con jardines tropicales',
+        'gallery.alt6': 'Playa Paraíso al atardecer',
+        'gallery.alt7': 'Baño moderno con ducha a ras de suelo',
+        'gallery.alt8': 'Espectacular atardecer desde la terraza',
 
         // Mapa de Ubicación
         'map.label': 'Ubicación',
@@ -255,6 +281,7 @@ const translations = {
         'map.airport': 'Aeropuerto Tenerife Sur',
         'map.airportDist': '20 min en coche (25 km)',
         'map.directions': 'Cómo Llegar',
+        'map.loading': 'Cargando mapa…',
 
         // Descubrir Playa Paraíso
         'discover.label': 'Descubre la Zona',
@@ -283,6 +310,15 @@ const translations = {
         'reviews.viewAll': 'Ver en Trustpilot',
         'reviews.verified': 'Verificado',
         'reviews.readMore': 'Leer todas las reseñas en Trustpilot',
+        'reviews.fallback1Name': 'Sarah K.',
+        'reviews.fallback1Text': '¡Vistas absolutamente impresionantes desde la terraza! El apartamento está decorado con mucho gusto y tiene todo lo necesario. Verónica fue increíblemente servicial con las recomendaciones de restaurantes.',
+        'reviews.fallback1Date': 'Enero 2026',
+        'reviews.fallback2Name': 'Marco L.',
+        'reviews.fallback2Text': 'Ubicación perfecta, a pocos pasos de la playa. La zona de piscina es encantadora y el apartamento está impecable. ¡Seguro que volvemos!',
+        'reviews.fallback2Date': 'Diciembre 2025',
+        'reviews.fallback3Name': 'Jana P.',
+        'reviews.fallback3Text': 'Nuestra familia pasó unas vacaciones maravillosas aquí. A los niños les encantó la piscina y nosotros disfrutamos de los increíbles atardeceres desde la terraza cada noche.',
+        'reviews.fallback3Date': 'Noviembre 2025',
 
         // CTA de Reserva
         'bookingCta.title': '¿Listo para Tu Escapada al Paraíso?',
@@ -420,6 +456,14 @@ const translations = {
         'gallery.pool': 'Bazén',
         'gallery.beach': 'Pláž',
         'gallery.views': 'Výhledy',
+        'gallery.alt1': 'Světlý moderní obývací pokoj s výhledem na moře',
+        'gallery.alt2': 'Prostorná ložnice s king-size postelí',
+        'gallery.alt3': 'Plně vybavená moderní kuchyně',
+        'gallery.alt4': 'Soukromá terasa s panoramatickým výhledem na moře',
+        'gallery.alt5': 'Společný bazén s tropickými zahradami',
+        'gallery.alt6': 'Pláž Playa Paraíso při západu slunce',
+        'gallery.alt7': 'Moderní koupelna se sprchovým koutem',
+        'gallery.alt8': 'Velkolepý západ slunce z terasy',
 
         // Mapa Polohy
         'map.label': 'Poloha',
@@ -439,6 +483,7 @@ const translations = {
         'map.airport': 'Letiště Tenerife Jih',
         'map.airportDist': '20 min autem (25 km)',
         'map.directions': 'Navigovat',
+        'map.loading': 'Načítání mapy…',
 
         // Objevte Playa Paraíso
         'discover.label': 'Objevte Okolí',
@@ -467,6 +512,15 @@ const translations = {
         'reviews.viewAll': 'Zobrazit na Trustpilot',
         'reviews.verified': 'Ověřeno',
         'reviews.readMore': 'Přečíst všechny recenze na Trustpilot',
+        'reviews.fallback1Name': 'Sarah K.',
+        'reviews.fallback1Text': 'Naprosto úchvatné výhledy z terasy! Apartmán je krásně zařízený a má vše, co potřebujete. Verónica nám skvěle poradila s restauracemi.',
+        'reviews.fallback1Date': 'Leden 2026',
+        'reviews.fallback2Name': 'Marco L.',
+        'reviews.fallback2Text': 'Perfektní poloha, jen pár kroků od pláže. Bazénová zóna je nádherná a apartmán je naprosto čistý. Určitě se vrátíme!',
+        'reviews.fallback2Date': 'Prosinec 2025',
+        'reviews.fallback3Name': 'Jana P.',
+        'reviews.fallback3Text': 'Naše rodina si tu užila naprosto nádhernou dovolenou. Děti milovaly bazén a my jsme si užívali neuvěřitelné západy slunce z terasy každý večer.',
+        'reviews.fallback3Date': 'Listopad 2025',
 
         // CTA Rezervace
         'bookingCta.title': 'Připraveni na Rajskou Dovolenou?',

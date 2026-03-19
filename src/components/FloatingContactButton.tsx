@@ -102,13 +102,18 @@ export default function FloatingContactButton() {
         }
     };
 
+    // Shared input classes
+    const inputBase = 'w-full rounded-xl border bg-sand-light/50 px-4 py-3.5 text-navy placeholder:text-navy/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ocean/50 focus:border-ocean focus:bg-white';
+    const inputError = 'border-coral ring-1 ring-coral/20';
+    const inputNormal = 'border-sand hover:border-ocean/30';
+
     return (
         <>
             {/* Floating Button */}
             <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className={`fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-full bg-ocean px-5 py-3.5 text-sm font-semibold text-white shadow-xl transition-all duration-300 hover:bg-ocean-dark hover:shadow-2xl hover:scale-105 ${visible && !open ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0 pointer-events-none'
+                className={`fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-full bg-ocean px-5 py-3.5 text-sm font-semibold text-white shadow-xl transition-all duration-300 hover:bg-ocean-dark hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-ocean ${visible && !open ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0 pointer-events-none'
                     } ${pulse ? 'animate-bounce' : ''}`}
                 aria-label={t('nav.contact')}
             >
@@ -122,133 +127,164 @@ export default function FloatingContactButton() {
             {/* Modal Overlay */}
             {open && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-navy/40 p-4 backdrop-blur-sm"
                     onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
                     role="dialog"
                     aria-modal="true"
                     aria-label={t('contact.title')}
                 >
-                    <div className="relative w-full max-w-lg animate-fade-in rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
-                        {/* Close button */}
-                        <button
-                            type="button"
-                            onClick={() => setOpen(false)}
-                            className="absolute right-4 top-4 rounded-full p-1.5 text-navy/40 transition-colors hover:bg-sand-light hover:text-navy"
-                            aria-label="Close"
-                        >
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                    <div className="relative w-full max-w-lg animate-fade-in overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-black/5">
+                        {/* Decorative top accent bar */}
+                        <div className="h-1 w-full bg-gradient-to-r from-ocean via-ocean-dark to-coral/60" />
 
-                        {/* Header */}
-                        <div className="mb-6">
-                            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-ocean/10 text-ocean">
-                                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                                    <rect x="2" y="4" width="20" height="16" rx="2" />
-                                    <path d="M22 4l-10 8L2 4" />
-                                </svg>
-                            </div>
-                            <h2 className="font-heading text-2xl font-bold text-navy">
-                                {t('contact.title')}
-                            </h2>
-                            <p className="mt-1 text-sm text-warm-gray">
-                                {t('contact.subtitle')}
-                            </p>
-                        </div>
-
-                        {/* Form */}
-                        <form onSubmit={handleSubmit} noValidate>
-                            <div className="mb-4">
-                                <label htmlFor="modal-name" className="mb-1.5 block text-sm font-semibold text-navy">
-                                    {t('contact.name')} <span className="text-coral">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    id="modal-name"
-                                    name="name"
-                                    value={form.name}
-                                    onChange={handleChange}
-                                    autoComplete="name"
-                                    placeholder={t('contact.namePlaceholder')}
-                                    className={`w-full rounded-xl border bg-white px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean ${errors.name ? 'border-coral' : 'border-sand'}`}
-                                />
-                                {errors.name && <p className="mt-1 text-xs text-coral" role="alert">{errors.name}</p>}
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="modal-email" className="mb-1.5 block text-sm font-semibold text-navy">
-                                    {t('contact.email')} <span className="text-coral">*</span>
-                                </label>
-                                <input
-                                    type="email"
-                                    id="modal-email"
-                                    name="email"
-                                    value={form.email}
-                                    onChange={handleChange}
-                                    autoComplete="email"
-                                    placeholder={t('contact.emailPlaceholder')}
-                                    spellCheck={false}
-                                    className={`w-full rounded-xl border bg-white px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean ${errors.email ? 'border-coral' : 'border-sand'}`}
-                                />
-                                {errors.email && <p className="mt-1 text-xs text-coral" role="alert">{errors.email}</p>}
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="modal-phone" className="mb-1.5 block text-sm font-semibold text-navy">
-                                    {t('contact.phone')} <span className="text-warm-gray">{t('contact.phoneOptional')}</span>
-                                </label>
-                                <input
-                                    type="tel"
-                                    id="modal-phone"
-                                    name="phone"
-                                    value={form.phone}
-                                    onChange={handleChange}
-                                    autoComplete="tel"
-                                    placeholder={t('contact.phonePlaceholder')}
-                                    className="w-full rounded-xl border border-sand bg-white px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean"
-                                />
-                            </div>
-
-                            <div className="mb-5">
-                                <label htmlFor="modal-message" className="mb-1.5 block text-sm font-semibold text-navy">
-                                    {t('contact.message')} <span className="text-coral">*</span>
-                                </label>
-                                <textarea
-                                    id="modal-message"
-                                    name="message"
-                                    value={form.message}
-                                    onChange={handleChange}
-                                    rows={3}
-                                    placeholder={t('contact.messagePlaceholder')}
-                                    className={`w-full resize-none rounded-xl border bg-white px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean ${errors.message ? 'border-coral' : 'border-sand'}`}
-                                />
-                                {errors.message && <p className="mt-1 text-xs text-coral" role="alert">{errors.message}</p>}
-                            </div>
-
+                        <div className="p-6 sm:p-8">
+                            {/* Close button */}
                             <button
-                                type="submit"
-                                disabled={status === 'sending'}
-                                className="w-full rounded-full bg-ocean py-3.5 text-base font-semibold text-white shadow-lg transition-all duration-200 hover:bg-ocean-dark hover:shadow-xl disabled:cursor-wait disabled:opacity-70"
+                                type="button"
+                                onClick={() => setOpen(false)}
+                                className="absolute right-4 top-5 rounded-full p-2 text-navy/30 transition-all duration-200 hover:bg-sand-light hover:text-navy hover:rotate-90"
+                                aria-label="Close"
                             >
-                                {status === 'sending'
-                                    ? t('contact.sending')
-                                    : status === 'sent'
-                                        ? t('contact.messageSent')
-                                        : t('contact.send')}
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                             </button>
 
-                            {status === 'sent' && (
-                                <p className="mt-3 text-center text-sm text-ocean" role="status" aria-live="polite">
-                                    {t('contact.thanks')}
+                            {/* Header */}
+                            <div className="mb-6 text-center">
+                                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-ocean/10 text-ocean">
+                                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                                        <path d="M22 4l-10 8L2 4" />
+                                    </svg>
+                                </div>
+                                <h2 className="font-heading text-2xl font-bold text-navy">
+                                    {t('contact.title')}
+                                </h2>
+                                <p className="mt-1 text-sm leading-relaxed text-warm-gray">
+                                    {t('contact.subtitle')}
                                 </p>
+                            </div>
+
+                            {/* SUCCESS STATE */}
+                            {status === 'sent' ? (
+                                <div className="flex flex-col items-center py-8 text-center">
+                                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 text-green-500">
+                                        <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-lg font-semibold text-navy">{t('contact.messageSent')}</p>
+                                    <p className="mt-1 text-sm text-warm-gray">{t('contact.thanks')}</p>
+                                </div>
+                            ) : (
+                                /* FORM */
+                                <form onSubmit={handleSubmit} noValidate>
+                                    <div className="space-y-4">
+                                        {/* Name */}
+                                        <div>
+                                            <label htmlFor="modal-name" className="mb-1.5 block text-sm font-semibold text-navy">
+                                                {t('contact.name')} <span className="text-coral">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="modal-name"
+                                                name="name"
+                                                value={form.name}
+                                                onChange={handleChange}
+                                                autoComplete="name"
+                                                placeholder={t('contact.namePlaceholder')}
+                                                className={`${inputBase} ${errors.name ? inputError : inputNormal}`}
+                                            />
+                                            {errors.name && <p className="mt-1 text-xs text-coral" role="alert">{errors.name}</p>}
+                                        </div>
+
+                                        {/* Email */}
+                                        <div>
+                                            <label htmlFor="modal-email" className="mb-1.5 block text-sm font-semibold text-navy">
+                                                {t('contact.email')} <span className="text-coral">*</span>
+                                            </label>
+                                            <input
+                                                type="email"
+                                                id="modal-email"
+                                                name="email"
+                                                value={form.email}
+                                                onChange={handleChange}
+                                                autoComplete="email"
+                                                placeholder={t('contact.emailPlaceholder')}
+                                                spellCheck={false}
+                                                className={`${inputBase} ${errors.email ? inputError : inputNormal}`}
+                                            />
+                                            {errors.email && <p className="mt-1 text-xs text-coral" role="alert">{errors.email}</p>}
+                                        </div>
+
+                                        {/* Phone */}
+                                        <div>
+                                            <label htmlFor="modal-phone" className="mb-1.5 block text-sm font-semibold text-navy">
+                                                {t('contact.phone')} <span className="font-normal text-warm-gray">{t('contact.phoneOptional')}</span>
+                                            </label>
+                                            <input
+                                                type="tel"
+                                                id="modal-phone"
+                                                name="phone"
+                                                value={form.phone}
+                                                onChange={handleChange}
+                                                autoComplete="tel"
+                                                placeholder={t('contact.phonePlaceholder')}
+                                                className={`${inputBase} ${inputNormal}`}
+                                            />
+                                        </div>
+
+                                        {/* Message */}
+                                        <div>
+                                            <label htmlFor="modal-message" className="mb-1.5 block text-sm font-semibold text-navy">
+                                                {t('contact.message')} <span className="text-coral">*</span>
+                                            </label>
+                                            <textarea
+                                                id="modal-message"
+                                                name="message"
+                                                value={form.message}
+                                                onChange={handleChange}
+                                                rows={3}
+                                                placeholder={t('contact.messagePlaceholder')}
+                                                className={`${inputBase} resize-none ${errors.message ? inputError : inputNormal}`}
+                                            />
+                                            {errors.message && <p className="mt-1 text-xs text-coral" role="alert">{errors.message}</p>}
+                                        </div>
+                                    </div>
+
+                                    {/* Submit */}
+                                    <button
+                                        type="submit"
+                                        disabled={status === 'sending'}
+                                        className="group mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-ocean to-ocean-dark py-4 text-base font-semibold text-white shadow-lg shadow-ocean/20 transition-all duration-300 hover:shadow-xl hover:shadow-ocean/30 disabled:cursor-wait disabled:opacity-70"
+                                    >
+                                        {status === 'sending' ? (
+                                            <>
+                                                <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                                </svg>
+                                                {t('contact.sending')}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg className="h-5 w-5 transition-transform duration-300 group-hover:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                </svg>
+                                                {t('contact.send')}
+                                            </>
+                                        )}
+                                    </button>
+
+                                    {status === 'error' && (
+                                        <p className="mt-3 text-center text-sm text-coral" role="alert" aria-live="polite">
+                                            {t('contact.errorServer')}
+                                        </p>
+                                    )}
+                                </form>
                             )}
-                            {status === 'error' && (
-                                <p className="mt-3 text-center text-sm text-coral" role="alert" aria-live="polite">
-                                    {t('contact.errorServer')}
-                                </p>
-                            )}
-                        </form>
+                        </div>
                     </div>
                 </div>
             )}

@@ -69,7 +69,7 @@ export default function Header() {
             <nav className={`mx-auto flex max-w-7xl items-center justify-between px-6 relative transition-all duration-500 ${showNav ? 'py-4' : 'py-6'}`}>
                 {/* Logo — hidden initially, appears on scroll */}
                 <a
-                    href="#"
+                    href="#hero"
                     className={`flex items-center gap-3 transition-all duration-500 ${showNav ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
                         }`}
                     aria-label="Verónica's Flat — Home"

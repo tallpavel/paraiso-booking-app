@@ -39,8 +39,8 @@ export default function BookingCTA() {
 
                 <div className="relative mx-auto max-w-4xl px-6 text-center">
                     {/* Sun icon */}
-                    <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm">
-                        <svg className="h-8 w-8 text-coral" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400/20 to-coral/10 backdrop-blur-sm shadow-lg shadow-amber-400/10">
+                        <svg className="h-8 w-8 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="12" cy="12" r="5" />
                             <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
                         </svg>
@@ -65,7 +65,7 @@ export default function BookingCTA() {
                         {t('bookingCta.button')}
                     </button>
 
-                    <p className="mt-6 text-sm text-white/50">
+                    <p className="mt-6 text-base text-white/50">
                         {t('bookingCta.hint')}
                     </p>
                 </div>

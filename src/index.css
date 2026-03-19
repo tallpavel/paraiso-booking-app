@@ -176,7 +176,7 @@ h6 {
 /* Previous / next month days */
 .flatpickr-booking-wrapper .flatpickr-day.prevMonthDay,
 .flatpickr-booking-wrapper .flatpickr-day.nextMonthDay {
-  color: rgba(44, 62, 80, 0.2) !important;
+  color: rgba(44, 62, 80, 0.45) !important;
 }
 
 /* ── Price label inside each day ────────────────────────────────────── */
@@ -191,10 +191,14 @@ h6 {
 }
 
 /* Price hides on disabled / past days */
-.flatpickr-day.flatpickr-disabled .fp-day-price,
+.flatpickr-day.flatpickr-disabled .fp-day-price {
+  display: none;
+}
+
+/* Softer price label for prev / next month overflow days */
 .flatpickr-day.prevMonthDay .fp-day-price,
 .flatpickr-day.nextMonthDay .fp-day-price {
-  display: none;
+  opacity: 0.4;
 }
 
 /* Booked day price placeholder */
@@ -268,6 +272,28 @@ h6 {
 
 .animate-scroll-dot {
   animation: scroll-dot 1.8s ease-out infinite;
+}
+
+/* ── Accessibility: Reduced Motion ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-fade-in,
+  .animate-scroll-dot,
+  .animate-bounce {
+    animation: none;
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -2326,4 +2352,573 @@ h6 {
   color: rgba(245, 240, 232, 0.3);
   font-size: 0.8rem;
   margin: 0;
+}
+
+/* ── Blocked Dates Panel ──────────────────────────────────────────── */
+
+.admin-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(245, 240, 232, 0.9);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.admin-input:focus {
+  outline: none;
+  border-color: rgba(26, 140, 170, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.admin-input::placeholder {
+  color: rgba(245, 240, 232, 0.3);
+}
+
+.admin-input[type="date"] {
+  color-scheme: dark;
+}
+
+.admin-blocked-form {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.admin-blocked-form__row {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin-bottom: 0.75rem;
+}
+
+.admin-blocked-form__field label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(245, 240, 232, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+.admin-blocked-form__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-blocked-form__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: rgba(245, 240, 232, 0.6);
+  cursor: pointer;
+}
+
+.admin-blocked-form__toggle input[type="checkbox"] {
+  accent-color: #1a8caa;
+  width: 16px;
+  height: 16px;
+}
+
+.admin-blocked-form__error {
+  margin-top: 0.5rem;
+  color: #e07c5a;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.admin-btn--primary {
+  background: linear-gradient(135deg, #1a8caa, #157a95);
+  color: white;
+}
+
+.admin-btn--primary:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.admin-btn--danger-sm {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.75rem;
+  background: rgba(224, 124, 90, 0.1);
+  color: #e07c5a;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.admin-btn--danger-sm:hover:not(:disabled) {
+  background: rgba(224, 124, 90, 0.2);
+}
+
+.admin-section__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: rgba(26, 140, 170, 0.15);
+  color: #1a8caa;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.admin-blocked-months {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-blocked-month__header {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(245, 240, 232, 0.7);
+  margin: 0 0 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.admin-blocked-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.admin-blocked-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.15s;
+}
+
+.admin-blocked-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.admin-blocked-item__info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.admin-blocked-item__date {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(245, 240, 232, 0.85);
+  white-space: nowrap;
+}
+
+.admin-blocked-item__reason {
+  font-size: 0.78rem;
+  color: rgba(245, 240, 232, 0.4);
+  padding: 0.15rem 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Pricing Panel ────────────────────────────────────────────────── */
+
+.admin-input[type="number"] {
+  color-scheme: dark;
+}
+
+.admin-pricing-defaults {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-pricing-default-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.35rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  position: relative;
+}
+
+.admin-pricing-default-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.admin-pricing-default-card--editing {
+  border-color: rgba(234, 179, 56, 0.4);
+  background: rgba(234, 179, 56, 0.06);
+  box-shadow: 0 0 0 2px rgba(234, 179, 56, 0.15);
+}
+
+.admin-pricing-default-card--high-season {
+  border-color: rgba(234, 140, 56, 0.25);
+  background: linear-gradient(
+    135deg,
+    rgba(234, 140, 56, 0.06) 0%,
+    rgba(220, 100, 40, 0.04) 100%
+  );
+}
+
+.admin-pricing-default-card--high-season:hover {
+  border-color: rgba(234, 140, 56, 0.35);
+  background: linear-gradient(
+    135deg,
+    rgba(234, 140, 56, 0.1) 0%,
+    rgba(220, 100, 40, 0.07) 100%
+  );
+}
+
+.admin-pricing-default-card--high-season .admin-pricing-default-card__month {
+  color: rgba(234, 179, 56, 0.7);
+}
+
+.admin-pricing-default-card--high-season .admin-pricing-default-card__price {
+  color: rgba(245, 200, 120, 0.9);
+}
+
+.admin-pricing-default-card__fire {
+  font-size: 0.55rem;
+  margin-left: 0.15rem;
+}
+
+.admin-pricing-default-card--low-season {
+  border-color: rgba(100, 160, 220, 0.2);
+  background: linear-gradient(
+    135deg,
+    rgba(100, 160, 220, 0.05) 0%,
+    rgba(80, 130, 190, 0.03) 100%
+  );
+}
+
+.admin-pricing-default-card--low-season:hover {
+  border-color: rgba(100, 160, 220, 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba(100, 160, 220, 0.08) 0%,
+    rgba(80, 130, 190, 0.06) 100%
+  );
+}
+
+.admin-pricing-default-card--low-season .admin-pricing-default-card__month {
+  color: rgba(140, 190, 230, 0.65);
+}
+
+.admin-pricing-default-card--low-season .admin-pricing-default-card__price {
+  color: rgba(160, 200, 240, 0.8);
+}
+
+.admin-pricing-default-card__month {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(245, 240, 232, 0.4);
+}
+
+.admin-pricing-default-card__price {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(245, 240, 232, 0.8);
+}
+
+.admin-pricing-default-card__edit-hint {
+  font-size: 0.55rem;
+  color: rgba(245, 240, 232, 0.15);
+  transition: color 0.15s;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-pricing-default-card:hover .admin-pricing-default-card__edit-hint {
+  color: rgba(245, 240, 232, 0.35);
+}
+
+.admin-input--seasonal {
+  width: 56px;
+  padding: 0.15rem 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  color-scheme: dark;
+  border-radius: 6px;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.admin-input--seasonal::-webkit-inner-spin-button,
+.admin-input--seasonal::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.admin-pricing-default-card__btns {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.2rem;
+}
+
+.admin-pricing-default-card__btns .admin-btn--primary-sm,
+.admin-pricing-default-card__btns .admin-btn--outline-sm {
+  padding: 0.15rem 0.4rem;
+  font-size: 0.7rem;
+  min-width: 24px;
+}
+
+.admin-pricing-defaults__hint {
+  font-size: 0.78rem;
+  color: rgba(245, 240, 232, 0.3);
+  margin: 0;
+}
+
+.admin-pricing-price {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(245, 240, 232, 0.85);
+  white-space: nowrap;
+}
+
+.admin-pricing-price--up {
+  color: #4ead6b;
+}
+
+.admin-pricing-price--down {
+  color: #e07c5a;
+}
+
+.admin-pricing-diff {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.admin-pricing-diff--up {
+  background: rgba(78, 173, 107, 0.12);
+  color: #4ead6b;
+}
+
+.admin-pricing-diff--down {
+  background: rgba(224, 124, 90, 0.12);
+  color: #e07c5a;
+}
+
+/* ── Inline editing ───────────────────────────────────────────────── */
+
+.admin-input--inline {
+  width: 80px;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.82rem;
+  color-scheme: dark;
+}
+
+.admin-input--inline-note {
+  width: 110px;
+}
+
+.admin-blocked-item__actions {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.admin-btn--primary-sm {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background: rgba(78, 173, 107, 0.2);
+  color: #4ead6b;
+  transition: background 0.15s;
+}
+
+.admin-btn--primary-sm:hover {
+  background: rgba(78, 173, 107, 0.35);
+}
+
+.admin-btn--primary-sm:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-btn--outline-sm {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: rgba(245, 240, 232, 0.6);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.admin-btn--outline-sm:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Confirm Modal ────────────────────────────────────────────────── */
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: confirmFadeIn 0.18s ease-out;
+}
+
+@keyframes confirmFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes confirmSlideIn {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.confirm-modal {
+  background: #1a1a1f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 2rem 2rem 1.5rem;
+  max-width: 380px;
+  width: calc(100% - 2rem);
+  text-align: center;
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  animation: confirmSlideIn 0.22s ease-out;
+}
+
+.confirm-modal__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.confirm-modal__icon--danger {
+  background: rgba(224, 100, 90, 0.15);
+  color: #e0645a;
+}
+
+.confirm-modal__icon--warning {
+  background: rgba(234, 179, 56, 0.15);
+  color: #eab338;
+}
+
+.confirm-modal__icon--default {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+}
+
+.confirm-modal__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: rgba(245, 240, 232, 0.92);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.confirm-modal__message {
+  font-size: 0.88rem;
+  color: rgba(245, 240, 232, 0.5);
+  line-height: 1.5;
+  margin: 0 0 1.5rem;
+}
+
+.confirm-modal__actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.confirm-modal__btn {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.confirm-modal__btn:active {
+  transform: scale(0.97);
+}
+
+.confirm-modal__btn--cancel {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(245, 240, 232, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.confirm-modal__btn--cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.confirm-modal__btn--danger {
+  background: rgba(224, 100, 90, 0.2);
+  color: #e0645a;
+}
+
+.confirm-modal__btn--danger:hover {
+  background: rgba(224, 100, 90, 0.35);
+}
+
+.confirm-modal__btn--warning {
+  background: rgba(234, 179, 56, 0.2);
+  color: #eab338;
+}
+
+.confirm-modal__btn--warning:hover {
+  background: rgba(234, 179, 56, 0.35);
+}
+
+.confirm-modal__btn--default {
+  background: rgba(96, 165, 250, 0.2);
+  color: #60a5fa;
+}
+
+.confirm-modal__btn--default:hover {
+  background: rgba(96, 165, 250, 0.35);
 }

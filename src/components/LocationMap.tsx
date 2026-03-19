@@ -89,15 +89,25 @@ export default function LocationMap() {
                 </div>
 
                 {/* Map + sidebar */}
-                <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
+                <div className="grid items-stretch gap-8 lg:grid-cols-[1fr_340px]">
                     {/* Google Maps embed */}
-                    <div className="relative overflow-hidden rounded-2xl shadow-lg" style={{ minHeight: '400px' }}>
+                    <div className="relative overflow-hidden rounded-2xl bg-sand shadow-lg" style={{ minHeight: '440px' }}>
+                        {/* Loading skeleton */}
+                        <div className="absolute inset-0 flex items-center justify-center bg-sand">
+                            <div className="text-center">
+                                <svg className="mx-auto h-8 w-8 text-ocean/30 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                                </svg>
+                                <p className="mt-2 text-xs text-warm-gray">{t('map.loading' as TranslationKey)}</p>
+                            </div>
+                        </div>
                         <iframe
                             title={t('map.title')}
-                            src="https://www.google.com/maps?q=Paraiso+Del+Sur+Apartments,+Adeje,+Tenerife&output=embed"
+                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=Paraiso+del+Sur,Playa+Paraiso,Adeje,Tenerife&zoom=15"
                             width="100%"
                             height="100%"
-                            style={{ border: 0, position: 'absolute', inset: 0 }}
+                            style={{ border: 0, position: 'absolute', inset: 0, zIndex: 1 }}
                             allowFullScreen
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"

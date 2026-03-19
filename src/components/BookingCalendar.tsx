@@ -1,16 +1,11 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useI18n } from '../i18n';
-import { createReservation, fetchConfirmedReservations, fetchDailyRates } from '../api';
+import { createReservation, fetchConfirmedReservations, fetchDailyRates, fetchBlockedDates, fetchSeasonalRates } from '../api';
 import type { ConfirmedReservation } from '../api';
 import { useSpamProtection } from '../hooks/useSpamProtection';
 import flatpickr from 'flatpickr';
 import type { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
 import 'flatpickr/dist/flatpickr.min.css';
-
-// ── Seasonal nightly rates (€) ───────────────────────────────────────
-const NIGHTLY_RATES: readonly number[] = [
-    150, 175, 165, 155, 145, 155, 180, 190, 160, 150, 145, 180,
-] as const;
 
 const MIN_NIGHTS = 3;
 
@@ -32,18 +27,18 @@ function expandBookedDays(reservations: ConfirmedReservation[]): Set<string> {
     return set;
 }
 
-function getRateForDate(d: Date, customRates: Map<string, number>): number {
+function getRateForDate(d: Date, customRates: Map<string, number>, seasonalRates: readonly number[]): number {
     const key = toDateKey(d);
     if (customRates.has(key)) return customRates.get(key)!;
-    return NIGHTLY_RATES[d.getMonth()];
+    return seasonalRates[d.getMonth()];
 }
 
-function calculateStayPrice(checkIn: Date, checkOut: Date, customRates: Map<string, number>) {
+function calculateStayPrice(checkIn: Date, checkOut: Date, customRates: Map<string, number>, seasonalRates: readonly number[]) {
     let total = 0;
     let nightCount = 0;
     const cursor = new Date(checkIn);
     while (cursor < checkOut) {
-        total += getRateForDate(cursor, customRates);
+        total += getRateForDate(cursor, customRates, seasonalRates);
         nightCount++;
         cursor.setDate(cursor.getDate() + 1);
     }
@@ -126,7 +121,9 @@ export default function BookingCalendar() {
 
     // ── API data ─────────────────────────────────────────────────────
     const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
+    const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set());
     const [customRates, setCustomRates] = useState<Map<string, number>>(new Map());
+    const [seasonalRates, setSeasonalRates] = useState<readonly number[]>([]);
     const [dataReady, setDataReady] = useState(false);
 
     useEffect(() => {
@@ -134,14 +131,22 @@ export default function BookingCalendar() {
         Promise.all([
             fetchConfirmedReservations().catch(() => []),
             fetchDailyRates().catch(() => []),
-        ]).then(([confirmed, rates]) => {
+            fetchBlockedDates().catch(() => []),
+            fetchSeasonalRates().catch(() => ({ rates: [] as number[], updatedAt: null })),
+        ]).then(([confirmed, rates, blocked, seasonal]) => {
             if (cancelled) return;
             setBookedDates(expandBookedDays(confirmed));
+            const blockedSet = new Set<string>();
+            for (const b of blocked) {
+                blockedSet.add(b.date.slice(0, 10));
+            }
+            setBlockedDates(blockedSet);
             const map = new Map<string, number>();
             for (const r of rates) {
                 map.set(r.date.slice(0, 10), r.price);
             }
             setCustomRates(map);
+            setSeasonalRates(seasonal.rates);
             setDataReady(true);
         });
         return () => { cancelled = true; };
@@ -157,6 +162,7 @@ export default function BookingCalendar() {
         if (!calendarRef.current || !dataReady) return;
 
         const bookedSet = bookedDates;
+        const blockedSet = blockedDates;
 
         const fp = flatpickr(calendarRef.current, {
             mode: 'range',
@@ -165,19 +171,21 @@ export default function BookingCalendar() {
             inline: true,
             showMonths: 1,
             locale: flatpickrLocale,
-            disable: [(date: Date) => bookedSet.has(toDateKey(date))],
+            disable: [(date: Date) => bookedSet.has(toDateKey(date)) || blockedSet.has(toDateKey(date))],
 
             onDayCreate(_dObj: Date[], _dStr: string, _fp: FlatpickrInstance, dayElem: HTMLElement) {
                 const dayEl = dayElem as HTMLElement & { dateObj: Date };
                 const cellDate = dayEl.dateObj;
-                const rate = getRateForDate(cellDate, customRates);
-                const isBooked = bookedSet.has(toDateKey(cellDate));
+                const rate = getRateForDate(cellDate, customRates, seasonalRates);
+                const dateKey = toDateKey(cellDate);
+                const isBooked = bookedSet.has(dateKey);
+                const isBlocked = blockedSet.has(dateKey);
 
                 const priceSpan = document.createElement('span');
                 priceSpan.className = 'fp-day-price';
 
-                if (isBooked) {
-                    priceSpan.textContent = '—';
+                if (isBooked || isBlocked) {
+                    priceSpan.textContent = isBlocked ? '✕' : '—';
                     priceSpan.classList.add('fp-day-price--booked');
                 } else {
                     priceSpan.textContent = `€${rate}`;
@@ -206,13 +214,13 @@ export default function BookingCalendar() {
         fpRef.current = fp;
         return () => { fp.destroy(); fpRef.current = null; };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [step, dataReady, bookedDates, customRates, flatpickrLocale]);
+    }, [step, dataReady, bookedDates, blockedDates, customRates, seasonalRates, flatpickrLocale]);
 
     // ── Pricing ──────────────────────────────────────────────────────
     const pricing = useMemo(() => {
         if (!checkIn || !checkOut) return null;
-        return calculateStayPrice(checkIn, checkOut, customRates);
-    }, [checkIn, checkOut, customRates]);
+        return calculateStayPrice(checkIn, checkOut, customRates, seasonalRates);
+    }, [checkIn, checkOut, customRates, seasonalRates]);
 
     const nights = pricing?.nights ?? 0;
     const isBelowMinimum = nights > 0 && nights < MIN_NIGHTS;
@@ -344,8 +352,21 @@ export default function BookingCalendar() {
                 <StepIndicator current={step} labels={stepLabels} />
 
                 {/* Card container — wider on step 1 for the two-column layout */}
-                <div className={`mx-auto rounded-3xl bg-white p-6 shadow-lg transition-all sm:p-10 ${step === 1 ? 'max-w-5xl' : 'max-w-2xl'}`}>
+                <div className={`relative mx-auto rounded-3xl bg-white p-6 shadow-lg transition-all sm:p-10 ${step === 1 ? 'max-w-5xl' : 'max-w-2xl'}`}>
 
+                    {/* Close button — resets wizard to step 1 */}
+                    {step > 1 && (
+                        <button
+                            type="button"
+                            onClick={() => setStep(1)}
+                            className="absolute right-4 top-4 rounded-full p-2 text-navy/30 transition-colors hover:bg-sand-light hover:text-navy"
+                            aria-label="Close"
+                        >
+                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    )}
                     {/* ═══════════════════════════════════════════════════ */}
                     {/*  STEP 1: Select Dates                              */}
                     {/* ═══════════════════════════════════════════════════ */}
