@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import type { Locale } from '../i18n';
+import ShareButton from './ShareButton';
 
 const NAV_KEYS = [
     { key: 'nav.amenities' as const, href: '#amenities' },
@@ -11,7 +12,33 @@ const NAV_KEYS = [
     { key: 'nav.faq' as const, href: '#faq' },
 ];
 
-const LOCALE_FLAGS: Record<Locale, string> = { en: '🇬🇧', es: '🇪🇸', cs: '🇨🇿' };
+// ── SVG Flag Icons — consistent rendering across all devices ────────
+const FlagGB = ({ className = '' }: { className?: string }) => (
+    <svg className={className} viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="16" rx="2" fill="#012169" />
+        <path d="M0 0L24 16M24 0L0 16" stroke="#fff" strokeWidth="2.5" />
+        <path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" strokeWidth="1.2" />
+        <path d="M12 0V16M0 8H24" stroke="#fff" strokeWidth="4" />
+        <path d="M12 0V16M0 8H24" stroke="#C8102E" strokeWidth="2.4" />
+    </svg>
+);
+
+const FlagES = ({ className = '' }: { className?: string }) => (
+    <svg className={className} viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="16" rx="2" fill="#AA151B" />
+        <rect y="4" width="24" height="8" fill="#F1BF00" />
+    </svg>
+);
+
+const FlagCZ = ({ className = '' }: { className?: string }) => (
+    <svg className={className} viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="16" rx="2" fill="#D7141A" />
+        <rect width="24" height="8" rx="2" fill="#fff" />
+        <path d="M0 0L12 8L0 16V0Z" fill="#11457E" />
+    </svg>
+);
+
+const LOCALE_FLAGS: Record<Locale, React.FC<{ className?: string }>> = { en: FlagGB, es: FlagES, cs: FlagCZ };
 const LOCALE_LABELS: Record<Locale, string> = { en: 'EN', es: 'ES', cs: 'CZ' };
 const LOCALE_FULL_LABELS: Record<Locale, string> = { en: 'English', es: 'Español', cs: 'Česky' };
 const LOCALE_ORDER: Locale[] = ['en', 'es', 'cs'];
@@ -111,7 +138,9 @@ export default function Header() {
                     ))}
                 </ul>
 
-                <div className={`hidden items-center gap-3 md:flex transition-all duration-300 ${showNav ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`hidden items-center gap-2 md:flex transition-all duration-300 ${showNav ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                    {/* Share */}
+                    <ShareButton variant="header" scrolled={scrolled} />
                     {/* Language Dropdown */}
                     <div className="relative" ref={langRef}>
                         <button
@@ -125,7 +154,8 @@ export default function Header() {
                             aria-expanded={langOpen}
                             aria-haspopup="listbox"
                         >
-                            {LOCALE_FLAGS[locale]} {LOCALE_LABELS[locale]}
+                            {(() => { const Flag = LOCALE_FLAGS[locale]; return <Flag className="h-3.5 w-5 rounded-[1px]" />; })()}
+                            {LOCALE_LABELS[locale]}
                             <svg
                                 className={`h-3.5 w-3.5 transition-transform duration-200 ${langOpen ? 'rotate-180' : ''}`}
                                 fill="none"
@@ -155,7 +185,7 @@ export default function Header() {
                                             : 'text-navy hover:bg-sand-light'
                                             }`}
                                     >
-                                        <span className="text-lg">{LOCALE_FLAGS[loc]}</span>
+                                        {(() => { const Flag = LOCALE_FLAGS[loc]; return <Flag className="h-4 w-6 rounded-[1px]" />; })()}
                                         {LOCALE_FULL_LABELS[loc]}
                                         {locale === loc && (
                                             <svg className="ml-auto h-4 w-4 text-ocean" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -185,24 +215,26 @@ export default function Header() {
                     </button>
                 </div>
 
-                {/* Mobile Menu Button */}
-                <button
-                    type="button"
-                    onClick={() => setMenuOpen(!menuOpen)}
-                    className={`relative flex h-10 w-10 items-center justify-center rounded-lg md:hidden transition-all duration-300 ${showNav ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                        } ${scrolled ? 'hover:bg-sand-light' : 'hover:bg-white/10'}`}
-                    aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-                    aria-expanded={menuOpen}
-                >
-                    <div className="flex h-5 w-6 flex-col items-center justify-center">
-                        <span className={`block h-0.5 w-6 rounded-full transition-all duration-300 ${scrolled ? 'bg-navy' : 'bg-white'
-                            } ${menuOpen ? 'translate-y-[5px] rotate-45' : ''}`} />
-                        <span className={`mt-[4px] block h-0.5 rounded-full transition-all duration-300 ${scrolled ? 'bg-navy' : 'bg-white'
-                            } ${menuOpen ? 'w-0 opacity-0' : 'w-6 opacity-100'}`} />
-                        <span className={`mt-[4px] block h-0.5 w-6 rounded-full transition-all duration-300 ${scrolled ? 'bg-navy' : 'bg-white'
-                            } ${menuOpen ? '-translate-y-[5px] -rotate-45' : ''}`} />
-                    </div>
-                </button>
+                {/* Mobile: Share + Hamburger */}
+                <div className={`flex items-center gap-1 md:hidden transition-all duration-300 ${showNav ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                    <ShareButton variant="header" scrolled={scrolled} />
+                    <button
+                        type="button"
+                        onClick={() => setMenuOpen(!menuOpen)}
+                        className={`relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300 ${scrolled ? 'hover:bg-sand-light' : 'hover:bg-white/10'}`}
+                        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+                        aria-expanded={menuOpen}
+                    >
+                        <div className="flex h-5 w-6 flex-col items-center justify-center">
+                            <span className={`block h-0.5 w-6 rounded-full transition-all duration-300 ${scrolled ? 'bg-navy' : 'bg-white'
+                                } ${menuOpen ? 'translate-y-[5px] rotate-45' : ''}`} />
+                            <span className={`mt-[4px] block h-0.5 rounded-full transition-all duration-300 ${scrolled ? 'bg-navy' : 'bg-white'
+                                } ${menuOpen ? 'w-0 opacity-0' : 'w-6 opacity-100'}`} />
+                            <span className={`mt-[4px] block h-0.5 w-6 rounded-full transition-all duration-300 ${scrolled ? 'bg-navy' : 'bg-white'
+                                } ${menuOpen ? '-translate-y-[5px] -rotate-45' : ''}`} />
+                        </div>
+                    </button>
+                </div>
             </nav>
 
             {/* Mobile Menu */}
@@ -232,7 +264,7 @@ export default function Header() {
                                         : 'bg-sand text-navy'
                                         }`}
                                 >
-                                    {LOCALE_FLAGS[loc]} {LOCALE_FULL_LABELS[loc]}
+                                    <span className="flex items-center gap-2">{(() => { const Flag = LOCALE_FLAGS[loc]; return <Flag className="h-3.5 w-5 rounded-[1px]" />; })()}{LOCALE_FULL_LABELS[loc]}</span>
                                 </button>
                             ))}
                         </li>

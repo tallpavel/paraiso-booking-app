@@ -3,20 +3,28 @@ import { useI18n } from '../i18n';
 
 const PAGE_TITLE = "Verónica's Flat — Holiday Apartment in Playa Paraíso, Tenerife";
 
-export default function FloatingShareButton() {
+interface ShareButtonProps {
+    /** When true, renders as a subtle icon for the header bar (no fixed positioning). */
+    variant?: 'header' | 'floating';
+    /** Whether the parent (e.g. header) is in scrolled/visible state */
+    scrolled?: boolean;
+}
+
+export default function ShareButton({ variant = 'floating', scrolled = true }: ShareButtonProps) {
     const { t } = useI18n();
-    const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState(variant === 'header');
     const [open, setOpen] = useState(false);
     const [copied, setCopied] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
-    // Show after scrolling past hero
+    // Only track scroll for floating variant
     useEffect(() => {
+        if (variant === 'header') return;
         const onScroll = () => setVisible(window.scrollY > 400);
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
         return () => window.removeEventListener('scroll', onScroll);
-    }, []);
+    }, [variant]);
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -100,34 +108,108 @@ export default function FloatingShareButton() {
     const handleClick = () => {
         // On mobile, try native share first
         if (typeof navigator.share === 'function' && window.innerWidth < 768) {
-            navigator.share({ title: PAGE_TITLE, url }).catch(() => {});
+            navigator.share({ title: PAGE_TITLE, url }).catch(() => { });
         } else {
             setOpen(!open);
         }
     };
 
+    // ── Header variant: inline icon button ──────────────────────────
+    if (variant === 'header') {
+        return (
+            <div ref={ref} className="relative">
+                <button
+                    type="button"
+                    onClick={handleClick}
+                    className={`flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 ${
+                        scrolled
+                            ? 'text-navy/60 hover:bg-sand-light hover:text-navy'
+                            : 'text-white/70 hover:bg-white/10 hover:text-white'
+                    }`}
+                    aria-label={t('share.title')}
+                >
+                    <svg className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                        <polyline points="16 6 12 2 8 6" />
+                        <line x1="12" y1="2" x2="12" y2="15" />
+                    </svg>
+                </button>
+
+                {/* Dropdown — opens downward in header */}
+                {open && (
+                    <div className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-sand bg-white shadow-2xl z-50">
+                        <div className="px-4 pt-3 pb-2">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('share.title')}</p>
+                        </div>
+                        <div className="pb-1">
+                            {shareOptions.map((opt) => (
+                                <a
+                                    key={opt.label}
+                                    href={opt.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => {
+                                        if ('copyFirst' in opt && opt.copyFirst) {
+                                            e.preventDefault();
+                                            navigator.clipboard.writeText(url).catch(() => { });
+                                            setCopied(true);
+                                            setTimeout(() => setCopied(false), 2000);
+                                            window.open(opt.href, '_blank');
+                                        }
+                                        setOpen(false);
+                                    }}
+                                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-sand-light"
+                                >
+                                    <span style={{ color: opt.color }}>{opt.icon}</span>
+                                    {opt.label}
+                                </a>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={handleCopyLink}
+                                className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-sand-light"
+                            >
+                                <span className="text-ocean">
+                                    {copied ? (
+                                        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M20 6 9 17l-5-5" />
+                                        </svg>
+                                    ) : (
+                                        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" />
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                        </svg>
+                                    )}
+                                </span>
+                                {copied ? t('share.copied') : t('share.copyLink')}
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    // ── Floating variant (legacy, kept for backward compat) ──────────
     return (
         <div
             ref={ref}
-            className={`fixed bottom-[5.5rem] right-6 z-40 transition-all duration-300 ${
-                visible ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0 pointer-events-none'
-            }`}
+            className={`fixed bottom-[4.25rem] right-6 z-40 transition-all duration-300 sm:bottom-[5.5rem] ${visible ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0 pointer-events-none'
+                }`}
         >
-            {/* Share Button */}
             <button
                 type="button"
                 onClick={handleClick}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-navy shadow-xl ring-1 ring-black/5 transition-all duration-200 hover:shadow-2xl hover:scale-105"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-navy/70 shadow-md ring-1 ring-black/5 backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-navy hover:shadow-lg hover:scale-105 sm:h-12 sm:w-12 sm:shadow-xl"
                 aria-label={t('share.title')}
             >
-                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <svg className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
                     <polyline points="16 6 12 2 8 6" />
                     <line x1="12" y1="2" x2="12" y2="15" />
                 </svg>
             </button>
 
-            {/* Dropdown — opens upward */}
             {open && (
                 <div className="absolute bottom-14 right-0 w-56 overflow-hidden rounded-xl border border-sand bg-white shadow-2xl">
                     <div className="px-4 pt-3 pb-2">
@@ -143,7 +225,7 @@ export default function FloatingShareButton() {
                                 onClick={(e) => {
                                     if ('copyFirst' in opt && opt.copyFirst) {
                                         e.preventDefault();
-                                        navigator.clipboard.writeText(url).catch(() => {});
+                                        navigator.clipboard.writeText(url).catch(() => { });
                                         setCopied(true);
                                         setTimeout(() => setCopied(false), 2000);
                                         window.open(opt.href, '_blank');

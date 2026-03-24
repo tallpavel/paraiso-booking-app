@@ -12,7 +12,6 @@ import CustomerReviews from './components/CustomerReviews';
 import BookingCTA from './components/BookingCTA';
 import FAQ from './components/FAQ';
 import FloatingContactButton from './components/FloatingContactButton';
-import FloatingShareButton from './components/ShareButton';
 import Footer from './components/Footer';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminLayout from './components/admin/AdminLayout';
@@ -53,7 +52,6 @@ function PublicSite() {
         <BookingCTA />
       </main>
       <Footer />
-      <FloatingShareButton />
       <FloatingContactButton />
     </>
   );

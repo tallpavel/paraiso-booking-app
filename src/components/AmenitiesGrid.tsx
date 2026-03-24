@@ -228,11 +228,11 @@ export default function AmenitiesGrid() {
                 >
                     {/* Page 1: first 8 — slightly narrower to peek page 2 */}
                     <div className="w-[92%] shrink-0 snap-center pl-6 pr-3">
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid auto-rows-fr grid-cols-2 gap-3">
                             {AMENITIES.slice(0, 8).map((amenity) => (
                                 <div
                                     key={amenity.labelKey}
-                                    className="group flex items-center gap-3 rounded-2xl bg-sand-light/60 px-4 py-3.5 ring-1 ring-navy/[0.04]"
+                                    className="group flex min-h-[4.5rem] items-center gap-3 rounded-2xl bg-sand-light/60 px-4 py-3.5 ring-1 ring-navy/[0.04]"
                                 >
                                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-ocean shadow-sm ring-1 ring-navy/[0.05]">
                                         <div className="h-[18px] w-[18px]">
@@ -244,7 +244,7 @@ export default function AmenitiesGrid() {
                                             {t(amenity.labelKey)}
                                         </span>
                                         {amenity.detailKey && (
-                                            <p className="mt-0.5 truncate text-[11px] leading-tight text-warm-gray">{t(amenity.detailKey)}</p>
+                                            <p className="mt-0.5 text-[11px] leading-tight text-warm-gray">{t(amenity.detailKey)}</p>
                                         )}
                                     </div>
                                 </div>
@@ -254,11 +254,11 @@ export default function AmenitiesGrid() {
 
                     {/* Page 2: remaining amenities */}
                     <div className="w-[92%] shrink-0 snap-center pl-3 pr-6">
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid auto-rows-fr grid-cols-2 gap-3">
                             {AMENITIES.slice(8).map((amenity) => (
                                 <div
                                     key={amenity.labelKey}
-                                    className="group flex items-center gap-3 rounded-2xl bg-sand-light/60 px-4 py-3.5 ring-1 ring-navy/[0.04]"
+                                    className="group flex min-h-[4.5rem] items-center gap-3 rounded-2xl bg-sand-light/60 px-4 py-3.5 ring-1 ring-navy/[0.04]"
                                 >
                                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-ocean shadow-sm ring-1 ring-navy/[0.05]">
                                         <div className="h-[18px] w-[18px]">
@@ -270,7 +270,7 @@ export default function AmenitiesGrid() {
                                             {t(amenity.labelKey)}
                                         </span>
                                         {amenity.detailKey && (
-                                            <p className="mt-0.5 truncate text-[11px] leading-tight text-warm-gray">{t(amenity.detailKey)}</p>
+                                            <p className="mt-0.5 text-[11px] leading-tight text-warm-gray">{t(amenity.detailKey)}</p>
                                         )}
                                     </div>
                                 </div>

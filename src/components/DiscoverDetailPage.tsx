@@ -6,7 +6,6 @@ import Header from './Header';
 import Footer from './Footer';
 import BookingCalendar from './BookingCalendar';
 import FloatingContactButton from './FloatingContactButton';
-import FloatingShareButton from './ShareButton';
 
 type DiscoverSlug = 'beaches' | 'snorkeling' | 'whales' | 'hiking' | 'food';
 
@@ -323,7 +322,7 @@ export default function DiscoverDetailPage() {
                     </div>
                 </div>
             )}
-            <FloatingShareButton />
+
             <FloatingContactButton />
         </>
     );
