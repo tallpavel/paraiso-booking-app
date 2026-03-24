@@ -10,7 +10,9 @@ import LocationMap from './components/LocationMap';
 import DiscoverSection from './components/DiscoverSection';
 import CustomerReviews from './components/CustomerReviews';
 import BookingCTA from './components/BookingCTA';
+import FAQ from './components/FAQ';
 import FloatingContactButton from './components/FloatingContactButton';
+import FloatingShareButton from './components/ShareButton';
 import Footer from './components/Footer';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminLayout from './components/admin/AdminLayout';
@@ -47,9 +49,11 @@ function PublicSite() {
         <LocationMap />
         <DiscoverSection />
         <CustomerReviews />
+        <FAQ />
         <BookingCTA />
       </main>
       <Footer />
+      <FloatingShareButton />
       <FloatingContactButton />
     </>
   );

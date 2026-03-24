@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n';
 import Header from './Header';
 import Footer from './Footer';
 import BookingCalendar from './BookingCalendar';
+import FloatingContactButton from './FloatingContactButton';
+import FloatingShareButton from './ShareButton';
 
 type DiscoverSlug = 'beaches' | 'snorkeling' | 'whales' | 'hiking' | 'food';
 
@@ -92,11 +94,17 @@ const TOPICS: DiscoverTopic[] = [
 
 export default function DiscoverDetailPage() {
     const { slug } = useParams<{ slug: string }>();
+    const navigate = useNavigate();
     const { t } = useI18n();
     const [bookingOpen, setBookingOpen] = useState(false);
+    const [pageReady, setPageReady] = useState(false);
 
     useEffect(() => {
         window.scrollTo(0, 0);
+        setPageReady(false);
+        // Small delay to let the browser settle, then fade in
+        const timer = setTimeout(() => setPageReady(true), 50);
+        return () => clearTimeout(timer);
     }, [slug]);
 
     const topic = TOPICS.find(t => t.slug === slug);
@@ -123,7 +131,7 @@ export default function DiscoverDetailPage() {
     return (
         <>
             <Header />
-            <main>
+            <main className={`transition-all duration-600 ease-out ${pageReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                 {/* Hero */}
                 <section className="relative h-[50vh] min-h-[400px] overflow-hidden sm:h-[60vh]">
                     <img
@@ -136,7 +144,7 @@ export default function DiscoverDetailPage() {
                         <div className="mx-auto max-w-4xl">
                             <a
                                 href="/#discover"
-                                className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-white/70 transition-colors hover:text-white"
+                                className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/20 backdrop-blur-md transition-all hover:bg-white/25 hover:ring-white/30"
                             >
                                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -153,89 +161,139 @@ export default function DiscoverDetailPage() {
                     </div>
                 </section>
 
-                {/* Content sections */}
-                <section className="mx-auto max-w-4xl px-6 py-16 sm:py-20">
-                    {topic.sections.map((section, i) => (
-                        <div
-                            key={i}
-                            className={`mb-14 last:mb-0 ${i > 0 ? 'border-t border-navy/8 pt-14' : ''}`}
-                        >
-                            <div className="flex items-start gap-4">
-                                <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ocean/10 text-sm font-bold text-ocean">
-                                    {i + 1}
-                                </span>
+                {/* Content sections — editorial magazine style */}
+                <section className="py-20 sm:py-28">
+                    <div className="mx-auto max-w-5xl px-6">
+                        {topic.sections.map((section, i) => (
+                            <div
+                                key={i}
+                                className={`group transition-all duration-700 ease-out ${pageReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+                                style={{ transitionDelay: `${300 + i * 200}ms` }}
+                            >
+                                <div className={`relative grid items-center gap-8 lg:grid-cols-5 ${i > 0 ? 'mt-20 pt-20 border-t border-navy/6' : ''}`}>
+                                    {/* Number accent */}
+                                    <div className={`lg:col-span-1 ${i % 2 !== 0 ? 'lg:order-2' : ''}`}>
+                                        <div className="flex items-center gap-4 lg:flex-col lg:items-start">
+                                            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-ocean/15 to-ocean/5 text-xl font-bold text-ocean ring-1 ring-ocean/10">
+                                                {String(i + 1).padStart(2, '0')}
+                                            </span>
+                                            <div className="hidden h-px flex-1 bg-gradient-to-r from-ocean/20 to-transparent lg:block lg:h-16 lg:w-px lg:bg-gradient-to-b" />
+                                        </div>
+                                    </div>
+                                    {/* Text content */}
+                                    <div className={`lg:col-span-4 ${i % 2 !== 0 ? 'lg:order-1' : ''}`}>
+                                        <h2 className="mb-5 font-heading text-2xl font-bold text-navy sm:text-3xl lg:text-4xl">
+                                            {t(section.titleKey)}
+                                        </h2>
+                                        <p className="text-base leading-[1.85] text-warm-gray sm:text-lg">
+                                            {t(section.bodyKey)}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Tips callout — glassmorphism card */}
+                <section className="relative overflow-hidden bg-gradient-to-br from-sand/40 via-white to-sand/20 py-16 sm:py-20">
+                    {/* Decorative blobs */}
+                    <div className="absolute -left-20 -top-20 h-60 w-60 rounded-full bg-ocean/5 blur-3xl" />
+                    <div className="absolute -right-20 -bottom-20 h-60 w-60 rounded-full bg-coral/5 blur-3xl" />
+
+                    <div className="relative mx-auto max-w-4xl px-6">
+                        <div className="rounded-3xl border border-white/60 bg-white/70 p-8 shadow-xl shadow-navy/5 backdrop-blur-xl sm:p-12">
+                            <div className="flex items-start gap-5">
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-amber-50 text-2xl shadow-sm ring-1 ring-amber-200/50">
+                                    💡
+                                </div>
                                 <div>
-                                    <h2 className="mb-4 font-heading text-2xl font-bold text-navy sm:text-3xl">
-                                        {t(section.titleKey)}
-                                    </h2>
-                                    <p className="text-base leading-relaxed text-warm-gray sm:text-lg">
-                                        {t(section.bodyKey)}
+                                    <h3 className="mb-3 font-heading text-xl font-bold text-navy sm:text-2xl">
+                                        {t('discoverPage.tipsTitle')}
+                                    </h3>
+                                    <p className="text-base leading-[1.85] text-warm-gray sm:text-lg">
+                                        {t(topic.tipsKey)}
                                     </p>
                                 </div>
                             </div>
                         </div>
-                    ))}
+                    </div>
                 </section>
 
-                {/* Tips callout */}
-                <section className="bg-sand/30 py-12">
-                    <div className="mx-auto max-w-4xl px-6">
-                        <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-navy/5 sm:p-10">
-                            <h3 className="mb-4 flex items-center gap-2 font-heading text-xl font-bold text-navy">
-                                <span className="text-2xl">💡</span>
-                                {t('discoverPage.tipsTitle')}
-                            </h3>
-                            <p className="text-base leading-relaxed text-warm-gray">
-                                {t(topic.tipsKey)}
-                            </p>
+                {/* Navigation & CTA — modern card grid */}
+                <section className="bg-white py-16 sm:py-20">
+                    <div className="mx-auto max-w-5xl px-6">
+                        {/* Nav cards */}
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            {/* Back to Explore */}
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    navigate('/');
+                                    setTimeout(() => {
+                                        const el = document.getElementById('discover');
+                                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                    }, 300);
+                                }}
+                                className="group flex items-center gap-4 rounded-2xl border border-navy/8 bg-sand-light/30 p-5 text-left transition-all duration-300 hover:border-ocean/20 hover:bg-ocean/5 hover:shadow-lg cursor-pointer"
+                            >
+                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-ocean/10 text-ocean transition-colors group-hover:bg-ocean group-hover:text-white">
+                                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <span className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('discoverPage.backToExplore')}</span>
+                                    <p className="text-sm font-bold text-navy">{t('nav.discover')}</p>
+                                </div>
+                            </button>
+
+                            {/* Next topic */}
+                            <Link
+                                to={`/discover/${nextTopic.slug}`}
+                                className="group flex items-center gap-4 rounded-2xl border border-navy/8 bg-sand-light/30 p-5 text-left transition-all duration-300 hover:border-ocean/20 hover:bg-ocean/5 hover:shadow-lg"
+                            >
+                                <div className="flex-1">
+                                    <span className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('discoverPage.continueExploring')}</span>
+                                    <p className="text-sm font-bold text-navy">{t(nextTopic.titleKey)}</p>
+                                </div>
+                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-ocean/10 text-ocean transition-colors group-hover:bg-ocean group-hover:text-white">
+                                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </Link>
                         </div>
-                    </div>
-                </section>
 
-                {/* CTAs */}
-                <section className="mx-auto max-w-4xl px-6 py-16">
-                    <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-                        {/* External link */}
-                        <a
-                            href={topic.externalLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 rounded-xl bg-ocean px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-ocean-dark hover:shadow-xl"
-                        >
-                            {t('discoverPage.officialGuide')}
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                        </a>
+                        {/* Book CTA */}
+                        <div className="relative mt-12 overflow-hidden rounded-3xl bg-gradient-to-br from-navy via-navy to-ocean/80 p-10 text-center text-white shadow-2xl sm:p-14">
+                            {/* Decorative circles */}
+                            <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/5" />
+                            <div className="absolute -bottom-12 -left-12 h-56 w-56 rounded-full bg-white/5" />
+                            <div className="absolute right-1/4 top-1/2 h-24 w-24 rounded-full bg-ocean/20 blur-2xl" />
 
-                        {/* Next topic */}
-                        <Link
-                            to={`/discover/${nextTopic.slug}`}
-                            className="inline-flex items-center gap-2 text-sm font-semibold text-navy transition-colors hover:text-ocean"
-                        >
-                            {t('discoverPage.continueExploring')}:&nbsp;
-                            <span className="text-ocean">{t(nextTopic.titleKey)}</span>
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </Link>
-                    </div>
-
-                    {/* Book CTA */}
-                    <div className="mt-12 rounded-2xl bg-gradient-to-r from-ocean to-ocean-dark p-8 text-center text-white shadow-lg sm:p-10">
-                        <h3 className="mb-3 font-heading text-2xl font-bold sm:text-3xl">
-                            {t('discoverPage.bookCta')}
-                        </h3>
-                        <p className="mb-6 text-white/80">
-                            {t('discoverPage.bookCtaSub')}
-                        </p>
-                        <button
-                            type="button"
-                            onClick={() => setBookingOpen(true)}
-                            className="inline-block rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-ocean shadow-lg transition-all hover:bg-sand hover:shadow-xl cursor-pointer"
-                        >
-                            {t('hero.cta')}
-                        </button>
+                            <div className="relative">
+                                <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-[0.2em] text-ocean-light/80">
+                                    Playa Paraíso
+                                </span>
+                                <h3 className="mb-4 font-heading text-2xl font-bold sm:text-3xl lg:text-4xl">
+                                    {t('discoverPage.bookCta')}
+                                </h3>
+                                <p className="mx-auto mb-8 max-w-xl text-white/70 sm:text-lg">
+                                    {t('discoverPage.bookCtaSub')}
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => setBookingOpen(true)}
+                                    className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-bold text-navy shadow-lg transition-all duration-300 hover:bg-sand hover:shadow-2xl hover:scale-105 cursor-pointer"
+                                >
+                                    {t('hero.cta')}
+                                    <svg className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </main>
@@ -265,6 +323,8 @@ export default function DiscoverDetailPage() {
                     </div>
                 </div>
             )}
+            <FloatingShareButton />
+            <FloatingContactButton />
         </>
     );
 }

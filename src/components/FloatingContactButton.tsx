@@ -126,7 +126,7 @@ export default function FloatingContactButton({ forceOpen, onForceOpenHandled }:
             <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className={`fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-full bg-ocean px-5 py-3.5 text-sm font-semibold text-white shadow-xl transition-all duration-300 hover:bg-ocean-dark hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-ocean ${visible && !open ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0 pointer-events-none'
+                className={`fixed bottom-6 right-6 z-40 flex items-center justify-center rounded-full bg-ocean text-white shadow-xl transition-all duration-300 hover:bg-ocean-dark hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-ocean h-12 w-12 sm:h-auto sm:w-auto sm:gap-2.5 sm:px-5 sm:py-3.5 sm:text-sm sm:font-semibold ${visible && !open ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0 pointer-events-none'
                     } ${pulse ? 'animate-bounce' : ''}`}
                 aria-label={t('nav.contact')}
             >

@@ -60,7 +60,7 @@ export default function HeroSection() {
                     </button>
                     <a
                         href="#gallery"
-                        className="rounded-full border-2 border-white/60 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:border-white hover:bg-white/10"
+                        className="rounded-full border-2 border-white/60 px-8 py-4 text-lg font-semibold uppercase tracking-wider text-white backdrop-blur-sm transition-all duration-200 hover:border-white hover:bg-white/10"
                     >
                         {t('hero.explore')}
                     </a>

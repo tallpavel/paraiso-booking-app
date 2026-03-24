@@ -397,21 +397,25 @@ export default function BookingCalendar() {
                             {/* Right — Summary sidebar */}
                             <div className="flex flex-col gap-5">
                                 {/* Check-in / Check-out */}
-                                <div className="rounded-xl bg-sand-light p-4">
-                                    <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
-                                        {t('booking.checkIn')}
-                                    </label>
-                                    <p className="font-medium text-navy">
-                                        {checkIn ? formatDate(checkIn) : t('booking.selectDate')}
-                                    </p>
-                                </div>
-                                <div className="rounded-xl bg-sand-light p-4">
-                                    <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
-                                        {t('booking.checkOut')}
-                                    </label>
-                                    <p className="font-medium text-navy">
-                                        {checkOut ? formatDate(checkOut) : t('booking.selectDate')}
-                                    </p>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="rounded-xl bg-sand-light p-4">
+                                        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
+                                            {t('booking.checkIn')}
+                                        </label>
+                                        <p className="font-medium text-navy">
+                                            {checkIn ? formatDate(checkIn) : t('booking.selectDate')}
+                                        </p>
+                                        {checkIn && <p className="mt-0.5 text-xs text-warm-gray">{t('booking.checkInTime')}</p>}
+                                    </div>
+                                    <div className="rounded-xl bg-sand-light p-4">
+                                        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
+                                            {t('booking.checkOut')}
+                                        </label>
+                                        <p className="font-medium text-navy">
+                                            {checkOut ? formatDate(checkOut) : t('booking.selectDate')}
+                                        </p>
+                                        {checkOut && <p className="mt-0.5 text-xs text-warm-gray">{t('booking.checkOutTime')}</p>}
+                                    </div>
                                 </div>
 
                                 {/* Pricing summary */}
@@ -438,6 +442,7 @@ export default function BookingCalendar() {
                                                     <span>{t('booking.total')}</span>
                                                     <span>€{pricing.total}</span>
                                                 </div>
+                                                <p className="mt-1 text-center text-[11px] text-warm-gray">{t('booking.includesCleaning')}</p>
                                             </div>
                                         )}
                                     </div>
@@ -627,10 +632,12 @@ export default function BookingCalendar() {
                                             <div>
                                                 <p className="text-[11px] font-semibold uppercase tracking-wide text-warm-gray">{t('booking.checkIn')}</p>
                                                 <p className="font-medium text-navy">{formatDate(checkIn!)}</p>
+                                                <p className="text-[11px] text-warm-gray">{t('booking.checkInTime')}</p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-[11px] font-semibold uppercase tracking-wide text-warm-gray">{t('booking.checkOut')}</p>
                                                 <p className="font-medium text-navy">{formatDate(checkOut!)}</p>
+                                                <p className="text-[11px] text-warm-gray">{t('booking.checkOutTime')}</p>
                                             </div>
                                             <div>
                                                 <p className="text-[11px] font-semibold uppercase tracking-wide text-warm-gray">{t('booking.guests')}</p>
@@ -690,6 +697,7 @@ export default function BookingCalendar() {
                                                     {t('booking.checkIn')}
                                                 </p>
                                                 <p className="text-base font-medium text-navy">{formatDate(checkIn!)}</p>
+                                                <p className="mt-0.5 text-xs text-warm-gray">{t('booking.checkInTime')}</p>
                                             </div>
                                             <div className="px-3 pt-3 text-warm-gray">→</div>
                                             <div className="text-right">
@@ -697,6 +705,7 @@ export default function BookingCalendar() {
                                                     {t('booking.checkOut')}
                                                 </p>
                                                 <p className="text-base font-medium text-navy">{formatDate(checkOut!)}</p>
+                                                <p className="mt-0.5 text-xs text-warm-gray">{t('booking.checkOutTime')}</p>
                                             </div>
                                         </div>
 
@@ -743,6 +752,7 @@ export default function BookingCalendar() {
                                                     <span>{t('booking.total')}</span>
                                                     <span>€{pricing.total}</span>
                                                 </div>
+                                                <p className="mt-1 text-right text-[11px] text-warm-gray">{t('booking.includesCleaning')}</p>
                                             </div>
                                         )}
                                     </div>

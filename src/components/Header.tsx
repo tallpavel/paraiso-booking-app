@@ -8,6 +8,7 @@ const NAV_KEYS = [
     { key: 'nav.gallery' as const, href: '#gallery' },
     { key: 'nav.discover' as const, href: '#discover' },
     { key: 'nav.reviews' as const, href: '#reviews' },
+    { key: 'nav.faq' as const, href: '#faq' },
 ];
 
 const LOCALE_FLAGS: Record<Locale, string> = { en: '🇬🇧', es: '🇪🇸', cs: '🇨🇿' };
@@ -70,7 +71,7 @@ export default function Header() {
 
     return (
         <header
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showNav ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showNav ? 'bg-white backdrop-blur-md shadow-lg' : 'bg-transparent'
                 }`}
         >
             <nav className={`mx-auto flex max-w-7xl items-center justify-between px-6 relative transition-all duration-500 ${showNav ? 'py-4' : 'py-6'}`}>
@@ -99,7 +100,7 @@ export default function Header() {
                         <li key={link.href}>
                             <a
                                 href={resolveHref(link.href)}
-                                className={`text-sm font-medium tracking-wide transition-colors duration-200 hover:text-ocean ${activeSection === link.href
+                                className={`text-xs font-semibold uppercase tracking-[0.15em] transition-colors duration-200 hover:text-ocean ${activeSection === link.href
                                     ? 'text-ocean'
                                     : scrolled ? 'text-navy' : 'text-white/90'
                                     }`}

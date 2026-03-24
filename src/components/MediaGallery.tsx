@@ -175,30 +175,30 @@ export default function MediaGallery() {
 
             {/* Carousel — constrained width */}
             <div className={`relative mx-auto max-w-[1400px] transition-all duration-700 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-                {/* Left arrow */}
+                {/* Left arrow — glassmorphic editorial */}
                 {canScrollLeft && (
                     <button
                         type="button"
                         onClick={() => scroll('left')}
-                        className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-3.5 shadow-xl ring-1 ring-black/5 backdrop-blur-sm transition-all duration-200 hover:bg-white hover:shadow-2xl hover:scale-110 sm:left-5"
+                        className="group/arrow absolute left-3 top-1/2 z-10 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/30 bg-white/60 shadow-lg backdrop-blur-xl transition-all duration-300 hover:bg-navy hover:border-navy hover:shadow-navy/25 hover:scale-105 active:scale-95 sm:left-5 sm:h-12 sm:w-12"
                         aria-label="Scroll left"
                     >
-                        <svg className="h-5 w-5 text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                        <svg className="h-5 w-5 text-navy transition-colors duration-300 group-hover/arrow:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m0 0l5-5m-5 5l5 5" />
                         </svg>
                     </button>
                 )}
 
-                {/* Right arrow */}
+                {/* Right arrow — glassmorphic editorial */}
                 {canScrollRight && (
                     <button
                         type="button"
                         onClick={() => scroll('right')}
-                        className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-3.5 shadow-xl ring-1 ring-black/5 backdrop-blur-sm transition-all duration-200 hover:bg-white hover:shadow-2xl hover:scale-110 sm:right-5"
+                        className="group/arrow absolute right-3 top-1/2 z-10 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/30 bg-white/60 shadow-lg backdrop-blur-xl transition-all duration-300 hover:bg-navy hover:border-navy hover:shadow-navy/25 hover:scale-105 active:scale-95 sm:right-5 sm:h-12 sm:w-12"
                         aria-label="Scroll right"
                     >
-                        <svg className="h-5 w-5 text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        <svg className="h-5 w-5 text-navy transition-colors duration-300 group-hover/arrow:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0l-5-5m5 5l-5 5" />
                         </svg>
                     </button>
                 )}
