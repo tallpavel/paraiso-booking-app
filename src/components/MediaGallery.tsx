@@ -99,8 +99,10 @@ export default function MediaGallery() {
     const scroll = useCallback((dir: 'left' | 'right') => {
         const el = scrollRef.current;
         if (!el) return;
-        const amount = el.clientWidth * 0.7;
-        el.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
+        // Scroll by exactly one card width (first child width + gap)
+        const firstCard = el.querySelector('button');
+        const cardWidth = firstCard ? firstCard.offsetWidth + 16 : el.clientWidth * 0.85;
+        el.scrollBy({ left: dir === 'left' ? -cardWidth : cardWidth, behavior: 'smooth' });
     }, []);
 
     // Compute number of indicator dots
@@ -175,30 +177,32 @@ export default function MediaGallery() {
 
             {/* Carousel — constrained width */}
             <div className={`relative mx-auto max-w-[1400px] transition-all duration-700 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-                {/* Left arrow — glassmorphic editorial */}
+                {/* Image track with arrows — arrows centered to this container only */}
+                <div className="relative">
+                {/* Left arrow — subtle, hidden on mobile (swipe preferred) */}
                 {canScrollLeft && (
                     <button
                         type="button"
                         onClick={() => scroll('left')}
-                        className="group/arrow absolute left-3 top-1/2 z-10 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/30 bg-white/60 shadow-lg backdrop-blur-xl transition-all duration-300 hover:bg-navy hover:border-navy hover:shadow-navy/25 hover:scale-105 active:scale-95 sm:left-5 sm:h-12 sm:w-12"
+                        className="group/arrow absolute left-2 top-1/2 z-10 -translate-y-1/2 hidden h-9 w-9 items-center justify-center rounded-full bg-white/70 shadow-md backdrop-blur-sm transition-all duration-200 hover:bg-white hover:shadow-lg hover:scale-110 active:scale-95 sm:flex sm:left-4 sm:h-10 sm:w-10"
                         aria-label="Scroll left"
                     >
-                        <svg className="h-5 w-5 text-navy transition-colors duration-300 group-hover/arrow:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m0 0l5-5m-5 5l5 5" />
+                        <svg className="h-4 w-4 text-navy/70 transition-colors group-hover/arrow:text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
                 )}
 
-                {/* Right arrow — glassmorphic editorial */}
+                {/* Right arrow — subtle, hidden on mobile (swipe preferred) */}
                 {canScrollRight && (
                     <button
                         type="button"
                         onClick={() => scroll('right')}
-                        className="group/arrow absolute right-3 top-1/2 z-10 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/30 bg-white/60 shadow-lg backdrop-blur-xl transition-all duration-300 hover:bg-navy hover:border-navy hover:shadow-navy/25 hover:scale-105 active:scale-95 sm:right-5 sm:h-12 sm:w-12"
+                        className="group/arrow absolute right-2 top-1/2 z-10 -translate-y-1/2 hidden h-9 w-9 items-center justify-center rounded-full bg-white/70 shadow-md backdrop-blur-sm transition-all duration-200 hover:bg-white hover:shadow-lg hover:scale-110 active:scale-95 sm:flex sm:right-4 sm:h-10 sm:w-10"
                         aria-label="Scroll right"
                     >
-                        <svg className="h-5 w-5 text-navy transition-colors duration-300 group-hover/arrow:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0l-5-5m5 5l-5 5" />
+                        <svg className="h-4 w-4 text-navy/70 transition-colors group-hover/arrow:text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
                 )}
@@ -221,7 +225,7 @@ export default function MediaGallery() {
                             key={item.id}
                             type="button"
                             onClick={() => openLightbox(index)}
-                            className="group relative h-[300px] w-[400px] shrink-0 snap-start overflow-hidden rounded-2xl focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 sm:h-[380px] sm:w-[520px]"
+                            className="group relative h-[300px] w-[85vw] max-w-[400px] shrink-0 snap-center overflow-hidden rounded-2xl focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 sm:h-[380px] sm:w-[520px] sm:max-w-none sm:snap-start"
                             aria-label={`View: ${t(getAltKey(item.id))}`}
                         >
                             <img
@@ -261,27 +265,18 @@ export default function MediaGallery() {
                         </button>
                     ))}
                 </div>
+                </div>
 
-                {/* Scroll progress bar + dots */}
-                <div className="mt-8 flex flex-col items-center gap-3">
-                    {/* Progress bar */}
-                    <div className="h-0.5 w-32 overflow-hidden rounded-full bg-navy/10">
+                {/* Scroll dots */}
+                <div className="mt-8 flex justify-center gap-2">
+                    {[...Array(dotCount)].map((_, i) => (
                         <div
-                            className="h-full rounded-full bg-ocean transition-all duration-300"
-                            style={{ width: `${Math.max(10, scrollProgress * 100)}%` }}
+                            key={i}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${
+                                i === activeDot ? 'w-5 bg-ocean' : 'w-1.5 bg-navy/15'
+                            }`}
                         />
-                    </div>
-                    {/* Dots */}
-                    <div className="flex gap-2">
-                        {[...Array(dotCount)].map((_, i) => (
-                            <div
-                                key={i}
-                                className={`h-1.5 rounded-full transition-all duration-300 ${
-                                    i === activeDot ? 'w-5 bg-ocean' : 'w-1.5 bg-navy/15'
-                                }`}
-                            />
-                        ))}
-                    </div>
+                    ))}
                 </div>
             </div>
 

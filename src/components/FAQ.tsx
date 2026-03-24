@@ -65,7 +65,7 @@ export default function FAQ() {
     const { t } = useI18n();
     const sectionRef = useRef<HTMLElement>(null);
     const [isVisible, setIsVisible] = useState(false);
-    const [openIndex, setOpenIndex] = useState<number | null>(0);
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     useEffect(() => {
         const el = sectionRef.current;

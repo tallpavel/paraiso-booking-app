@@ -56,9 +56,9 @@ export default function BookingCTA() {
                     <button
                         type="button"
                         onClick={() => setOpen(true)}
-                        className="group inline-flex items-center gap-3 rounded-full bg-coral px-10 py-4 text-lg font-semibold text-white shadow-xl transition-all duration-300 hover:bg-coral-dark hover:shadow-2xl hover:scale-105"
+                        className="group inline-flex items-center gap-2.5 rounded-full bg-coral px-7 py-3 text-base font-semibold text-white shadow-xl transition-all duration-300 hover:bg-coral-dark hover:shadow-2xl hover:scale-105 sm:gap-3 sm:px-10 sm:py-4 sm:text-lg"
                     >
-                        <svg className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <svg className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                             <rect x="3" y="4" width="18" height="18" rx="2" />
                             <path d="M16 2v4M8 2v4M3 10h18" />
                         </svg>

@@ -42,8 +42,9 @@ export default function DiscoverSection() {
     const scroll = useCallback((dir: 'left' | 'right') => {
         const el = scrollRef.current;
         if (!el) return;
-        const amount = el.clientWidth * 0.7;
-        el.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
+        const firstCard = el.querySelector('a');
+        const cardWidth = firstCard ? firstCard.offsetWidth + 20 : el.clientWidth * 0.85;
+        el.scrollBy({ left: dir === 'left' ? -cardWidth : cardWidth, behavior: 'smooth' });
     }, []);
 
     return (
@@ -65,30 +66,32 @@ export default function DiscoverSection() {
 
             {/* Carousel — constrained width */}
             <div className="relative mx-auto max-w-[1400px]">
-                {/* Left arrow — glassmorphic editorial */}
+                {/* Image track with arrows */}
+                <div className="relative">
+                {/* Left arrow — subtle, hidden on mobile */}
                 {canScrollLeft && (
                     <button
                         type="button"
                         onClick={() => scroll('left')}
-                        className="group/arrow absolute left-3 top-1/2 z-10 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/30 bg-white/60 shadow-lg backdrop-blur-xl transition-all duration-300 hover:bg-navy hover:border-navy hover:shadow-navy/25 hover:scale-105 active:scale-95 sm:left-5 sm:h-12 sm:w-12"
+                        className="group/arrow absolute left-2 top-1/2 z-10 -translate-y-1/2 hidden h-9 w-9 items-center justify-center rounded-full bg-white/70 shadow-md backdrop-blur-sm transition-all duration-200 hover:bg-white hover:shadow-lg hover:scale-110 active:scale-95 sm:flex sm:left-4 sm:h-10 sm:w-10"
                         aria-label="Scroll left"
                     >
-                        <svg className="h-5 w-5 text-navy transition-colors duration-300 group-hover/arrow:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m0 0l5-5m-5 5l5 5" />
+                        <svg className="h-4 w-4 text-navy/70 transition-colors group-hover/arrow:text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
                 )}
 
-                {/* Right arrow — glassmorphic editorial */}
+                {/* Right arrow — subtle, hidden on mobile */}
                 {canScrollRight && (
                     <button
                         type="button"
                         onClick={() => scroll('right')}
-                        className="group/arrow absolute right-3 top-1/2 z-10 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/30 bg-white/60 shadow-lg backdrop-blur-xl transition-all duration-300 hover:bg-navy hover:border-navy hover:shadow-navy/25 hover:scale-105 active:scale-95 sm:right-5 sm:h-12 sm:w-12"
+                        className="group/arrow absolute right-2 top-1/2 z-10 -translate-y-1/2 hidden h-9 w-9 items-center justify-center rounded-full bg-white/70 shadow-md backdrop-blur-sm transition-all duration-200 hover:bg-white hover:shadow-lg hover:scale-110 active:scale-95 sm:flex sm:right-4 sm:h-10 sm:w-10"
                         aria-label="Scroll right"
                     >
-                        <svg className="h-5 w-5 text-navy transition-colors duration-300 group-hover/arrow:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0l-5-5m5 5l-5 5" />
+                        <svg className="h-4 w-4 text-navy/70 transition-colors group-hover/arrow:text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
                 )}
@@ -103,7 +106,7 @@ export default function DiscoverSection() {
                         <Link
                             key={activity.titleKey}
                             to={activity.href}
-                            className="group relative h-[380px] w-[340px] shrink-0 snap-start overflow-hidden rounded-2xl sm:h-[440px] sm:w-[420px]"
+                            className="group relative h-[380px] w-[85vw] max-w-[340px] shrink-0 snap-center overflow-hidden rounded-2xl sm:h-[440px] sm:w-[420px] sm:max-w-none sm:snap-start"
                         >
                             <img
                                 src={activity.image}
@@ -142,15 +145,21 @@ export default function DiscoverSection() {
                         </Link>
                     ))}
                 </div>
+                </div>
 
-                {/* Scroll progress bar */}
-                <div className="mt-6 flex justify-center">
-                    <div className="h-0.5 w-24 overflow-hidden rounded-full bg-navy/10">
-                        <div
-                            className="h-full rounded-full bg-ocean transition-all duration-300"
-                            style={{ width: `${Math.max(15, scrollProgress * 100)}%` }}
-                        />
-                    </div>
+                {/* Scroll dots */}
+                <div className="mt-8 flex justify-center gap-2">
+                    {ACTIVITIES.map((_, i) => {
+                        const activeDot = Math.min(Math.round(scrollProgress * (ACTIVITIES.length - 1)), ACTIVITIES.length - 1);
+                        return (
+                            <div
+                                key={i}
+                                className={`h-1.5 rounded-full transition-all duration-300 ${
+                                    i === activeDot ? 'w-5 bg-ocean' : 'w-1.5 bg-navy/15'
+                                }`}
+                            />
+                        );
+                    })}
                 </div>
             </div>
 
