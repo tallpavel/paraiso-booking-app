@@ -20,7 +20,7 @@ import { createElement } from 'react';
 // ── Cloudflare Turnstile site key ────────────────────────────────────
 // Replace with your real key from https://dash.cloudflare.com/turnstile
 // Use '1x00000000000000000000AA' for testing (always passes)
-const TURNSTILE_SITE_KEY = '1x00000000000000000000AA';
+const TURNSTILE_SITE_KEY = '0x4AAAAAAACvd6ET3qQxt_3sZ';
 
 // Minimum seconds before a form can be submitted (bots submit instantly)
 const MIN_FILL_TIME_SECONDS = 3;
