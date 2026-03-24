@@ -253,18 +253,19 @@ export default function Header() {
                                 </a>
                             </li>
                         ))}
-                        <li className="flex items-center gap-2 py-3">
+                        <li className="flex flex-wrap items-center gap-2 py-3">
                             {LOCALE_ORDER.map((loc) => (
                                 <button
                                     key={loc}
                                     type="button"
                                     onClick={() => { setLocale(loc); setMenuOpen(false); }}
-                                    className={`rounded-full px-4 py-2 text-sm font-medium ${locale === loc
+                                    className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium ${locale === loc
                                         ? 'bg-ocean text-white'
                                         : 'bg-sand text-navy'
                                         }`}
                                 >
-                                    <span className="flex items-center gap-2">{(() => { const Flag = LOCALE_FLAGS[loc]; return <Flag className="h-3.5 w-5 rounded-[1px]" />; })()}{LOCALE_FULL_LABELS[loc]}</span>
+                                    {(() => { const Flag = LOCALE_FLAGS[loc]; return <Flag className="h-3.5 w-5 rounded-[1px]" />; })()}
+                                    {LOCALE_FULL_LABELS[loc]}
                                 </button>
                             ))}
                         </li>
