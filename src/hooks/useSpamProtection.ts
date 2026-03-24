@@ -151,12 +151,8 @@ export function useSpamProtection(formId: string): SpamProtection {
             return { ok: false, reason: 'Please take a moment to fill out the form.' };
         }
 
-        // Layer 1: Turnstile token check
-        if (!turnstileTokenRef.current) {
-            return { ok: false, reason: 'Security check not completed. Please wait a moment and try again.' };
-        }
-
-        return { ok: true, turnstileToken: turnstileTokenRef.current };
+        // Layer 1: Turnstile token (include if available, but don't block if widget didn't load)
+        return { ok: true, turnstileToken: turnstileTokenRef.current ?? undefined };
     }, []);
 
     const resetProtection = useCallback(() => {
