@@ -282,12 +282,20 @@ a.btn {
 }
 
 @keyframes swipeHint {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(4px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(4px);
+  }
 }
 
 /* ── Accessibility: Reduced Motion ─────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -741,10 +749,21 @@ a.btn {
   margin: 0;
 }
 
-.admin-stat-card--teal .admin-stat-card__value { color: #1a8caa; }
-.admin-stat-card--amber .admin-stat-card__value { color: #d4a24e; }
-.admin-stat-card--green .admin-stat-card__value { color: #4ead6b; }
-.admin-stat-card--red .admin-stat-card__value { color: #e07c5a; }
+.admin-stat-card--teal .admin-stat-card__value {
+  color: #1a8caa;
+}
+
+.admin-stat-card--amber .admin-stat-card__value {
+  color: #d4a24e;
+}
+
+.admin-stat-card--green .admin-stat-card__value {
+  color: #4ead6b;
+}
+
+.admin-stat-card--red .admin-stat-card__value {
+  color: #e07c5a;
+}
 
 /* ── Sections ────────────────────────────────────────────────────────── */
 .admin-section {
@@ -820,10 +839,21 @@ a.btn {
   border-left: 3px solid rgba(255, 255, 255, 0.08);
 }
 
-.admin-checkin-card--arriving { border-left-color: #4ead6b; }
-.admin-checkin-card--departing { border-left-color: #d4a24e; }
-.admin-checkin-card--staying { border-left-color: #5ba8c8; }
-.admin-checkin-card--upcoming { border-left-color: rgba(245, 240, 232, 0.15); }
+.admin-checkin-card--arriving {
+  border-left-color: #4ead6b;
+}
+
+.admin-checkin-card--departing {
+  border-left-color: #d4a24e;
+}
+
+.admin-checkin-card--staying {
+  border-left-color: #5ba8c8;
+}
+
+.admin-checkin-card--upcoming {
+  border-left-color: rgba(245, 240, 232, 0.15);
+}
 
 .admin-checkin-card__header {
   display: flex;
@@ -1812,7 +1842,9 @@ a.btn {
 
 /* ── Animations ──────────────────────────────────────────────────────── */
 @keyframes admin-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes admin-slide-in {
@@ -1820,6 +1852,7 @@ a.btn {
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1827,8 +1860,13 @@ a.btn {
 }
 
 @keyframes admin-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes admin-slide-up {
@@ -1836,6 +1874,7 @@ a.btn {
     opacity: 0;
     transform: translateY(16px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -2151,7 +2190,9 @@ a.btn {
 }
 
 @keyframes checkin-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .checkin-loading p {
@@ -2236,9 +2277,17 @@ a.btn {
 
 /* Responsive */
 @media (max-width: 500px) {
-  .checkin-field-row { grid-template-columns: 1fr; }
-  .checkin-header__title { font-size: 1.4rem; }
-  .checkin-page { padding: 1rem 0.5rem; }
+  .checkin-field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .checkin-header__title {
+    font-size: 1.4rem;
+  }
+
+  .checkin-page {
+    padding: 1rem 0.5rem;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -2274,7 +2323,7 @@ a.btn {
   padding: 0.35rem 0;
 }
 
-.checkin-details-summary__row + .checkin-details-summary__row {
+.checkin-details-summary__row+.checkin-details-summary__row {
   border-top: 1px solid rgba(255, 255, 255, 0.03);
 }
 
@@ -2626,20 +2675,16 @@ a.btn {
 
 .admin-pricing-default-card--high-season {
   border-color: rgba(234, 140, 56, 0.25);
-  background: linear-gradient(
-    135deg,
-    rgba(234, 140, 56, 0.06) 0%,
-    rgba(220, 100, 40, 0.04) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(234, 140, 56, 0.06) 0%,
+      rgba(220, 100, 40, 0.04) 100%);
 }
 
 .admin-pricing-default-card--high-season:hover {
   border-color: rgba(234, 140, 56, 0.35);
-  background: linear-gradient(
-    135deg,
-    rgba(234, 140, 56, 0.1) 0%,
-    rgba(220, 100, 40, 0.07) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(234, 140, 56, 0.1) 0%,
+      rgba(220, 100, 40, 0.07) 100%);
 }
 
 .admin-pricing-default-card--high-season .admin-pricing-default-card__month {
@@ -2657,20 +2702,16 @@ a.btn {
 
 .admin-pricing-default-card--low-season {
   border-color: rgba(100, 160, 220, 0.2);
-  background: linear-gradient(
-    135deg,
-    rgba(100, 160, 220, 0.05) 0%,
-    rgba(80, 130, 190, 0.03) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(100, 160, 220, 0.05) 0%,
+      rgba(80, 130, 190, 0.03) 100%);
 }
 
 .admin-pricing-default-card--low-season:hover {
   border-color: rgba(100, 160, 220, 0.3);
-  background: linear-gradient(
-    135deg,
-    rgba(100, 160, 220, 0.08) 0%,
-    rgba(80, 130, 190, 0.06) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(100, 160, 220, 0.08) 0%,
+      rgba(80, 130, 190, 0.06) 100%);
 }
 
 .admin-pricing-default-card--low-season .admin-pricing-default-card__month {
@@ -2851,13 +2892,25 @@ a.btn {
 }
 
 @keyframes confirmFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes confirmSlideIn {
-  from { opacity: 0; transform: scale(0.95) translateY(8px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .confirm-modal {
@@ -2979,6 +3032,7 @@ a.btn {
     opacity: 0;
     transform: translateY(16px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -2998,8 +3052,15 @@ a.btn {
 }
 
 @keyframes paymentIconFadeIn {
-  from { opacity: 0; transform: scale(0.85); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Circle */
@@ -3042,13 +3103,19 @@ a.btn {
 }
 
 @keyframes paymentCircleDraw {
-  to { stroke-dashoffset: 0; }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 @keyframes paymentCheckDraw {
-  to { stroke-dashoffset: 0; }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 @keyframes paymentCrossDraw {
-  to { stroke-dashoffset: 0; }
+  to {
+    stroke-dashoffset: 0;
+  }
 }

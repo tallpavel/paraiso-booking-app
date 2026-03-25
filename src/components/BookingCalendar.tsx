@@ -61,7 +61,7 @@ interface FormErrors {
 // ── Step indicator ───────────────────────────────────────────────────
 function StepIndicator({ current, labels }: { current: number; labels: string[] }) {
     return (
-        <div className="mb-8 flex items-center justify-center gap-2">
+        <div className="mb-4 flex items-center justify-center gap-2 sm:mb-8">
             {labels.map((label, i) => {
                 const stepNum = i + 1;
                 const isActive = stepNum === current;
@@ -337,26 +337,25 @@ export default function BookingCalendar() {
     const stepLabels = [t('booking.stepDates'), t('booking.stepDetails'), t('booking.stepConfirm')];
 
     return (
-        <section id="booking" className="bg-sand-light py-20 sm:py-28">
+        <section id="booking" className="bg-sand-light py-10 sm:py-16 lg:py-20">
             <div className="mx-auto max-w-7xl px-6">
-                {/* Header */}
-                <div className="mb-12 text-center">
-                    <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-[0.15em] text-ocean">
-                        {t('booking.label')}
-                    </span>
-                    <h2 className="mb-4 font-heading text-3xl font-bold text-navy sm:text-4xl md:text-5xl">
-                        {t('booking.title')}
-                    </h2>
-                    <p className="mx-auto max-w-2xl text-lg text-warm-gray">
-                        {t('booking.subtitle')}
-                    </p>
-                </div>
-
-                {/* Step Indicator */}
-                <StepIndicator current={step} labels={stepLabels} />
 
                 {/* Card container — wider on step 1 for the two-column layout */}
-                <div className={`relative mx-auto rounded-3xl bg-white p-6 shadow-lg transition-all sm:p-10 ${step === 1 ? 'max-w-5xl' : 'max-w-2xl'}`}>
+                <div className={`relative mx-auto rounded-3xl bg-white p-5 shadow-lg transition-all sm:p-10 ${step === 1 ? 'max-w-5xl' : 'max-w-2xl'}`}>
+
+                    {/* Integrated header + step indicator */}
+                    <div className="mb-6 text-center sm:mb-8">
+                        <span className="mb-1 hidden text-sm font-semibold uppercase tracking-[0.15em] text-ocean sm:inline-block sm:mb-2">
+                            {t('booking.label')}
+                        </span>
+                        <h2 className="mb-1 font-heading text-2xl font-bold text-navy sm:mb-2 sm:text-3xl md:text-4xl">
+                            {t('booking.title')}
+                        </h2>
+                        <p className="mx-auto hidden max-w-2xl text-base text-warm-gray sm:block">
+                            {t('booking.subtitle')}
+                        </p>
+                    </div>
+                    <StepIndicator current={step} labels={stepLabels} />
 
                     {/* Close button — resets wizard to step 1 */}
                     {step > 1 && (
@@ -378,9 +377,6 @@ export default function BookingCalendar() {
                         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
                             {/* Left — Calendar */}
                             <div>
-                                <h3 className="mb-6 font-heading text-xl font-bold text-navy">
-                                    {t('booking.stepDatesTitle')}
-                                </h3>
 
                                 <div className="flatpickr-booking-wrapper">
                                     {!dataReady ? (
@@ -451,25 +447,23 @@ export default function BookingCalendar() {
                                     </div>
                                 )}
 
-                                {/* Next button — sticky on mobile so it's always visible */}
-                                <div className="sticky bottom-0 z-10 -mx-4 mt-auto bg-gradient-to-t from-white via-white to-white/0 px-4 pb-2 pt-6 sm:static sm:mx-0 sm:bg-none sm:p-0">
-                                    <button
-                                        type="button"
-                                        onClick={goNext}
-                                        disabled={!datesValid}
-                                        className={`w-full rounded-full py-3.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 sm:text-base ${datesValid
-                                            ? 'bg-ocean hover:bg-ocean-dark hover:shadow-xl'
-                                            : 'cursor-not-allowed bg-navy/15'
-                                            }`}
-                                    >
-                                        {datesValid
-                                            ? `${t('booking.next')} · €${pricing!.total}`
-                                            : t('booking.next')}
-                                    </button>
-                                    <p className="mt-2 text-center text-xs text-warm-gray">
-                                        {t('booking.noPayment')}
-                                    </p>
-                                </div>
+                                {/* Next button */}
+                                <button
+                                    type="button"
+                                    onClick={goNext}
+                                    disabled={!datesValid}
+                                    className={`mt-auto w-full rounded-full py-3.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 sm:text-base ${datesValid
+                                        ? 'bg-ocean hover:bg-ocean-dark hover:shadow-xl'
+                                        : 'cursor-not-allowed bg-navy/15'
+                                        }`}
+                                >
+                                    {datesValid
+                                        ? `${t('booking.next')} · €${pricing!.total}`
+                                        : t('booking.next')}
+                                </button>
+                                <p className="mt-2 text-center text-xs text-warm-gray">
+                                    {t('booking.noPayment')}
+                                </p>
                             </div>
                         </div>
                     )}
