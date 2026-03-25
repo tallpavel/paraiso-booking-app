@@ -789,13 +789,13 @@ export default function BookingCalendar() {
                                         </div>
                                     )}
 
-                                    {/* Navigation */}
-                                    <div className="mt-8 flex gap-3">
+                                    {/* Navigation — stacked on mobile, side-by-side on sm+ */}
+                                    <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row">
                                         <button
                                             type="button"
                                             onClick={goBack}
                                             disabled={status === 'sending'}
-                                            className="shrink-0 rounded-full border-2 border-navy/15 px-6 py-3.5 text-base font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-sand disabled:opacity-50"
+                                            className="rounded-full border-2 border-navy/15 py-3 text-sm font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-sand disabled:opacity-50 sm:px-8 sm:py-3.5 sm:text-base"
                                         >
                                             {t('booking.back')}
                                         </button>
@@ -803,7 +803,7 @@ export default function BookingCalendar() {
                                             type="button"
                                             onClick={handleSubmit}
                                             disabled={status === 'sending' || !gdprConsent}
-                                            className={`flex-1 min-w-0 rounded-full py-3.5 text-sm sm:text-base font-semibold text-white shadow-lg transition-all ${status === 'sending' || !gdprConsent
+                                            className={`flex-1 rounded-full py-3.5 text-sm font-semibold text-white shadow-lg transition-all sm:text-base ${status === 'sending' || !gdprConsent
                                                 ? 'cursor-not-allowed bg-coral/40'
                                                 : 'bg-coral hover:bg-coral-dark hover:shadow-xl'
                                                 }`}
