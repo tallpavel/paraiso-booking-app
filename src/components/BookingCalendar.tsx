@@ -451,24 +451,25 @@ export default function BookingCalendar() {
                                     </div>
                                 )}
 
-                                {/* Next button */}
-                                <button
-                                    type="button"
-                                    onClick={goNext}
-                                    disabled={!datesValid}
-                                    className={`mt-auto w-full rounded-full py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 ${datesValid
-                                        ? 'bg-ocean hover:bg-ocean-dark hover:shadow-xl'
-                                        : 'cursor-not-allowed bg-navy/15'
-                                        }`}
-                                >
-                                    {datesValid
-                                        ? `${t('booking.next')} · €${pricing!.total}`
-                                        : t('booking.next')}
-                                </button>
-
-                                <p className="text-center text-xs text-warm-gray">
-                                    {t('booking.noPayment')}
-                                </p>
+                                {/* Next button — sticky on mobile so it's always visible */}
+                                <div className="sticky bottom-0 z-10 -mx-4 mt-auto bg-gradient-to-t from-white via-white to-white/0 px-4 pb-2 pt-6 sm:static sm:mx-0 sm:bg-none sm:p-0">
+                                    <button
+                                        type="button"
+                                        onClick={goNext}
+                                        disabled={!datesValid}
+                                        className={`w-full rounded-full py-3.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 sm:text-base ${datesValid
+                                            ? 'bg-ocean hover:bg-ocean-dark hover:shadow-xl'
+                                            : 'cursor-not-allowed bg-navy/15'
+                                            }`}
+                                    >
+                                        {datesValid
+                                            ? `${t('booking.next')} · €${pricing!.total}`
+                                            : t('booking.next')}
+                                    </button>
+                                    <p className="mt-2 text-center text-xs text-warm-gray">
+                                        {t('booking.noPayment')}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -584,21 +585,21 @@ export default function BookingCalendar() {
                                 {spam.honeypotField}
                             </div>
 
-                            {/* Navigation */}
-                            <div className="mt-8 flex gap-3">
+                            {/* Navigation — stacked on mobile, side-by-side on sm+ */}
+                            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row">
                                 <button
                                     type="button"
                                     onClick={goBack}
-                                    className="flex-1 rounded-full border-2 border-navy/15 py-3.5 text-base font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-sand"
+                                    className="rounded-full border-2 border-navy/15 py-3 text-sm font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-sand sm:px-8 sm:py-3.5 sm:text-base"
                                 >
                                     {t('booking.back')}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={goNext}
-                                    className="flex-[2] rounded-full bg-ocean py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:bg-ocean-dark hover:shadow-xl"
+                                    className="flex-1 rounded-full bg-ocean py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-ocean-dark hover:shadow-xl sm:text-base"
                                 >
-                                    {t('booking.next')}
+                                    {pricing ? `${t('booking.next')} · €${pricing.total}` : t('booking.next')}
                                 </button>
                             </div>
                         </div>
@@ -760,24 +761,24 @@ export default function BookingCalendar() {
                                         )}
                                     </div>
 
-                                    {/* GDPR consent */}
-                                    <div className="mt-6 rounded-xl border border-navy/8 bg-sand-light/60 p-4">
+                                    {/* GDPR consent — improved readability on mobile */}
+                                    <div className="mt-6 rounded-xl border border-navy/8 bg-sand-light/60 p-4 sm:p-5">
                                         <label className="flex cursor-pointer items-start gap-3">
                                             <input
                                                 type="checkbox"
                                                 id="gdpr-consent"
                                                 checked={gdprConsent}
                                                 onChange={(e) => setGdprConsent(e.target.checked)}
-                                                className="mt-0.5 h-4 w-4 shrink-0 accent-ocean"
+                                                className="mt-0.5 h-5 w-5 shrink-0 accent-ocean"
                                             />
-                                            <span className="text-xs leading-relaxed text-warm-gray">
+                                            <span className="text-[13px] leading-relaxed text-navy/70 sm:text-sm">
                                                 {t('booking.gdprConsent' as TranslationKey)}{' '}
                                                 <Link to="/terms" target="_blank" className="text-ocean underline underline-offset-2 hover:text-ocean-dark">
                                                     {t('booking.gdprPrivacyLink' as TranslationKey)}
                                                 </Link>
                                             </span>
                                         </label>
-                                        <p className="mt-2.5 text-[10px] leading-relaxed text-warm-gray/70">
+                                        <p className="mt-3 border-t border-navy/5 pt-3 text-[11px] leading-relaxed text-warm-gray/60 sm:text-xs">
                                             {t('booking.gdprDetails' as TranslationKey)}
                                         </p>
                                     </div>
@@ -803,9 +804,9 @@ export default function BookingCalendar() {
                                             type="button"
                                             onClick={handleSubmit}
                                             disabled={status === 'sending' || !gdprConsent}
-                                            className={`flex-1 rounded-full py-3.5 text-sm font-semibold text-white shadow-lg transition-all sm:text-base ${status === 'sending' || !gdprConsent
-                                                ? 'cursor-not-allowed bg-coral/40'
-                                                : 'bg-coral hover:bg-coral-dark hover:shadow-xl'
+                                            className={`flex-1 rounded-full py-3.5 text-sm font-semibold shadow-lg transition-all sm:text-base ${status === 'sending' || !gdprConsent
+                                                ? 'cursor-not-allowed bg-navy/15 text-navy/30'
+                                                : 'bg-coral text-white hover:bg-coral-dark hover:shadow-xl'
                                                 }`}
                                         >
                                             {status === 'sending'
