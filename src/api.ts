@@ -262,6 +262,9 @@ export interface ConfirmedReservationFull {
     paymentStatus: 'pending' | 'paid' | 'failed';
     stripeSessionId: string;
     stripePaymentUrl: string;
+    remainingPaymentStatus?: 'not_requested' | 'pending' | 'paid' | 'failed';
+    remainingStripeSessionId?: string;
+    remainingPaymentUrl?: string;
     status?: 'active' | 'cancelled' | 'completed';
     cancelledAt?: string;
     checkedIn?: boolean;
@@ -343,6 +346,19 @@ export async function sendCheckInEmail(token: string, reservationId: string): Pr
 
     if (!res.ok) {
         const body = await res.json().catch(() => ({ message: 'Failed to send check-in email' }));
+        throw body;
+    }
+    return res.json();
+}
+
+export async function sendRemainingPaymentEmail(token: string, id: string): Promise<{ message: string; paymentUrl: string; remainingBalance: number }> {
+    const res = await fetch(`${API_BASE}/reservations-confirmed/${id}/send-remaining-payment`, {
+        method: 'POST',
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({ message: 'Failed to send remaining payment email' }));
         throw body;
     }
     return res.json();

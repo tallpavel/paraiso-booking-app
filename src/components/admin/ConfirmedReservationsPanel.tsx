@@ -7,7 +7,7 @@ import type { ConfirmedReservationFull } from '../../api';
 
 function paymentLabel(status: string): string {
     switch (status) {
-        case 'paid': return '✓ Paid';
+        case 'paid': return '✓ Deposit Paid';
         case 'pending': return '⏳ Pending';
         case 'failed': return '✕ Failed';
         default: return status;
@@ -15,12 +15,13 @@ function paymentLabel(status: string): string {
 }
 
 export default function ConfirmedReservationsPanel() {
-    const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed, handleSendCheckIn } = useAdminData();
+    const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed, handleSendCheckIn, handleSendRemainingPayment } = useAdminData();
     const [cancelState, setCancelState] = useState<Record<string, 'cancelling' | 'done' | 'error'>>({});
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'paid' | 'failed'>('all');
     const [editing, setEditing] = useState<ConfirmedReservationFull | null>(null);
     const [cancelling, setCancelling] = useState<ConfirmedReservationFull | null>(null);
     const [sendingCheckIn, setSendingCheckIn] = useState<Record<string, boolean>>({});
+    const [sendingRemaining, setSendingRemaining] = useState<Record<string, boolean>>({});
     const [viewingCheckIn, setViewingCheckIn] = useState<ConfirmedReservationFull | null>(null);
 
     const filtered = filterStatus === 'all'
@@ -119,6 +120,13 @@ export default function ConfirmedReservationsPanel() {
                                         <span className={`admin-badge admin-badge--${c.paymentStatus}`}>
                                             {paymentLabel(c.paymentStatus)}
                                         </span>
+                                        {c.paymentStatus === 'paid' && (
+                                            c.remainingPaymentStatus === 'paid'
+                                                ? <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
+                                                : c.remainingPaymentStatus === 'pending'
+                                                    ? <span className="admin-badge admin-badge--checkin-sent">⏳ Remaining €{c.totalPrice - c.depositAmount}</span>
+                                                    : <span className="admin-badge admin-badge--remaining">Remaining €{c.totalPrice - c.depositAmount}</span>
+                                        )}
                                     </div>
                                 </div>
 
@@ -173,6 +181,7 @@ export default function ConfirmedReservationsPanel() {
 
                                 <div className="admin-card__actions">
                                     {(() => {
+                                        const isFullyPaid = c.paymentStatus === 'paid' && c.remainingPaymentStatus === 'paid';
                                         const ciStatus = c.checkInStatus || 'pending';
                                         const isSending = sendingCheckIn[c._id];
                                         if (ciStatus === 'completed') {
@@ -184,6 +193,9 @@ export default function ConfirmedReservationsPanel() {
                                                     ☑ Checked In
                                                 </button>
                                             );
+                                        }
+                                        if (!isFullyPaid) {
+                                            return null;
                                         }
                                         return (
                                             <>
@@ -220,6 +232,23 @@ export default function ConfirmedReservationsPanel() {
                                     >
                                         ✎ Edit
                                     </button>
+                                    {c.paymentStatus === 'paid' && c.remainingPaymentStatus !== 'paid' && (
+                                        <button
+                                            onClick={async () => {
+                                                setSendingRemaining(prev => ({ ...prev, [c._id]: true }));
+                                                try { await handleSendRemainingPayment(c._id); } catch { }
+                                                setSendingRemaining(prev => ({ ...prev, [c._id]: false }));
+                                            }}
+                                            disabled={sendingRemaining[c._id] || state === 'cancelling' || state === 'done'}
+                                            className={`admin-btn ${c.remainingPaymentStatus === 'pending' ? 'admin-btn--checkin-sent' : 'admin-btn--remaining'}`}
+                                        >
+                                            {sendingRemaining[c._id]
+                                                ? 'Sending…'
+                                                : c.remainingPaymentStatus === 'pending'
+                                                    ? '↻ Resend Remaining'
+                                                    : `💳 Send Remaining €${c.totalPrice - c.depositAmount}`}
+                                        </button>
+                                    )}
                                     <button
                                         onClick={() => setCancelling(c)}
                                         disabled={state === 'cancelling' || state === 'done'}

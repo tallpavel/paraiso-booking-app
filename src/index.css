@@ -1080,6 +1080,11 @@ a.btn {
   color: #e07c5a;
 }
 
+.admin-badge--remaining {
+  background: rgba(224, 124, 90, 0.12);
+  color: #e07c5a;
+}
+
 /* ── Cards (Requests / Confirmed) ────────────────────────────────────── */
 .admin-cards {
   display: grid;
@@ -1311,6 +1316,17 @@ a.btn {
 .admin-badge--checkin-sent {
   background: rgba(212, 162, 78, 0.12);
   color: #d4a24e;
+}
+
+.admin-btn--remaining {
+  background: rgba(220, 38, 38, 0.08);
+  color: #ef4444;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.admin-btn--remaining:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.18);
+  color: #ef4444;
 }
 
 .admin-card__badges {

@@ -11,6 +11,7 @@ import {
     updateConfirmedReservation,
     toggleCheckIn,
     sendCheckInEmail,
+    sendRemainingPaymentEmail,
     type AdminStats,
     type Reservation,
     type ConfirmedReservationFull,
@@ -34,6 +35,7 @@ interface AdminActions {
     handleUpdateConfirmed: (id: string, data: UpdateReservationPayload) => Promise<void>;
     handleToggleCheckIn: (id: string) => Promise<void>;
     handleSendCheckIn: (id: string) => Promise<void>;
+    handleSendRemainingPayment: (id: string) => Promise<void>;
 }
 
 export function useAdminData(): AdminData & AdminActions {
@@ -117,9 +119,16 @@ export function useAdminData(): AdminData & AdminActions {
         await refresh();
     }, [token, refresh]);
 
+    const handleSendRemainingPayment = useCallback(async (id: string) => {
+        if (!token) throw new Error('Not authenticated');
+        await sendRemainingPaymentEmail(token, id);
+        await refresh();
+    }, [token, refresh]);
+
     return {
         stats, requests, confirmed, isLoading, error,
         refresh, handleConfirm, handleRejectRequest, handleCancelConfirmed,
         handleUpdateRequest, handleUpdateConfirmed, handleToggleCheckIn, handleSendCheckIn,
+        handleSendRemainingPayment,
     };
 }

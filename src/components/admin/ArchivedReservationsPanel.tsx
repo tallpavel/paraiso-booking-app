@@ -4,7 +4,7 @@ import { fetchArchivedReservations, type ConfirmedReservationFull } from '../../
 
 function paymentLabel(status: string): string {
     switch (status) {
-        case 'paid': return '✓ Paid';
+        case 'paid': return '✓ Deposit Paid';
         case 'pending': return '⏳ Pending';
         case 'failed': return '✕ Failed';
         default: return status;
@@ -142,6 +142,13 @@ export default function ArchivedReservationsPanel() {
                                     <span className={`admin-badge admin-badge--${r.paymentStatus}`}>
                                         {paymentLabel(r.paymentStatus)}
                                     </span>
+                                    {r.paymentStatus === 'paid' && (
+                                        r.remainingPaymentStatus === 'paid'
+                                            ? <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
+                                            : r.remainingPaymentStatus === 'pending'
+                                                ? <span className="admin-badge admin-badge--checkin-sent">⏳ Remaining €{r.totalPrice - r.depositAmount}</span>
+                                                : <span className="admin-badge admin-badge--remaining">Remaining €{r.totalPrice - r.depositAmount}</span>
+                                    )}
                                 </div>
                             </div>
 
