@@ -2952,3 +2952,65 @@ a.btn {
     stroke-dashoffset: 0;
   }
 }
+
+/* ── Payment Result Page Icons ─────────────────────────────────────── */
+.payment-icon {
+  display: inline-flex;
+  animation: paymentIconFadeIn 0.4s ease-out;
+}
+
+@keyframes paymentIconFadeIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Circle */
+.payment-icon__circle {
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 160;
+  stroke-dashoffset: 160;
+  animation: paymentCircleDraw 0.6s ease-out 0.2s forwards;
+}
+
+.payment-icon--success .payment-icon__circle {
+  stroke: rgba(255, 255, 255, 0.6);
+}
+
+.payment-icon--cancelled .payment-icon__circle {
+  stroke: rgba(255, 255, 255, 0.6);
+}
+
+/* Checkmark */
+.payment-icon__check {
+  stroke: white;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: paymentCheckDraw 0.4s ease-out 0.6s forwards;
+}
+
+/* Cross */
+.payment-icon__cross {
+  stroke: white;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 56;
+  stroke-dashoffset: 56;
+  animation: paymentCrossDraw 0.4s ease-out 0.6s forwards;
+}
+
+@keyframes paymentCircleDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes paymentCheckDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes paymentCrossDraw {
+  to { stroke-dashoffset: 0; }
+}
