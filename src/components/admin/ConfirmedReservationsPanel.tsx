@@ -117,15 +117,19 @@ export default function ConfirmedReservationsPanel() {
                                                 ✓ Checked In
                                             </span>
                                         )}
-                                        <span className={`admin-badge admin-badge--${c.paymentStatus}`}>
-                                            {paymentLabel(c.paymentStatus)}
-                                        </span>
-                                        {c.paymentStatus === 'paid' && (
-                                            c.remainingPaymentStatus === 'paid'
-                                                ? <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
-                                                : c.remainingPaymentStatus === 'pending'
-                                                    ? <span className="admin-badge admin-badge--checkin-sent">⏳ Remaining €{c.totalPrice - c.depositAmount}</span>
-                                                    : <span className="admin-badge admin-badge--remaining">Remaining €{c.totalPrice - c.depositAmount}</span>
+                                        {c.paymentStatus === 'paid' && c.remainingPaymentStatus === 'paid' ? (
+                                            <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
+                                        ) : (
+                                            <>
+                                                <span className={`admin-badge admin-badge--${c.paymentStatus}`}>
+                                                    {paymentLabel(c.paymentStatus)}
+                                                </span>
+                                                {c.paymentStatus === 'paid' && (
+                                                    c.remainingPaymentStatus === 'pending'
+                                                        ? <span className="admin-badge admin-badge--checkin-sent">⏳ Remaining €{c.totalPrice - c.depositAmount}</span>
+                                                        : <span className="admin-badge admin-badge--remaining">Remaining €{c.totalPrice - c.depositAmount}</span>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 </div>

@@ -1334,6 +1334,8 @@ a.btn {
   gap: 0.35rem;
   align-items: center;
   flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 /* ── Check-in toggle on dashboard cards ────────────────────────────── */

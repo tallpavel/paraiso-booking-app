@@ -139,15 +139,19 @@ export default function ArchivedReservationsPanel() {
                                 </div>
                                 <div className="admin-card__detail">
                                     <span className="admin-card__label">Payment</span>
-                                    <span className={`admin-badge admin-badge--${r.paymentStatus}`}>
-                                        {paymentLabel(r.paymentStatus)}
-                                    </span>
-                                    {r.paymentStatus === 'paid' && (
-                                        r.remainingPaymentStatus === 'paid'
-                                            ? <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
-                                            : r.remainingPaymentStatus === 'pending'
-                                                ? <span className="admin-badge admin-badge--checkin-sent">⏳ Remaining €{r.totalPrice - r.depositAmount}</span>
-                                                : <span className="admin-badge admin-badge--remaining">Remaining €{r.totalPrice - r.depositAmount}</span>
+                                    {r.paymentStatus === 'paid' && r.remainingPaymentStatus === 'paid' ? (
+                                        <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
+                                    ) : (
+                                        <>
+                                            <span className={`admin-badge admin-badge--${r.paymentStatus}`}>
+                                                {paymentLabel(r.paymentStatus)}
+                                            </span>
+                                            {r.paymentStatus === 'paid' && (
+                                                r.remainingPaymentStatus === 'pending'
+                                                    ? <span className="admin-badge admin-badge--checkin-sent">⏳ Remaining €{r.totalPrice - r.depositAmount}</span>
+                                                    : <span className="admin-badge admin-badge--remaining">Remaining €{r.totalPrice - r.depositAmount}</span>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </div>

@@ -80,13 +80,17 @@ function CheckInCard({ reservation, type, onSendCheckIn, onViewCheckIn }: { rese
                 <span className="admin-checkin-card__arrow">→</span>
                 <span>{formatDateShort(reservation.checkOut)}</span>
                 <span className="admin-checkin-card__nights">{reservation.nights}n</span>
-                <span className={`admin-badge admin-badge--${reservation.paymentStatus}`}>{paymentLabel(reservation.paymentStatus)}</span>
-                {reservation.paymentStatus === 'paid' && (
-                    reservation.remainingPaymentStatus === 'paid'
-                        ? <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
-                        : reservation.remainingPaymentStatus === 'pending'
-                            ? <span className="admin-badge admin-badge--checkin-sent">⏳ Remaining €{reservation.totalPrice - reservation.depositAmount}</span>
-                            : <span className="admin-badge admin-badge--remaining">Remaining €{reservation.totalPrice - reservation.depositAmount}</span>
+                {reservation.paymentStatus === 'paid' && reservation.remainingPaymentStatus === 'paid' ? (
+                    <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
+                ) : (
+                    <>
+                        <span className={`admin-badge admin-badge--${reservation.paymentStatus}`}>{paymentLabel(reservation.paymentStatus)}</span>
+                        {reservation.paymentStatus === 'paid' && (
+                            reservation.remainingPaymentStatus === 'pending'
+                                ? <span className="admin-badge admin-badge--checkin-sent">⏳ Remaining €{reservation.totalPrice - reservation.depositAmount}</span>
+                                : <span className="admin-badge admin-badge--remaining">Remaining €{reservation.totalPrice - reservation.depositAmount}</span>
+                        )}
+                    </>
                 )}
             </div>
             {type === 'staying' && (
@@ -348,15 +352,19 @@ export default function AdminDashboard() {
                                             <td className="admin-table__price">€{c.totalPrice}</td>
                                             <td className="admin-table__price">€{c.depositAmount}</td>
                                             <td>
-                                                <span className={`admin-badge admin-badge--${c.paymentStatus}`}>
-                                                    {paymentLabel(c.paymentStatus)}
-                                                </span>
-                                                {c.paymentStatus === 'paid' && (
-                                                    c.remainingPaymentStatus === 'paid'
-                                                        ? <span className="admin-badge admin-badge--paid" style={{ marginLeft: '0.35rem' }}>✓ Fully Paid</span>
-                                                        : c.remainingPaymentStatus === 'pending'
-                                                            ? <span className="admin-badge admin-badge--checkin-sent" style={{ marginLeft: '0.35rem' }}>⏳ Remaining €{c.totalPrice - c.depositAmount}</span>
-                                                            : <span className="admin-badge admin-badge--remaining" style={{ marginLeft: '0.35rem' }}>Remaining €{c.totalPrice - c.depositAmount}</span>
+                                                {c.paymentStatus === 'paid' && c.remainingPaymentStatus === 'paid' ? (
+                                                    <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
+                                                ) : (
+                                                    <>
+                                                        <span className={`admin-badge admin-badge--${c.paymentStatus}`}>
+                                                            {paymentLabel(c.paymentStatus)}
+                                                        </span>
+                                                        {c.paymentStatus === 'paid' && (
+                                                            c.remainingPaymentStatus === 'pending'
+                                                                ? <span className="admin-badge admin-badge--checkin-sent" style={{ marginLeft: '0.35rem' }}>⏳ Remaining €{c.totalPrice - c.depositAmount}</span>
+                                                                : <span className="admin-badge admin-badge--remaining" style={{ marginLeft: '0.35rem' }}>Remaining €{c.totalPrice - c.depositAmount}</span>
+                                                        )}
+                                                    </>
                                                 )}
                                             </td>
                                         </tr>
