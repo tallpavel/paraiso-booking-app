@@ -209,7 +209,7 @@ export default function Header() {
                                 window.dispatchEvent(new CustomEvent('open-booking'));
                             }
                         }}
-                        className="rounded-full bg-coral px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-coral-dark hover:shadow-xl"
+                        className="rounded-full bg-coral px-8 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-coral-dark hover:shadow-xl hover:-translate-y-0.5"
                     >
                         {t('nav.book')}
                     </button>
@@ -281,7 +281,7 @@ export default function Header() {
                                         window.dispatchEvent(new CustomEvent('open-booking'));
                                     }
                                 }}
-                                className="mt-2 block w-full rounded-full bg-coral px-6 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-coral-dark"
+                                className="mt-2 block w-full rounded-full bg-coral px-8 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-coral-dark"
                             >
                                 {t('nav.book')}
                             </button>
