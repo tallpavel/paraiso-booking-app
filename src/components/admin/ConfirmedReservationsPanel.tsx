@@ -15,13 +15,14 @@ function paymentLabel(status: string): string {
 }
 
 export default function ConfirmedReservationsPanel() {
-    const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed, handleSendCheckIn, handleSendRemainingPayment } = useAdminData();
+    const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed, handleSendCheckIn, handleSendRemainingPayment, handleSendAccessInfo } = useAdminData();
     const [cancelState, setCancelState] = useState<Record<string, 'cancelling' | 'done' | 'error'>>({});
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'paid' | 'failed'>('all');
     const [editing, setEditing] = useState<ConfirmedReservationFull | null>(null);
     const [cancelling, setCancelling] = useState<ConfirmedReservationFull | null>(null);
     const [sendingCheckIn, setSendingCheckIn] = useState<Record<string, boolean>>({});
     const [sendingRemaining, setSendingRemaining] = useState<Record<string, boolean>>({});
+    const [sendingAccessInfo, setSendingAccessInfo] = useState<Record<string, boolean>>({});
     const [viewingCheckIn, setViewingCheckIn] = useState<ConfirmedReservationFull | null>(null);
 
     const filtered = filterStatus === 'all'
@@ -189,13 +190,31 @@ export default function ConfirmedReservationsPanel() {
                                         const ciStatus = c.checkInStatus || 'pending';
                                         const isSending = sendingCheckIn[c._id];
                                         if (ciStatus === 'completed') {
+                                            const isSendingAccess = sendingAccessInfo[c._id];
                                             return (
-                                                <button
-                                                    onClick={() => setViewingCheckIn(c)}
-                                                    className="admin-btn admin-btn--checkedin"
-                                                >
-                                                    ☑ Checked In
-                                                </button>
+                                                <>
+                                                    <button
+                                                        onClick={() => setViewingCheckIn(c)}
+                                                        className="admin-btn admin-btn--checkedin"
+                                                    >
+                                                        ☑ Checked In
+                                                    </button>
+                                                    <button
+                                                        onClick={async () => {
+                                                            setSendingAccessInfo(prev => ({ ...prev, [c._id]: true }));
+                                                            try { await handleSendAccessInfo(c._id); } catch { }
+                                                            setSendingAccessInfo(prev => ({ ...prev, [c._id]: false }));
+                                                        }}
+                                                        disabled={isSendingAccess || state === 'cancelling' || state === 'done'}
+                                                        className={`admin-btn ${c.accessInfoSent ? 'admin-btn--checkin-sent' : 'admin-btn--checkin'}`}
+                                                    >
+                                                        {isSendingAccess
+                                                            ? 'Sending…'
+                                                            : c.accessInfoSent
+                                                                ? '↻ Resend Access Info'
+                                                                : '🔑 Send Access Info'}
+                                                    </button>
+                                                </>
                                             );
                                         }
                                         if (!isFullyPaid) {

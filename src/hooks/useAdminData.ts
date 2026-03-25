@@ -12,6 +12,7 @@ import {
     toggleCheckIn,
     sendCheckInEmail,
     sendRemainingPaymentEmail,
+    sendAccessInfoEmail,
     type AdminStats,
     type Reservation,
     type ConfirmedReservationFull,
@@ -36,6 +37,7 @@ interface AdminActions {
     handleToggleCheckIn: (id: string) => Promise<void>;
     handleSendCheckIn: (id: string) => Promise<void>;
     handleSendRemainingPayment: (id: string) => Promise<void>;
+    handleSendAccessInfo: (id: string) => Promise<void>;
 }
 
 export function useAdminData(): AdminData & AdminActions {
@@ -125,10 +127,16 @@ export function useAdminData(): AdminData & AdminActions {
         await refresh();
     }, [token, refresh]);
 
+    const handleSendAccessInfo = useCallback(async (id: string) => {
+        if (!token) throw new Error('Not authenticated');
+        await sendAccessInfoEmail(token, id);
+        await refresh();
+    }, [token, refresh]);
+
     return {
         stats, requests, confirmed, isLoading, error,
         refresh, handleConfirm, handleRejectRequest, handleCancelConfirmed,
         handleUpdateRequest, handleUpdateConfirmed, handleToggleCheckIn, handleSendCheckIn,
-        handleSendRemainingPayment,
+        handleSendRemainingPayment, handleSendAccessInfo,
     };
 }

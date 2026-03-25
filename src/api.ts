@@ -271,6 +271,7 @@ export interface ConfirmedReservationFull {
     checkedInAt?: string;
     checkInStatus?: 'pending' | 'sent' | 'completed';
     checkInToken?: string;
+    accessInfoSent?: boolean;
     createdAt: string;
     updatedAt: string;
 }
@@ -359,6 +360,19 @@ export async function sendRemainingPaymentEmail(token: string, id: string): Prom
 
     if (!res.ok) {
         const body = await res.json().catch(() => ({ message: 'Failed to send remaining payment email' }));
+        throw body;
+    }
+    return res.json();
+}
+
+export async function sendAccessInfoEmail(token: string, id: string): Promise<{ message: string }> {
+    const res = await fetch(`${API_BASE}/reservations-confirmed/${id}/send-access-info`, {
+        method: 'POST',
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({ message: 'Failed to send access info email' }));
         throw body;
     }
     return res.json();
