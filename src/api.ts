@@ -466,6 +466,7 @@ export interface UpdateReservationPayload {
     nights?: number;
     totalPrice?: number;
     comment?: string;
+    paymentStatus?: 'pending' | 'paid' | 'failed';
 }
 
 export async function updateReservationRequest(

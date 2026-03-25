@@ -2,6 +2,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { fetchArchivedReservations, type ConfirmedReservationFull } from '../../api';
 
+function paymentLabel(status: string): string {
+    switch (status) {
+        case 'paid': return '✓ Paid';
+        case 'pending': return '⏳ Pending';
+        case 'failed': return '✕ Failed';
+        default: return status;
+    }
+}
+
 type FilterType = 'all' | 'completed' | 'cancelled';
 
 export default function ArchivedReservationsPanel() {
@@ -131,7 +140,7 @@ export default function ArchivedReservationsPanel() {
                                 <div className="admin-card__detail">
                                     <span className="admin-card__label">Payment</span>
                                     <span className={`admin-badge admin-badge--${r.paymentStatus}`}>
-                                        {r.paymentStatus}
+                                        {paymentLabel(r.paymentStatus)}
                                     </span>
                                 </div>
                             </div>

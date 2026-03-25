@@ -89,6 +89,8 @@ export default function EditReservationModal({
     const [checkOut, setCheckOut] = useState(toDateInputValue(reservation.checkOut));
     const [comment, setComment] = useState(reservation.comment || '');
     const [totalPrice, setTotalPrice] = useState(reservation.totalPrice);
+    const initialPaymentStatus = type === 'confirmed' ? (reservation as ConfirmedReservationFull).paymentStatus : undefined;
+    const [paymentStatus, setPaymentStatus] = useState<'pending' | 'paid' | 'failed'>(initialPaymentStatus || 'pending');
     const [autoPrice, setAutoPrice] = useState(true);
 
     const [saving, setSaving] = useState(false);
@@ -168,6 +170,8 @@ export default function EditReservationModal({
             list.push({ field: 'Total Price', from: `€${reservation.totalPrice}`, to: `€${totalPrice}` });
         if ((comment.trim() || '') !== (reservation.comment || ''))
             list.push({ field: 'Comment', from: reservation.comment || '(empty)', to: comment.trim() || '(empty)' });
+        if (type === 'confirmed' && paymentStatus !== initialPaymentStatus)
+            list.push({ field: 'Payment Status', from: initialPaymentStatus || 'pending', to: paymentStatus });
         return list;
     }, [guestName, guestEmail, checkIn, checkOut, totalPrice, comment, reservation]);
 
@@ -186,7 +190,7 @@ export default function EditReservationModal({
         setSaving(true);
         setError('');
         try {
-            await onSave(reservation._id, {
+            const payload: UpdateReservationPayload = {
                 guestName: guestName.trim(),
                 guestEmail: guestEmail.trim(),
                 checkIn: new Date(checkIn).toISOString(),
@@ -194,7 +198,11 @@ export default function EditReservationModal({
                 nights,
                 totalPrice,
                 comment: comment.trim() || undefined,
-            });
+            };
+            if (type === 'confirmed' && paymentStatus !== initialPaymentStatus) {
+                payload.paymentStatus = paymentStatus;
+            }
+            await onSave(reservation._id, payload);
             onClose();
         } catch (err) {
             const apiErr = err as { message?: string };
@@ -256,126 +264,142 @@ export default function EditReservationModal({
                     ) : (
                         /* ── Edit form ─────────────────────────────── */
                         <>
-                    {/* Guest Name */}
-                    <div className="admin-modal__field">
-                        <label className="admin-modal__label">Guest Name *</label>
-                        <input
-                            type="text"
-                            value={guestName}
-                            onChange={(e) => setGuestName(e.target.value)}
-                            className="admin-modal__input"
-                        />
-                    </div>
-
-                    {/* Guest Email */}
-                    <div className="admin-modal__field">
-                        <label className="admin-modal__label">Guest Email *</label>
-                        <input
-                            type="email"
-                            value={guestEmail}
-                            onChange={(e) => setGuestEmail(e.target.value)}
-                            className="admin-modal__input"
-                        />
-                    </div>
-
-                    {/* Dates row */}
-                    <div className="admin-modal__row">
-                        <div className="admin-modal__field">
-                            <label className="admin-modal__label">Check-in *</label>
-                            <input
-                                type="date"
-                                value={checkIn}
-                                onChange={(e) => setCheckIn(e.target.value)}
-                                min={new Date().toISOString().slice(0, 10)}
-                                className="admin-modal__input"
-                            />
-                        </div>
-                        <div className="admin-modal__field">
-                            <label className="admin-modal__label">Check-out *</label>
-                            <input
-                                type="date"
-                                value={checkOut}
-                                onChange={(e) => setCheckOut(e.target.value)}
-                                min={checkIn}
-                                className="admin-modal__input"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Nights display */}
-                    {nights > 0 && (
-                        <div className={`admin-modal__info ${nights < MIN_NIGHTS ? 'admin-modal__info--error' : ''}`}>
-                            {nights} night{nights !== 1 ? 's' : ''}
-                            {nights < MIN_NIGHTS && ` — minimum ${MIN_NIGHTS} nights required`}
-                        </div>
-                    )}
-
-                    {/* Conflict warning */}
-                    {conflicts.length > 0 && (
-                        <div className="admin-modal__warning">
-                            ⚠ {conflicts.length} day{conflicts.length !== 1 ? 's' : ''} conflict with existing bookings:
-                            <span className="admin-modal__conflicts">
-                                {conflicts.slice(0, 5).join(', ')}
-                                {conflicts.length > 5 && ` +${conflicts.length - 5} more`}
-                            </span>
-                        </div>
-                    )}
-
-                    {/* Price */}
-                    <div className="admin-modal__field">
-                        <label className="admin-modal__label">
-                            Total Price (€) *
-                            <label className="admin-modal__checkbox-label">
+                            {/* Guest Name */}
+                            <div className="admin-modal__field">
+                                <label className="admin-modal__label">Guest Name *</label>
                                 <input
-                                    type="checkbox"
-                                    checked={autoPrice}
-                                    onChange={(e) => setAutoPrice(e.target.checked)}
+                                    type="text"
+                                    value={guestName}
+                                    onChange={(e) => setGuestName(e.target.value)}
+                                    className="admin-modal__input"
                                 />
-                                Auto-calculate
-                            </label>
-                        </label>
-                        <input
-                            type="number"
-                            value={totalPrice}
-                            onChange={(e) => {
-                                setAutoPrice(false);
-                                setTotalPrice(Number(e.target.value));
-                            }}
-                            min={1}
-                            className="admin-modal__input"
-                            disabled={autoPrice}
-                        />
-                        {autoPrice && nights > 0 && (
-                            <p className="admin-modal__hint">
-                                Estimated: €{estimatedPrice} ({nights} nights × avg €{Math.round(estimatedPrice / nights)}/night)
-                            </p>
-                        )}
-                    </div>
+                            </div>
 
-                    {/* Comment */}
-                    <div className="admin-modal__field">
-                        <label className="admin-modal__label">Comment</label>
-                        <textarea
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                            rows={3}
-                            className="admin-modal__input admin-modal__textarea"
-                        />
-                    </div>
+                            {/* Guest Email */}
+                            <div className="admin-modal__field">
+                                <label className="admin-modal__label">Guest Email *</label>
+                                <input
+                                    type="email"
+                                    value={guestEmail}
+                                    onChange={(e) => setGuestEmail(e.target.value)}
+                                    className="admin-modal__input"
+                                />
+                            </div>
 
-                    {/* Validation errors */}
-                    {validationErrors.length > 0 && (
-                        <div className="admin-modal__errors">
-                            {validationErrors.map((err, i) => (
-                                <p key={i}>• {err}</p>
-                            ))}
-                        </div>
-                    )}
+                            {/* Dates row */}
+                            <div className="admin-modal__row">
+                                <div className="admin-modal__field">
+                                    <label className="admin-modal__label">Check-in *</label>
+                                    <input
+                                        type="date"
+                                        value={checkIn}
+                                        onChange={(e) => setCheckIn(e.target.value)}
+                                        min={new Date().toISOString().slice(0, 10)}
+                                        className="admin-modal__input"
+                                    />
+                                </div>
+                                <div className="admin-modal__field">
+                                    <label className="admin-modal__label">Check-out *</label>
+                                    <input
+                                        type="date"
+                                        value={checkOut}
+                                        onChange={(e) => setCheckOut(e.target.value)}
+                                        min={checkIn}
+                                        className="admin-modal__input"
+                                    />
+                                </div>
+                            </div>
 
-                    {/* API error */}
-                    {error && (
-                        <div className="admin-modal__api-error">{error}</div>
-                    )}
+                            {/* Nights display */}
+                            {nights > 0 && (
+                                <div className={`admin-modal__info ${nights < MIN_NIGHTS ? 'admin-modal__info--error' : ''}`}>
+                                    {nights} night{nights !== 1 ? 's' : ''}
+                                    {nights < MIN_NIGHTS && ` — minimum ${MIN_NIGHTS} nights required`}
+                                </div>
+                            )}
+
+                            {/* Conflict warning */}
+                            {conflicts.length > 0 && (
+                                <div className="admin-modal__warning">
+                                    ⚠ {conflicts.length} day{conflicts.length !== 1 ? 's' : ''} conflict with existing bookings:
+                                    <span className="admin-modal__conflicts">
+                                        {conflicts.slice(0, 5).join(', ')}
+                                        {conflicts.length > 5 && ` +${conflicts.length - 5} more`}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Price */}
+                            <div className="admin-modal__field">
+                                <label className="admin-modal__label">
+                                    Total Price (€) *
+                                    <label className="admin-modal__checkbox-label">
+                                        <input
+                                            type="checkbox"
+                                            checked={autoPrice}
+                                            onChange={(e) => setAutoPrice(e.target.checked)}
+                                        />
+                                        Auto-calculate
+                                    </label>
+                                </label>
+                                <input
+                                    type="number"
+                                    value={totalPrice}
+                                    onChange={(e) => {
+                                        setAutoPrice(false);
+                                        setTotalPrice(Number(e.target.value));
+                                    }}
+                                    min={1}
+                                    className="admin-modal__input"
+                                    disabled={autoPrice}
+                                />
+                                {autoPrice && nights > 0 && (
+                                    <p className="admin-modal__hint">
+                                        Estimated: €{estimatedPrice} ({nights} nights × avg €{Math.round(estimatedPrice / nights)}/night)
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Payment Status (confirmed only) */}
+                            {type === 'confirmed' && (
+                                <div className="admin-modal__field">
+                                    <label className="admin-modal__label">Payment Status</label>
+                                    <select
+                                        value={paymentStatus}
+                                        onChange={(e) => setPaymentStatus(e.target.value as 'pending' | 'paid' | 'failed')}
+                                        className="admin-modal__input"
+                                    >
+                                        <option value="pending">⏳ Pending</option>
+                                        <option value="paid">✓ Paid</option>
+                                        <option value="failed">✕ Failed</option>
+                                    </select>
+                                </div>
+                            )}
+
+                            {/* Comment */}
+                            <div className="admin-modal__field">
+                                <label className="admin-modal__label">Comment</label>
+                                <textarea
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}
+                                    rows={3}
+                                    className="admin-modal__input admin-modal__textarea"
+                                />
+                            </div>
+
+                            {/* Validation errors */}
+                            {validationErrors.length > 0 && (
+                                <div className="admin-modal__errors">
+                                    {validationErrors.map((err, i) => (
+                                        <p key={i}>• {err}</p>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* API error */}
+                            {error && (
+                                <div className="admin-modal__api-error">{error}</div>
+                            )}
                         </>
                     )}
                 </div>

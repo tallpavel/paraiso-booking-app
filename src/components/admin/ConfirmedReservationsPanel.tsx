@@ -5,6 +5,15 @@ import ConfirmDialog from './ConfirmDialog';
 import CheckInDetailsModal from './CheckInDetailsModal';
 import type { ConfirmedReservationFull } from '../../api';
 
+function paymentLabel(status: string): string {
+    switch (status) {
+        case 'paid': return '✓ Paid';
+        case 'pending': return '⏳ Pending';
+        case 'failed': return '✕ Failed';
+        default: return status;
+    }
+}
+
 export default function ConfirmedReservationsPanel() {
     const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed, handleSendCheckIn } = useAdminData();
     const [cancelState, setCancelState] = useState<Record<string, 'cancelling' | 'done' | 'error'>>({});
@@ -108,7 +117,7 @@ export default function ConfirmedReservationsPanel() {
                                             </span>
                                         )}
                                         <span className={`admin-badge admin-badge--${c.paymentStatus}`}>
-                                            {c.paymentStatus}
+                                            {paymentLabel(c.paymentStatus)}
                                         </span>
                                     </div>
                                 </div>
@@ -181,7 +190,7 @@ export default function ConfirmedReservationsPanel() {
                                                 <button
                                                     onClick={async () => {
                                                         setSendingCheckIn(prev => ({ ...prev, [c._id]: true }));
-                                                        try { await handleSendCheckIn(c._id); } catch {}
+                                                        try { await handleSendCheckIn(c._id); } catch { }
                                                         setSendingCheckIn(prev => ({ ...prev, [c._id]: false }));
                                                     }}
                                                     disabled={isSending || state === 'cancelling' || state === 'done'}
