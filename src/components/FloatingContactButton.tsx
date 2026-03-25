@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { ContactFormData } from '../types';
 import { useI18n } from '../i18n';
+import type { TranslationKey } from '../i18n';
 import { sendContactMessage } from '../api';
 
 const initialForm: ContactFormData = {
@@ -31,6 +32,7 @@ export default function FloatingContactButton({ forceOpen, onForceOpenHandled }:
     const [form, setForm] = useState<ContactFormData>(initialForm);
     const [errors, setErrors] = useState<FieldError>({});
     const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+    const [gdprConsent, setGdprConsent] = useState(false);
 
     // Show button after scrolling past hero
     useEffect(() => {
@@ -105,6 +107,7 @@ export default function FloatingContactButton({ forceOpen, onForceOpenHandled }:
             });
             setStatus('sent');
             setForm(initialForm);
+            setGdprConsent(false);
             setTimeout(() => {
                 setStatus('idle');
                 setOpen(false);
@@ -266,11 +269,31 @@ export default function FloatingContactButton({ forceOpen, onForceOpenHandled }:
                                         </div>
                                     </div>
 
+                                    {/* GDPR consent */}
+                                    <div className="mt-4 rounded-xl border border-navy/8 bg-sand-light/50 p-3">
+                                        <label className="flex cursor-pointer items-start gap-2.5">
+                                            <input
+                                                type="checkbox"
+                                                id="modal-gdpr"
+                                                checked={gdprConsent}
+                                                onChange={(e) => setGdprConsent(e.target.checked)}
+                                                className="mt-0.5 h-4 w-4 shrink-0 accent-ocean"
+                                            />
+                                            <span className="text-[11px] leading-relaxed text-warm-gray">
+                                                {t('contact.gdprConsent' as TranslationKey)}
+                                            </span>
+                                        </label>
+                                    </div>
+
                                     {/* Submit */}
                                     <button
                                         type="submit"
-                                        disabled={status === 'sending'}
-                                        className="group mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-ocean to-ocean-dark py-4 text-base font-semibold text-white shadow-lg shadow-ocean/20 transition-all duration-300 hover:shadow-xl hover:shadow-ocean/30 disabled:cursor-wait disabled:opacity-70"
+                                        disabled={status === 'sending' || !gdprConsent}
+                                        className={`group mt-5 flex w-full items-center justify-center gap-2 rounded-full py-4 text-base font-semibold text-white shadow-lg transition-all duration-300 ${
+                                            status === 'sending' || !gdprConsent
+                                                ? 'cursor-not-allowed bg-ocean/40 shadow-none'
+                                                : 'bg-gradient-to-r from-ocean to-ocean-dark shadow-ocean/20 hover:shadow-xl hover:shadow-ocean/30'
+                                        }`}
                                     >
                                         {status === 'sending' ? (
                                             <>

@@ -2,128 +2,151 @@ import { useRef, useState, useEffect } from 'react';
 import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n';
 
-// ── SVG Icons — stroke-based, 24×24 viewBox ─────────────────────────
+// ── SVG Icons — modern dual-tone, 24×24 viewBox ─────────────────────
 const icons: Record<string, React.ReactNode> = {
+    entirePlace: (
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 10.4V20a1 1 0 001 1h14a1 1 0 001-1v-9.6" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M2 11l9.293-8.293a1 1 0 011.414 0L22 11" stroke="currentColor" strokeWidth={1.5} />
+            <rect x="9" y="14" width="6" height="7" rx="0.5" fill="currentColor" opacity={0.12} stroke="currentColor" strokeWidth={1.2} />
+            <circle cx="13.5" cy="17.5" r="0.5" fill="currentColor" />
+        </svg>
+    ),
     oceanView: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 12c1.5-2 3.5-3 5.5-3s4 1 5.5 3c1.5-2 3.5-3 5.5-3s4 1 5.5 3" />
-            <path d="M2 17c1.5-2 3.5-3 5.5-3s4 1 5.5 3c1.5-2 3.5-3 5.5-3s4 1 5.5 3" />
-            <circle cx="17" cy="5" r="3" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="18" cy="5" r="2.5" fill="currentColor" opacity={0.15} stroke="currentColor" strokeWidth={1.5} />
+            <path d="M2 13c2-2.5 4.5-3 6.5-2s4 2.5 6.5 0 4.5-2 6.5 0" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M2 17.5c2-2 4.5-2.5 6.5-1.5s4 2 6.5 0 4.5-1.5 6.5 0" stroke="currentColor" strokeWidth={1.3} opacity={0.5} />
         </svg>
     ),
     pool: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 15c1.5 1.5 3.5 2 5.5 1.5S11 15 13 15s3.5 1 5.5 1.5S22 15 24 13.5" />
-            <path d="M2 19c1.5 1.5 3.5 2 5.5 1.5S11 19 13 19s3.5 1 5.5 1.5S22 19 24 17.5" />
-            <path d="M8 3v9" />
-            <path d="M16 6v6" />
-            <path d="M8 6h8a2 2 0 0 1 2 2v0" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            {/* Swimmer head */}
+            <circle cx="6" cy="5.5" r="2" fill="currentColor" opacity={0.15} stroke="currentColor" strokeWidth={1.4} />
+            {/* Swimmer body — arm reaching forward */}
+            <path d="M6 7.5c1 1 2.5 2 5 2.5l5-3" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M6 7.5c1.5 2 3 3.5 5 4" stroke="currentColor" strokeWidth={1.4} />
+            {/* Water waves */}
+            <path d="M2 15c1.5-1.2 3.5-1.5 5.5-.8s3.5 1.5 5.5.8 3.5-1.5 5.5-.8 3.5 1.2 5.5.8" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M2 19c1.5-1 3.5-1.2 5.5-.6s3.5 1.2 5.5.6 3.5-1.2 5.5-.6 3.5 1 5.5.6" stroke="currentColor" strokeWidth={1.3} opacity={0.4} />
         </svg>
     ),
-    wifi: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 20h.01" />
-            <path d="M8.5 16.5a5 5 0 0 1 7 0" />
-            <path d="M5 12.5a10 10 0 0 1 14 0" />
-            <path d="M1.5 8.5a15 15 0 0 1 21 0" />
+    kidsPool: (
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            {/* Inflatable pool — rounded shape */}
+            <path d="M4 12c0-3 3.5-5 8-5s8 2 8 5v4c0 2-3.5 4-8 4s-8-2-8-4v-4z" fill="currentColor" opacity={0.07} stroke="currentColor" strokeWidth={1.5} />
+            {/* Pool rim */}
+            <path d="M4 12c0 2 3.5 3.5 8 3.5s8-1.5 8-3.5" stroke="currentColor" strokeWidth={1.2} opacity={0.35} />
+            {/* Water ripple */}
+            <path d="M7 14.5c1.2-.6 2.5-.2 3.8.3s2.5.6 3.8 0 2.5-.2 3.8.3" stroke="currentColor" strokeWidth={1.1} />
+            {/* Rubber duck */}
+            <circle cx="9" cy="4.5" r="1.8" fill="currentColor" opacity={0.15} stroke="currentColor" strokeWidth={1.3} />
+            <path d="M10.8 4.8c.6 0 1.1.2 1.2.6" stroke="currentColor" strokeWidth={1.2} />
+            <circle cx="8.6" cy="4" r="0.4" fill="currentColor" />
         </svg>
     ),
     terrace: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2v8" />
-            <path d="M8 6c0-2.2 1.8-4 4-4s4 1.8 4 4" />
-            <path d="M5 10c0-3.9 3.1-7 7-7s7 3.1 7 7" />
-            <rect x="3" y="10" width="18" height="2" rx="1" />
-            <path d="M6 12v10" />
-            <path d="M18 12v10" />
-            <path d="M12 12v6" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 11h18" stroke="currentColor" strokeWidth={1.8} />
+            <path d="M5 11v10M19 11v10M12 11v7" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M12 2c-3.5 0-6.5 2.5-7.5 6h15c-1-3.5-4-6-7.5-6z" fill="currentColor" opacity={0.1} stroke="currentColor" strokeWidth={1.3} />
+            <path d="M12 2v9" stroke="currentColor" strokeWidth={1.2} opacity={0.4} />
+        </svg>
+    ),
+    wifi: (
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="19" r="1.5" fill="currentColor" opacity={0.25} stroke="currentColor" strokeWidth={1.3} />
+            <path d="M8.5 15.5a5.5 5.5 0 017 0" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M5 12a10 10 0 0114 0" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M1.5 8.5a15 15 0 0121 0" stroke="currentColor" strokeWidth={1.5} />
         </svg>
     ),
     ac: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2v10" />
-            <path d="M18.364 5.636l-6.364 6.364" />
-            <path d="M20 12h-10" />
-            <path d="M5.636 5.636l6.364 6.364" />
-            <path d="M12 22v-4" />
-            <path d="M9 18c0 0 1.5 2 3 2s3-2 3-2" />
-            <path d="M6 14c0 0 2 4 6 4s6-4 6-4" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="3" width="20" height="10" rx="2" fill="currentColor" opacity={0.08} stroke="currentColor" strokeWidth={1.5} />
+            <path d="M6 8h12" stroke="currentColor" strokeWidth={1.2} />
+            <path d="M6 6h12" stroke="currentColor" strokeWidth={1.2} opacity={0.4} />
+            <path d="M8 13v2c0 1.5-2 3-2 4" stroke="currentColor" strokeWidth={1.3} />
+            <path d="M12 13v2c0 1.5 0 3 0 4" stroke="currentColor" strokeWidth={1.3} />
+            <path d="M16 13v2c0 1.5 2 3 2 4" stroke="currentColor" strokeWidth={1.3} />
         </svg>
     ),
     kitchen: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
-            <path d="M7 2v20" />
-            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 3v7a3 3 0 003 3h0a3 3 0 003-3V3" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M7 3v18" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M7 13h0" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M20 3v0a5 5 0 00-5 5v4a2 2 0 002 2h3V3z" fill="currentColor" opacity={0.1} stroke="currentColor" strokeWidth={1.5} />
+            <path d="M20 14v7" stroke="currentColor" strokeWidth={1.5} />
         </svg>
     ),
     tv: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="4" width="20" height="14" rx="2" />
-            <path d="M8 21h8" />
-            <path d="M12 18v3" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="4" width="20" height="13" rx="2" fill="currentColor" opacity={0.08} stroke="currentColor" strokeWidth={1.5} />
+            <path d="M8 21h8M12 17v4" stroke="currentColor" strokeWidth={1.5} />
+            <circle cx="12" cy="10.5" r="2" fill="currentColor" opacity={0.15} />
+            <path d="M10.5 9.5l3.5 2-3.5 2v-4z" fill="currentColor" opacity={0.3} />
         </svg>
     ),
     parking: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="4" />
-            <path d="M9 17V7h4a3.5 3.5 0 0 1 0 7H9" />
-        </svg>
-    ),
-    entirePlace: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
-        </svg>
-    ),
-    bathroom: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-3a1 1 0 0 1 1-1z" />
-            <path d="M6 12V5a2 2 0 0 1 2-2h1" />
-            <path d="M7 20v2" />
-            <path d="M17 20v2" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="4" fill="currentColor" opacity={0.08} stroke="currentColor" strokeWidth={1.5} />
+            <path d="M9 17V7h4a3.5 3.5 0 010 7H9" stroke="currentColor" strokeWidth={1.8} />
         </svg>
     ),
     washer: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="2" width="18" height="20" rx="2" />
-            <circle cx="12" cy="13" r="5" />
-            <circle cx="12" cy="13" r="2" />
-            <path d="M7 5h.01" />
-            <path d="M10 5h.01" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="2" width="18" height="20" rx="2.5" stroke="currentColor" strokeWidth={1.5} />
+            <circle cx="12" cy="13.5" r="4.5" fill="currentColor" opacity={0.08} stroke="currentColor" strokeWidth={1.3} />
+            <path d="M9.5 12c1-1 2.5-.5 3 .5s2 1.5 3 .5" stroke="currentColor" strokeWidth={1.2} />
+            <circle cx="7.5" cy="5" r="0.8" fill="currentColor" />
+            <circle cx="10.5" cy="5" r="0.8" fill="currentColor" />
+            <line x1="14" y1="5" x2="17" y2="5" stroke="currentColor" strokeWidth={1.2} opacity={0.4} />
         </svg>
     ),
     bed: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 4v16" />
-            <path d="M2 8h18a2 2 0 0 1 2 2v10" />
-            <path d="M2 17h20" />
-            <path d="M6 8v3" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 17V5" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M3 9h14a4 4 0 014 4v4" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M3 17h18" stroke="currentColor" strokeWidth={1.8} />
+            <path d="M3 17v3M21 17v3" stroke="currentColor" strokeWidth={1.3} />
+            <path d="M6 9v3h4V9" fill="currentColor" opacity={0.12} stroke="currentColor" strokeWidth={1.2} />
         </svg>
     ),
     towels: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <rect x="4" y="2" width="16" height="20" rx="2" />
-            <path d="M8 6h8" />
-            <path d="M8 10h8" />
-            <path d="M8 14h4" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 3h10a2 2 0 012 2v14a2 2 0 01-2 2H5" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M5 3a2 2 0 00-2 2v14a2 2 0 002 2" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M5 3v18" stroke="currentColor" strokeWidth={1.5} />
+            <rect x="8" y="7" width="6" height="4" rx="1" fill="currentColor" opacity={0.12} stroke="currentColor" strokeWidth={1.2} />
+            <path d="M8 14h6M8 17h4" stroke="currentColor" strokeWidth={1.2} opacity={0.5} />
         </svg>
     ),
     beach: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M13 8c0-2.76-2.24-5-5-5-.55 0-1.08.1-1.57.28C7.38 1.92 9.06 1 11 1c3.31 0 6 2.69 6 6" />
-            <path d="M13 8c0-2.76 2.24-5 5-5 .55 0 1.08.1 1.57.28C18.62 1.92 16.94 1 15 1" />
-            <path d="M13 8v13" />
-            <path d="M4 21h16" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            {/* Sun */}
+            <circle cx="19" cy="5" r="2.5" fill="currentColor" opacity={0.12} stroke="currentColor" strokeWidth={1.2} />
+            {/* Palm trunk — curved */}
+            <path d="M9 21c.5-3 1.5-6 2-8.5.8-3.5 1-5.5 1-7.5" stroke="currentColor" strokeWidth={1.6} />
+            {/* Leaf canopy — 3 large drooping fronds */}
+            <path d="M12 5c-2 0-5 .5-7 3" stroke="currentColor" strokeWidth={1.4} />
+            <path d="M12 5c-1.5-1-4-2.5-7-1.5" stroke="currentColor" strokeWidth={1.3} />
+            <path d="M12 5c-2 0-5 .5-7 3c1-2.5 4-4.5 7-1.5" fill="currentColor" opacity={0.1} />
+            <path d="M12 5c1.5.5 4 2 5 4.5" stroke="currentColor" strokeWidth={1.4} />
+            <path d="M12 5c2-.5 5-1 7 .5" stroke="currentColor" strokeWidth={1.3} />
+            <path d="M12 5c1.5.5 4 2 5 4.5c-.5-2.5-1.5-4.5-5-4.5c2-.5 5-1 7 .5" fill="currentColor" opacity={0.1} />
+            {/* Ocean wave */}
+            <path d="M1 18c1.5-1 3-1.5 5-1s3.5 1.5 5.5 1.5 3-1 5-1.5 3.5.5 5 1.5" stroke="currentColor" strokeWidth={1.3} opacity={0.45} />
+            {/* Sand line */}
+            <path d="M2 21h20" stroke="currentColor" strokeWidth={1.6} />
         </svg>
     ),
     coffee: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17 8h1a4 4 0 0 1 0 8h-1" />
-            <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z" />
-            <path d="M6 2v3" />
-            <path d="M10 2v3" />
-            <path d="M14 2v3" />
+        <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z" fill="currentColor" opacity={0.08} stroke="currentColor" strokeWidth={1.5} />
+            <path d="M17 9h1.5a3.5 3.5 0 010 7H17" stroke="currentColor" strokeWidth={1.5} />
+            <path d="M7 2c0 1.5-.5 2.5 0 3.5S8 7.5 7.5 8" stroke="currentColor" strokeWidth={1.2} opacity={0.5} />
+            <path d="M10.5 2c0 1.5-.5 2.5 0 3.5s1 2 .5 2.5" stroke="currentColor" strokeWidth={1.2} opacity={0.5} />
         </svg>
     ),
 };
@@ -133,7 +156,7 @@ const AMENITIES: { icon: string; labelKey: TranslationKey; detailKey?: Translati
     { icon: 'entirePlace', labelKey: 'amenity.entirePlace', detailKey: 'amenity.entirePlaceDetail' },
     { icon: 'oceanView', labelKey: 'amenity.oceanView' },
     { icon: 'pool', labelKey: 'amenity.pool', detailKey: 'amenity.poolDetail' },
-    { icon: 'pool', labelKey: 'amenity.kidsPool', detailKey: 'amenity.kidsPoolDetail' },
+    { icon: 'kidsPool', labelKey: 'amenity.kidsPool', detailKey: 'amenity.kidsPoolDetail' },
     { icon: 'terrace', labelKey: 'amenity.terrace' },
     { icon: 'wifi', labelKey: 'amenity.wifi' },
     { icon: 'ac', labelKey: 'amenity.ac', detailKey: 'amenity.acDetail' },

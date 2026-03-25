@@ -39,6 +39,7 @@ export default function CheckInForm() {
     const [fieldErrors, setFieldErrors] = useState<FieldError[]>([]);
     const [success, setSuccess] = useState(false);
     const [apiErrors, setApiErrors] = useState<string[]>([]);
+    const [gdprConsent, setGdprConsent] = useState(false);
 
     const { honeypotField, validate: spamValidate } = useSpamProtection('checkin-form');
 
@@ -335,10 +336,28 @@ export default function CheckInForm() {
 
                     {honeypotField}
 
+                    {/* GDPR consent */}
+                    <div className="checkin-gdpr">
+                        <label className="checkin-gdpr__label">
+                            <input
+                                type="checkbox"
+                                checked={gdprConsent}
+                                onChange={(e) => setGdprConsent(e.target.checked)}
+                                className="checkin-gdpr__checkbox"
+                            />
+                            <span>
+                                I consent to the processing of my personal data (name, date of birth, nationality, and identity document details) as required by Spanish law (Real Decreto 933/2021) for guest registration purposes.
+                            </span>
+                        </label>
+                        <p className="checkin-gdpr__details">
+                            Data controller: Verónica's Flat, Playa Paraíso, Tenerife, Spain. Your data is processed under GDPR Art. 6(1)(c) (legal obligation) and shared with Spanish authorities as required. Data is retained for the legally mandated period. You may exercise your rights of access, rectification, or erasure by contacting info@veronicas-flat.com.
+                        </p>
+                    </div>
+
                     <button
                         type="submit"
-                        disabled={isSubmitting}
-                        className="checkin-btn checkin-btn--submit"
+                        disabled={isSubmitting || !gdprConsent}
+                        className={`checkin-btn checkin-btn--submit${!gdprConsent ? ' checkin-btn--disabled' : ''}`}
                     >
                         {isSubmitting ? 'Submitting…' : formData.submittedAt ? '↻ Update Check-In' : '✓ Complete Check-In'}
                     </button>

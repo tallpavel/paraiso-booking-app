@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ContactFormData } from '../types';
 import { useI18n } from '../i18n';
+import type { TranslationKey } from '../i18n';
 import { sendContactMessage } from '../api';
 import { useSpamProtection } from '../hooks/useSpamProtection';
 
@@ -22,6 +23,7 @@ export default function ContactForm() {
     const [form, setForm] = useState<ContactFormData>(initialForm);
     const [errors, setErrors] = useState<FieldError>({});
     const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+    const [gdprConsent, setGdprConsent] = useState(false);
     const spam = useSpamProtection('contact-form');
 
     const validate = (data: ContactFormData): FieldError => {
@@ -75,6 +77,7 @@ export default function ContactForm() {
 
             setStatus('sent');
             setForm(initialForm);
+            setGdprConsent(false);
             spam.reset();
             setTimeout(() => setStatus('idle'), 5000);
         } catch {
@@ -235,10 +238,30 @@ export default function ContactForm() {
 
                         {spam.honeypotField}
 
+                        {/* GDPR consent */}
+                        <div className="mb-6 rounded-xl border border-navy/8 bg-white/60 p-4">
+                            <label className="flex cursor-pointer items-start gap-3">
+                                <input
+                                    type="checkbox"
+                                    id="contact-gdpr"
+                                    checked={gdprConsent}
+                                    onChange={(e) => setGdprConsent(e.target.checked)}
+                                    className="mt-0.5 h-4 w-4 shrink-0 accent-ocean"
+                                />
+                                <span className="text-xs leading-relaxed text-warm-gray">
+                                    {t('contact.gdprConsent' as TranslationKey)}
+                                </span>
+                            </label>
+                        </div>
+
                         <button
                             type="submit"
-                            disabled={status === 'sending'}
-                            className="w-full rounded-full bg-ocean py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 hover:bg-ocean-dark hover:shadow-xl disabled:cursor-wait disabled:opacity-70"
+                            disabled={status === 'sending' || !gdprConsent}
+                            className={`w-full rounded-full py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 ${
+                                status === 'sending' || !gdprConsent
+                                    ? 'cursor-not-allowed bg-ocean/40'
+                                    : 'bg-ocean hover:bg-ocean-dark hover:shadow-xl'
+                            }`}
                         >
                             {status === 'sending'
                                 ? t('contact.sending')

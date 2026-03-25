@@ -251,6 +251,9 @@ const translations = {
         'booking.noPayment': 'No payment required — we\'ll confirm availability first.',
         'booking.termsAgree': 'By proceeding, you agree to our',
         'booking.termsLink': 'Terms & Conditions',
+        'booking.gdprConsent': 'I agree to the processing of my personal data (name, email, phone) for the purpose of managing my booking. For more details, see our',
+        'booking.gdprPrivacyLink': 'Privacy & Data Protection Policy',
+        'booking.gdprDetails': 'Data controller: Verónica\'s Flat, Playa Paraíso, Tenerife, Spain. Your data is processed under GDPR Art. 6(1)(b) (contractual necessity) and will be retained only for the duration of your booking. You may request access, rectification, or erasure at any time by contacting info@veronicas-flat.com.',
         'booking.name': 'Your Name',
         'booking.namePlaceholder': 'Full name…',
         'booking.email': 'Your Email',
@@ -311,6 +314,7 @@ const translations = {
         'contact.errorEmailInvalid': 'Please enter a valid email address',
         'contact.errorMessage': 'Please enter a message',
         'contact.errorServer': 'Something went wrong. Please try again later.',
+        'contact.gdprConsent': 'I agree to the processing of my personal data (name, email) to respond to my inquiry. Data controller: Verónica\'s Flat, Tenerife, Spain.',
         'contact.viewMap': 'View on Google Maps',
 
         // Footer
@@ -685,6 +689,9 @@ const translations = {
         'booking.noPayment': 'Sin pago previo — confirmaremos disponibilidad primero.',
         'booking.termsAgree': 'Al continuar, acepta nuestros',
         'booking.termsLink': 'Términos y Condiciones',
+        'booking.gdprConsent': 'Acepto el tratamiento de mis datos personales (nombre, email, teléfono) para gestionar mi reserva. Para más detalles, consulte nuestra',
+        'booking.gdprPrivacyLink': 'Política de Privacidad y Protección de Datos',
+        'booking.gdprDetails': 'Responsable del tratamiento: Verónica\'s Flat, Playa Paraíso, Tenerife, España. Sus datos se procesan conforme al Art. 6(1)(b) del RGPD (necesidad contractual) y se conservarán únicamente durante la duración de su reserva. Puede solicitar acceso, rectificación o supresión en cualquier momento contactando a info@veronicas-flat.com.',
         'booking.name': 'Tu Nombre',
         'booking.namePlaceholder': 'Nombre completo…',
         'booking.email': 'Tu Email',
@@ -745,6 +752,7 @@ const translations = {
         'contact.errorEmailInvalid': 'Por favor, introduce un correo electrónico válido',
         'contact.errorMessage': 'Por favor, escribe un mensaje',
         'contact.errorServer': 'Algo salió mal. Inténtalo de nuevo más tarde.',
+        'contact.gdprConsent': 'Acepto el tratamiento de mis datos personales (nombre, email) para responder a mi consulta. Responsable: Verónica\'s Flat, Tenerife, España.',
         'contact.viewMap': 'Ver en Google Maps',
 
         // Footer
@@ -1109,6 +1117,9 @@ const translations = {
         'booking.noPayment': 'Bez platby předem — nejprve potvrdíme dostupnost.',
         'booking.termsAgree': 'Pokračováním souhlasíte s našimi',
         'booking.termsLink': 'Obchodními podmínkami',
+        'booking.gdprConsent': 'Souhlasím se zpracováním osobních údajů (jméno, e-mail, telefon) za účelem správy mé rezervace. Více informací naleznete v našich',
+        'booking.gdprPrivacyLink': 'Zásadách ochrany osobních údajů',
+        'booking.gdprDetails': 'Správce údajů: Verónica\'s Flat, Playa Paraíso, Tenerife, Španělsko. Vaše údaje jsou zpracovávány dle čl. 6 odst. 1 písm. b) GDPR (smluvní nezbytnost) a budou uchovány pouze po dobu trvání rezervace. Můžete požádat o přístup, opravu nebo výmaz kdykoli na info@veronicas-flat.com.',
         'booking.name': 'Vaše Jméno',
         'booking.namePlaceholder': 'Celé jméno…',
         'booking.email': 'Váš E-mail',
@@ -1169,6 +1180,7 @@ const translations = {
         'contact.errorEmailInvalid': 'Prosím, zadejte platnou e-mailovou adresu',
         'contact.errorMessage': 'Prosím, napište zprávu',
         'contact.errorServer': 'Něco se pokazilo. Zkuste to prosím později.',
+        'contact.gdprConsent': 'Souhlasím se zpracováním osobních údajů (jméno, e-mail) za účelem odpovědi na můj dotaz. Správce: Verónica\'s Flat, Tenerife, Španělsko.',
         'contact.viewMap': 'Zobrazit na Google Maps',
 
         // Footer

@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../i18n';
+import type { TranslationKey } from '../i18n';
 import { createReservation, fetchConfirmedReservations, fetchDailyRates, fetchBlockedDates, fetchSeasonalRates } from '../api';
 import type { ConfirmedReservation } from '../api';
 import { useSpamProtection } from '../hooks/useSpamProtection';
@@ -118,6 +119,7 @@ export default function BookingCalendar() {
     const [errors, setErrors] = useState<FormErrors>({});
     const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
     const [serverError, setServerError] = useState('');
+    const [gdprConsent, setGdprConsent] = useState(false);
     const spam = useSpamProtection('booking-form');
 
     // ── API data ─────────────────────────────────────────────────────
@@ -286,6 +288,7 @@ export default function BookingCalendar() {
         setGuests(2);
         setStep(1);
         setStatus('idle');
+        setGdprConsent(false);
         fpRef.current?.clear();
         fetchConfirmedReservations()
             .then((data) => setBookedDates(expandBookedDays(data)))
@@ -757,6 +760,28 @@ export default function BookingCalendar() {
                                         )}
                                     </div>
 
+                                    {/* GDPR consent */}
+                                    <div className="mt-6 rounded-xl border border-navy/8 bg-sand-light/60 p-4">
+                                        <label className="flex cursor-pointer items-start gap-3">
+                                            <input
+                                                type="checkbox"
+                                                id="gdpr-consent"
+                                                checked={gdprConsent}
+                                                onChange={(e) => setGdprConsent(e.target.checked)}
+                                                className="mt-0.5 h-4 w-4 shrink-0 accent-ocean"
+                                            />
+                                            <span className="text-xs leading-relaxed text-warm-gray">
+                                                {t('booking.gdprConsent' as TranslationKey)}{' '}
+                                                <Link to="/terms" target="_blank" className="text-ocean underline underline-offset-2 hover:text-ocean-dark">
+                                                    {t('booking.gdprPrivacyLink' as TranslationKey)}
+                                                </Link>
+                                            </span>
+                                        </label>
+                                        <p className="mt-2.5 text-[10px] leading-relaxed text-warm-gray/70">
+                                            {t('booking.gdprDetails' as TranslationKey)}
+                                        </p>
+                                    </div>
+
                                     {/* Error message */}
                                     {status === 'error' && serverError && (
                                         <div className="mt-4 rounded-xl border border-coral/30 bg-coral/5 p-3 text-center">
@@ -777,9 +802,9 @@ export default function BookingCalendar() {
                                         <button
                                             type="button"
                                             onClick={handleSubmit}
-                                            disabled={status === 'sending'}
-                                            className={`flex-[2] rounded-full py-3.5 text-base font-semibold text-white shadow-lg transition-all ${status === 'sending'
-                                                ? 'cursor-wait bg-ocean/60'
+                                            disabled={status === 'sending' || !gdprConsent}
+                                            className={`flex-[2] rounded-full py-3.5 text-base font-semibold text-white shadow-lg transition-all ${status === 'sending' || !gdprConsent
+                                                ? 'cursor-not-allowed bg-coral/40'
                                                 : 'bg-coral hover:bg-coral-dark hover:shadow-xl'
                                                 }`}
                                         >
