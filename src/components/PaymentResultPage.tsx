@@ -56,11 +56,19 @@ export default function PaymentResultPage() {
         return param === 'success' ? 'success' : 'cancelled';
     }, [searchParams]);
 
+    const paymentType = useMemo(() => {
+        return searchParams.get('type') === 'remaining' ? 'remaining' : 'deposit';
+    }, [searchParams]);
+
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
     const isSuccess = status === 'success';
+    const isRemaining = paymentType === 'remaining';
+
+    // Pick i18n key prefix based on payment type
+    const prefix = isRemaining ? 'paymentRemaining' : 'payment';
 
     return (
         <>
@@ -91,10 +99,10 @@ export default function PaymentResultPage() {
                         </div>
 
                         <h1 className="mb-4 font-heading text-3xl font-bold text-white sm:text-4xl md:text-5xl">
-                            {t((isSuccess ? 'payment.successTitle' : 'payment.cancelledTitle') as TranslationKey)}
+                            {t((isSuccess ? `${prefix}.successTitle` : `${prefix}.cancelledTitle`) as TranslationKey)}
                         </h1>
                         <p className="text-lg text-white/75">
-                            {t((isSuccess ? 'payment.successSubtitle' : 'payment.cancelledSubtitle') as TranslationKey)}
+                            {t((isSuccess ? `${prefix}.successSubtitle` : `${prefix}.cancelledSubtitle`) as TranslationKey)}
                         </p>
                     </div>
                 </section>
@@ -105,21 +113,21 @@ export default function PaymentResultPage() {
                         {/* Steps / information card */}
                         <div className="rounded-2xl bg-white p-6 shadow-sm sm:p-10">
                             <h2 className="mb-6 font-heading text-xl font-bold text-navy">
-                                {t((isSuccess ? 'payment.successNextTitle' : 'payment.cancelledNextTitle') as TranslationKey)}
+                                {t((isSuccess ? `${prefix}.successNextTitle` : `${prefix}.cancelledNextTitle`) as TranslationKey)}
                             </h2>
 
                             <div className="space-y-5">
                                 {isSuccess ? (
                                     <>
-                                        <StepItem number={1} textKey={'payment.successStep1' as TranslationKey} />
-                                        <StepItem number={2} textKey={'payment.successStep2' as TranslationKey} />
-                                        <StepItem number={3} textKey={'payment.successStep3' as TranslationKey} />
+                                        <StepItem number={1} textKey={`${prefix}.successStep1` as TranslationKey} />
+                                        <StepItem number={2} textKey={`${prefix}.successStep2` as TranslationKey} />
+                                        <StepItem number={3} textKey={`${prefix}.successStep3` as TranslationKey} />
                                     </>
                                 ) : (
                                     <>
-                                        <StepItem number={1} textKey={'payment.cancelledStep1' as TranslationKey} />
-                                        <StepItem number={2} textKey={'payment.cancelledStep2' as TranslationKey} />
-                                        <StepItem number={3} textKey={'payment.cancelledStep3' as TranslationKey} />
+                                        <StepItem number={1} textKey={`${prefix}.cancelledStep1` as TranslationKey} />
+                                        <StepItem number={2} textKey={`${prefix}.cancelledStep2` as TranslationKey} />
+                                        <StepItem number={3} textKey={`${prefix}.cancelledStep3` as TranslationKey} />
                                     </>
                                 )}
                             </div>
@@ -137,7 +145,7 @@ export default function PaymentResultPage() {
                                         {isSuccess ? '✅' : '💡'}
                                     </span>
                                     <p className={`text-sm leading-relaxed ${isSuccess ? 'text-green-800' : 'text-amber-800'}`}>
-                                        {t((isSuccess ? 'payment.successNote' : 'payment.cancelledNote') as TranslationKey)}
+                                        {t((isSuccess ? `${prefix}.successNote` : `${prefix}.cancelledNote`) as TranslationKey)}
                                     </p>
                                 </div>
                             </div>

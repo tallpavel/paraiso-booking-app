@@ -439,6 +439,22 @@ const translations = {
         'payment.contactTitle': 'Need Help?',
         'payment.contactSubtitle': 'If you have any questions about your booking or payment, don\'t hesitate to reach out.',
         'payment.contactBtn': 'Contact Us',
+
+        // Remaining Balance Payment Result Page
+        'paymentRemaining.successTitle': 'Remaining Balance Paid!',
+        'paymentRemaining.successSubtitle': 'Thank you — your remaining balance has been received. Your booking is now fully paid.',
+        'paymentRemaining.cancelledTitle': 'Payment Cancelled',
+        'paymentRemaining.cancelledSubtitle': 'Your remaining balance payment was not completed. No charges have been made.',
+        'paymentRemaining.successNextTitle': 'What Happens Next',
+        'paymentRemaining.successStep1': 'You will receive a payment confirmation email with your updated receipt shortly.',
+        'paymentRemaining.successStep2': 'Your booking is now fully paid — no further payments are needed.',
+        'paymentRemaining.successStep3': 'We will send you check-in instructions with access codes, directions, and WiFi details before your arrival.',
+        'paymentRemaining.successNote': 'Your remaining balance has been successfully processed. Your booking at Verónica\'s Flat is now 100% paid. We look forward to welcoming you!',
+        'paymentRemaining.cancelledNextTitle': 'What You Can Do',
+        'paymentRemaining.cancelledStep1': 'Your booking is still confirmed — the deposit has been paid. Only the remaining balance is pending.',
+        'paymentRemaining.cancelledStep2': 'You can try the payment again using the link in your email or contact us for assistance.',
+        'paymentRemaining.cancelledStep3': 'You can also pay the remaining balance in cash upon arrival.',
+        'paymentRemaining.cancelledNote': 'Your deposit is safe and your booking is confirmed. You can complete the remaining balance online or pay in cash when you arrive.',
     },
 
     es: {
@@ -867,6 +883,22 @@ const translations = {
         'payment.contactTitle': '¿Necesitas Ayuda?',
         'payment.contactSubtitle': 'Si tienes alguna pregunta sobre tu reserva o pago, no dudes en contactarnos.',
         'payment.contactBtn': 'Contáctanos',
+
+        // Remaining Balance Payment Result Page
+        'paymentRemaining.successTitle': '¡Saldo Restante Pagado!',
+        'paymentRemaining.successSubtitle': 'Gracias — hemos recibido tu saldo restante. Tu reserva está completamente pagada.',
+        'paymentRemaining.cancelledTitle': 'Pago Cancelado',
+        'paymentRemaining.cancelledSubtitle': 'El pago del saldo restante no se completó. No se ha realizado ningún cargo.',
+        'paymentRemaining.successNextTitle': '¿Qué Pasa Ahora?',
+        'paymentRemaining.successStep1': 'Recibirás un email de confirmación de pago con tu recibo actualizado en breve.',
+        'paymentRemaining.successStep2': 'Tu reserva está completamente pagada — no se requieren más pagos.',
+        'paymentRemaining.successStep3': 'Te enviaremos las instrucciones de check-in con códigos de acceso, indicaciones y datos del WiFi antes de tu llegada.',
+        'paymentRemaining.successNote': 'Tu saldo restante se ha procesado correctamente. Tu reserva en Verónica\'s Flat está pagada al 100%. ¡Te esperamos!',
+        'paymentRemaining.cancelledNextTitle': '¿Qué Puedes Hacer?',
+        'paymentRemaining.cancelledStep1': 'Tu reserva sigue confirmada — el depósito ya fue pagado. Solo el saldo restante está pendiente.',
+        'paymentRemaining.cancelledStep2': 'Puedes intentar el pago de nuevo usando el enlace en tu email o contactarnos para asistencia.',
+        'paymentRemaining.cancelledStep3': 'También puedes pagar el saldo restante en efectivo a tu llegada.',
+        'paymentRemaining.cancelledNote': 'Tu depósito está seguro y tu reserva confirmada. Puedes completar el saldo restante online o pagar en efectivo cuando llegues.',
     },
 
     cs: {
@@ -1295,6 +1327,22 @@ const translations = {
         'payment.contactTitle': 'Potřebujete pomoc?',
         'payment.contactSubtitle': 'Máte-li jakékoliv dotazy k vaší rezervaci nebo platbě, neváhejte nás kontaktovat.',
         'payment.contactBtn': 'Kontaktujte nás',
+
+        // Remaining Balance Payment Result Page
+        'paymentRemaining.successTitle': 'Zbývající částka zaplacena!',
+        'paymentRemaining.successSubtitle': 'Děkujeme — vaše zbývající částka byla přijata. Vaše rezervace je nyní plně zaplacena.',
+        'paymentRemaining.cancelledTitle': 'Platba zrušena',
+        'paymentRemaining.cancelledSubtitle': 'Platba zbývající částky nebyla dokončena. Z vaší karty nebyly strženy žádné prostředky.',
+        'paymentRemaining.successNextTitle': 'Co bude následovat',
+        'paymentRemaining.successStep1': 'Brzy obdržíte potvrzovací email s aktualizovanou účtenkou.',
+        'paymentRemaining.successStep2': 'Vaše rezervace je plně zaplacena — žádné další platby nejsou potřeba.',
+        'paymentRemaining.successStep3': 'Před příjezdem vám zašleme pokyny k check-inu s přístupovými kódy, navigací a údaji k WiFi.',
+        'paymentRemaining.successNote': 'Vaše zbývající částka byla úspěšně zpracována. Vaše rezervace v apartmánu Verónica\'s Flat je 100% zaplacena. Těšíme se na vás!',
+        'paymentRemaining.cancelledNextTitle': 'Co můžete udělat',
+        'paymentRemaining.cancelledStep1': 'Vaše rezervace je stále potvrzena — deposit byl zaplacen. Zbývá pouze doplatit zbývající částku.',
+        'paymentRemaining.cancelledStep2': 'Platbu můžete zkusit znovu pomocí odkazu v emailu nebo nás kontaktovat pro pomoc.',
+        'paymentRemaining.cancelledStep3': 'Zbývající částku můžete také zaplatit v hotovosti při příjezdu.',
+        'paymentRemaining.cancelledNote': 'Váš deposit je v bezpečí a vaše rezervace potvrzena. Zbývající částku můžete doplatit online nebo v hotovosti při příjezdu.',
     },
 } as const;
 
