@@ -109,13 +109,6 @@ function useTrustpilotWidget(ref: React.RefObject<HTMLDivElement | null>) {
             const tp = (window as WindowWithTrustpilot).Trustpilot;
             if (ref.current && tp) {
                 tp.loadFromElement(ref.current, true);
-                // Check if widget actually rendered content after a brief delay
-                setTimeout(() => {
-                    if (ref.current) {
-                        const iframe = ref.current.querySelector('iframe');
-                        if (iframe) setLoaded(true);
-                    }
-                }, 2000);
             }
         };
 
@@ -126,16 +119,33 @@ function useTrustpilotWidget(ref: React.RefObject<HTMLDivElement | null>) {
         // Try immediately in case script already loaded
         init();
 
-        // If widget doesn't load within 4 seconds, show fallback
-        const timeout = setTimeout(() => {
-            if (!loaded) setLoaded(false);
-        }, 4000);
+        // Poll for a valid iframe over several seconds.
+        // The Trustpilot widget may briefly inject an iframe then remove it
+        // when the business-unit ID is invalid, so we need to confirm
+        // the iframe persists with actual content before trusting it.
+        let pollCount = 0;
+        const maxPolls = 8; // 8 × 1s = 8 seconds total
+        const pollInterval = setInterval(() => {
+            pollCount++;
+            if (ref.current) {
+                const iframe = ref.current.querySelector('iframe');
+                const hasContent = iframe && iframe.offsetHeight > 0;
+                if (hasContent) {
+                    setLoaded(true);
+                } else {
+                    setLoaded(false);
+                }
+            }
+            if (pollCount >= maxPolls) {
+                clearInterval(pollInterval);
+            }
+        }, 1000);
 
         return () => {
             existingScript?.removeEventListener('load', init);
-            clearTimeout(timeout);
+            clearInterval(pollInterval);
         };
-    }, [ref, loaded]);
+    }, [ref]);
 
     return loaded;
 }
