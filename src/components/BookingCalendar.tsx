@@ -720,9 +720,9 @@ export default function BookingCalendar() {
                                                 <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.name')}</p>
                                                 <p className="text-sm font-medium text-navy">{guestName}</p>
                                             </div>
-                                            <div>
+                                            <div className="min-w-0">
                                                 <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.email')}</p>
-                                                <p className="text-sm font-medium text-navy">{guestEmail}</p>
+                                                <p className="text-sm font-medium text-navy break-all">{guestEmail}</p>
                                             </div>
                                             <div>
                                                 <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.phone')}</p>
@@ -795,7 +795,7 @@ export default function BookingCalendar() {
                                             type="button"
                                             onClick={goBack}
                                             disabled={status === 'sending'}
-                                            className="flex-1 rounded-full border-2 border-navy/15 py-3.5 text-base font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-sand disabled:opacity-50"
+                                            className="shrink-0 rounded-full border-2 border-navy/15 px-6 py-3.5 text-base font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-sand disabled:opacity-50"
                                         >
                                             {t('booking.back')}
                                         </button>
@@ -803,7 +803,7 @@ export default function BookingCalendar() {
                                             type="button"
                                             onClick={handleSubmit}
                                             disabled={status === 'sending' || !gdprConsent}
-                                            className={`flex-[2] rounded-full py-3.5 text-base font-semibold text-white shadow-lg transition-all ${status === 'sending' || !gdprConsent
+                                            className={`flex-1 min-w-0 rounded-full py-3.5 text-sm sm:text-base font-semibold text-white shadow-lg transition-all ${status === 'sending' || !gdprConsent
                                                 ? 'cursor-not-allowed bg-coral/40'
                                                 : 'bg-coral hover:bg-coral-dark hover:shadow-xl'
                                                 }`}

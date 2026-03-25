@@ -143,28 +143,34 @@ export default function FloatingContactButton({ forceOpen, onForceOpenHandled }:
             {/* Modal Overlay */}
             {open && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-navy/40 p-4 backdrop-blur-sm"
+                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-navy/40 backdrop-blur-sm"
                     onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
                     role="dialog"
                     aria-modal="true"
                     aria-label={t('contact.title')}
                 >
-                    <div className="relative w-full max-w-lg animate-fade-in overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-black/5">
-                        {/* Decorative top accent bar */}
-                        <div className="h-1 w-full bg-gradient-to-r from-ocean via-ocean-dark to-coral/60" />
+                    <div className="relative w-full max-w-lg animate-fade-in overflow-y-auto rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl ring-1 ring-black/5 max-h-[95dvh] sm:max-h-[90vh] sm:m-4">
+                        {/* Mobile drag handle */}
+                        <div className="flex justify-center pt-3 pb-1 sm:hidden">
+                            <div className="h-1 w-10 rounded-full bg-navy/15" />
+                        </div>
 
-                        <div className="p-6 sm:p-8">
-                            {/* Close button */}
-                            <button
-                                type="button"
-                                onClick={() => setOpen(false)}
-                                className="absolute right-4 top-5 rounded-full p-2 text-navy/30 transition-all duration-200 hover:bg-sand-light hover:text-navy hover:rotate-90"
-                                aria-label="Close"
-                            >
-                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                        {/* Decorative top accent bar — desktop only */}
+                        <div className="hidden sm:block h-1 w-full bg-gradient-to-r from-ocean via-ocean-dark to-coral/60" />
+
+                        {/* Close button — sticky so it's always reachable */}
+                        <button
+                            type="button"
+                            onClick={() => setOpen(false)}
+                            className="sticky top-0 z-10 ml-auto mr-3 mt-1 sm:mr-4 sm:mt-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm text-navy/40 shadow-sm ring-1 ring-navy/10 transition-all duration-200 hover:bg-sand-light hover:text-navy hover:rotate-90"
+                            aria-label="Close"
+                        >
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+
+                        <div className="px-6 pb-6 sm:px-8 sm:pb-8 -mt-4">
 
                             {/* Header */}
                             <div className="mb-6 text-center">
