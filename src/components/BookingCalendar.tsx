@@ -842,12 +842,6 @@ export default function BookingCalendar() {
                                     <p className="mt-4 text-center text-xs text-warm-gray">
                                         {t('booking.noPayment')}
                                     </p>
-                                    <p className="mt-2 text-center text-xs text-warm-gray">
-                                        {t('booking.termsAgree')}{' '}
-                                        <Link to="/terms" target="_blank" className="text-ocean underline underline-offset-2 hover:text-ocean-dark">
-                                            {t('booking.termsLink')}
-                                        </Link>
-                                    </p>
                                 </div>
                             )}
                         </div>
