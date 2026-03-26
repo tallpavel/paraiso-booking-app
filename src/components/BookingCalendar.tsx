@@ -120,6 +120,7 @@ export default function BookingCalendar() {
     const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
     const [serverError, setServerError] = useState('');
     const [gdprConsent, setGdprConsent] = useState(false);
+    const [termsConsent, setTermsConsent] = useState(false);
     const spam = useSpamProtection('booking-form');
 
     // ── API data ─────────────────────────────────────────────────────
@@ -297,6 +298,7 @@ export default function BookingCalendar() {
         setStep(1);
         setStatus('idle');
         setGdprConsent(false);
+        setTermsConsent(false);
         fpRef.current?.clear();
         fetchConfirmedReservations()
             .then((data) => setBookedDates(expandBookedDays(data)))
@@ -786,6 +788,25 @@ export default function BookingCalendar() {
                                         </p>
                                     </div>
 
+                                    {/* Terms & Cancellation Policy consent */}
+                                    <div className="mt-3 rounded-xl border border-navy/8 bg-sand-light/60 p-4 sm:p-5">
+                                        <label className="flex cursor-pointer items-start gap-3">
+                                            <input
+                                                type="checkbox"
+                                                id="terms-consent"
+                                                checked={termsConsent}
+                                                onChange={(e) => setTermsConsent(e.target.checked)}
+                                                className="mt-0.5 h-5 w-5 shrink-0 accent-ocean"
+                                            />
+                                            <span className="text-[13px] leading-relaxed text-navy/70 sm:text-sm">
+                                                {t('booking.termsConsent' as TranslationKey)}{' '}
+                                                <Link to="/terms" target="_blank" className="text-ocean underline underline-offset-2 hover:text-ocean-dark">
+                                                    {t('booking.termsPolicyLink' as TranslationKey)}
+                                                </Link>
+                                            </span>
+                                        </label>
+                                    </div>
+
                                     {/* Error message */}
                                     {status === 'error' && serverError && (
                                         <div className="mt-4 rounded-xl border border-coral/30 bg-coral/5 p-3 text-center">
@@ -806,8 +827,8 @@ export default function BookingCalendar() {
                                         <button
                                             type="button"
                                             onClick={handleSubmit}
-                                            disabled={status === 'sending' || !gdprConsent}
-                                            className={`flex-1 rounded-full py-3.5 text-sm font-semibold shadow-lg transition-all sm:text-base ${status === 'sending' || !gdprConsent
+                                            disabled={status === 'sending' || !gdprConsent || !termsConsent}
+                                            className={`flex-1 rounded-full py-3.5 text-sm font-semibold shadow-lg transition-all sm:text-base ${status === 'sending' || !gdprConsent || !termsConsent
                                                 ? 'cursor-not-allowed bg-navy/15 text-navy/30'
                                                 : 'bg-coral text-white hover:bg-coral-dark hover:shadow-xl'
                                                 }`}

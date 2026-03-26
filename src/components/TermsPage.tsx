@@ -152,17 +152,22 @@ export default function TermsPage() {
                                                 </tr>
                                                 <tr>
                                                     <td className="px-4 py-3">{t('terms.s4.row2when')}</td>
-                                                    <td className="px-4 py-3 font-semibold text-amber-600">{t('terms.s4.row2refund')}</td>
+                                                    <td className="px-4 py-3 font-semibold text-coral">{t('terms.s4.row2refund')}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="px-4 py-3">{t('terms.s4.row3when')}</td>
                                                     <td className="px-4 py-3 font-semibold text-coral">{t('terms.s4.row3refund')}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="px-4 py-3">{t('terms.s4.row4when' as TranslationKey)}</td>
+                                                    <td className="px-4 py-3 font-semibold text-coral">{t('terms.s4.row4refund' as TranslationKey)}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                     <p>{t('terms.s4.p2')}</p>
                                     <p>{t('terms.s4.p3')}</p>
+                                    <p>{t('terms.s4.p4' as TranslationKey)}</p>
                                 </div>
                             </article>
 
