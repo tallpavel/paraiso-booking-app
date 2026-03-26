@@ -122,6 +122,7 @@ export default function TermsPage() {
                                             <li>{t('terms.s3.li1')}</li>
                                             <li>{t('terms.s3.li2')}</li>
                                             <li>{t('terms.s3.li3')}</li>
+                                            <li className="font-medium text-navy">{t('terms.s3.li4')}</li>
                                         </ul>
                                     </div>
                                     <p>{t('terms.s3.p2')}</p>

@@ -366,6 +366,19 @@ export async function sendRemainingPaymentEmail(token: string, id: string): Prom
     return res.json();
 }
 
+export async function sendFullPaymentEmail(token: string, id: string): Promise<{ message: string; paymentUrl: string; totalAmount: number }> {
+    const res = await fetch(`${API_BASE}/reservations-confirmed/${id}/send-full-payment`, {
+        method: 'POST',
+        headers: authHeaders(token),
+    });
+
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({ message: 'Failed to send full payment email' }));
+        throw body;
+    }
+    return res.json();
+}
+
 export async function sendAccessInfoEmail(token: string, id: string): Promise<{ message: string }> {
     const res = await fetch(`${API_BASE}/reservations-confirmed/${id}/send-access-info`, {
         method: 'POST',

@@ -842,6 +842,9 @@ export default function BookingCalendar() {
                                     <p className="mt-4 text-center text-xs text-warm-gray">
                                         {t('booking.noPayment')}
                                     </p>
+                                    <p className="mt-1.5 text-center text-xs text-coral/80 italic">
+                                        {t('booking.lastMinuteNote')}
+                                    </p>
                                 </div>
                             )}
                         </div>

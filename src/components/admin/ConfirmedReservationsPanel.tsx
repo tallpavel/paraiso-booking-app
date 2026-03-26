@@ -15,13 +15,14 @@ function paymentLabel(status: string): string {
 }
 
 export default function ConfirmedReservationsPanel() {
-    const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed, handleSendCheckIn, handleSendRemainingPayment, handleSendAccessInfo } = useAdminData();
+    const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed, handleSendCheckIn, handleSendRemainingPayment, handleSendFullPayment, handleSendAccessInfo } = useAdminData();
     const [cancelState, setCancelState] = useState<Record<string, 'cancelling' | 'done' | 'error'>>({});
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'paid' | 'failed'>('all');
     const [editing, setEditing] = useState<ConfirmedReservationFull | null>(null);
     const [cancelling, setCancelling] = useState<ConfirmedReservationFull | null>(null);
     const [sendingCheckIn, setSendingCheckIn] = useState<Record<string, boolean>>({});
     const [sendingRemaining, setSendingRemaining] = useState<Record<string, boolean>>({});
+    const [sendingFullPayment, setSendingFullPayment] = useState<Record<string, boolean>>({});
     const [sendingAccessInfo, setSendingAccessInfo] = useState<Record<string, boolean>>({});
     const [viewingCheckIn, setViewingCheckIn] = useState<ConfirmedReservationFull | null>(null);
 
@@ -255,23 +256,58 @@ export default function ConfirmedReservationsPanel() {
                                     >
                                         ✎ Edit
                                     </button>
-                                    {c.paymentStatus === 'paid' && c.remainingPaymentStatus !== 'paid' && (
-                                        <button
-                                            onClick={async () => {
-                                                setSendingRemaining(prev => ({ ...prev, [c._id]: true }));
-                                                try { await handleSendRemainingPayment(c._id); } catch { }
-                                                setSendingRemaining(prev => ({ ...prev, [c._id]: false }));
-                                            }}
-                                            disabled={sendingRemaining[c._id] || state === 'cancelling' || state === 'done'}
-                                            className={`admin-btn ${c.remainingPaymentStatus === 'pending' ? 'admin-btn--checkin-sent' : 'admin-btn--remaining'}`}
-                                        >
-                                            {sendingRemaining[c._id]
-                                                ? 'Sending…'
-                                                : c.remainingPaymentStatus === 'pending'
-                                                    ? '↻ Resend Remaining'
-                                                    : `💳 Send Remaining €${c.totalPrice - c.depositAmount}`}
-                                        </button>
-                                    )}
+                                    {(() => {
+                                        // Check if this is a short-notice booking (<14 days to check-in)
+                                        const checkInDate = new Date(c.checkIn + 'T00:00:00');
+                                        const now = new Date();
+                                        const daysUntilCheckIn = Math.ceil((checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                                        const isShortNotice = daysUntilCheckIn < 14;
+                                        const isFullyPaid = c.paymentStatus === 'paid' && c.remainingPaymentStatus === 'paid';
+
+                                        if (isShortNotice && !isFullyPaid) {
+                                            // Short-notice: show a single "Send Full Payment" button
+                                            return (
+                                                <button
+                                                    onClick={async () => {
+                                                        setSendingFullPayment(prev => ({ ...prev, [c._id]: true }));
+                                                        try { await handleSendFullPayment(c._id); } catch { }
+                                                        setSendingFullPayment(prev => ({ ...prev, [c._id]: false }));
+                                                    }}
+                                                    disabled={sendingFullPayment[c._id] || state === 'cancelling' || state === 'done'}
+                                                    className={`admin-btn ${c.remainingPaymentStatus === 'pending' ? 'admin-btn--checkin-sent' : 'admin-btn--remaining'}`}
+                                                >
+                                                    {sendingFullPayment[c._id]
+                                                        ? 'Sending…'
+                                                        : c.remainingPaymentStatus === 'pending'
+                                                            ? '↻ Resend Full Payment'
+                                                            : `💳 Send Full Payment €${c.totalPrice}`}
+                                                </button>
+                                            );
+                                        }
+
+                                        // Standard flow: show "Send Remaining" if deposit is paid
+                                        if (c.paymentStatus === 'paid' && c.remainingPaymentStatus !== 'paid') {
+                                            return (
+                                                <button
+                                                    onClick={async () => {
+                                                        setSendingRemaining(prev => ({ ...prev, [c._id]: true }));
+                                                        try { await handleSendRemainingPayment(c._id); } catch { }
+                                                        setSendingRemaining(prev => ({ ...prev, [c._id]: false }));
+                                                    }}
+                                                    disabled={sendingRemaining[c._id] || state === 'cancelling' || state === 'done'}
+                                                    className={`admin-btn ${c.remainingPaymentStatus === 'pending' ? 'admin-btn--checkin-sent' : 'admin-btn--remaining'}`}
+                                                >
+                                                    {sendingRemaining[c._id]
+                                                        ? 'Sending…'
+                                                        : c.remainingPaymentStatus === 'pending'
+                                                            ? '↻ Resend Remaining'
+                                                            : `💳 Send Remaining €${c.totalPrice - c.depositAmount}`}
+                                                </button>
+                                            );
+                                        }
+
+                                        return null;
+                                    })()}
                                     <button
                                         onClick={() => setCancelling(c)}
                                         disabled={state === 'cancelling' || state === 'done'}
