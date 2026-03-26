@@ -130,13 +130,26 @@ export default function ReservationRequestsPanel() {
                                     >
                                         ✎ Edit
                                     </button>
-                                    <button
-                                        onClick={() => onConfirm(req._id)}
-                                        disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                        className="admin-btn admin-btn--confirm"
-                                    >
-                                        {state === 'confirming' ? 'Confirming…' : '✓ Confirm & Send Payment'}
-                                    </button>
+                                    {(() => {
+                                        const checkInDate = new Date(req.checkIn + 'T00:00:00');
+                                        const now = new Date();
+                                        const daysUntilCheckIn = Math.ceil((checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                                        const isShortNotice = daysUntilCheckIn < 14;
+
+                                        return (
+                                            <button
+                                                onClick={() => onConfirm(req._id)}
+                                                disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
+                                                className={`admin-btn ${isShortNotice ? 'admin-btn--remaining' : 'admin-btn--confirm'}`}
+                                            >
+                                                {state === 'confirming'
+                                                    ? 'Confirming…'
+                                                    : isShortNotice
+                                                        ? `💳 Confirm & Send Full Payment €${req.totalPrice}`
+                                                        : '✓ Confirm & Send Payment'}
+                                            </button>
+                                        );
+                                    })()}
                                     <button
                                         onClick={() => setRejecting(req)}
                                         disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
