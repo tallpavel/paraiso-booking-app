@@ -57,7 +57,10 @@ export default function PaymentResultPage() {
     }, [searchParams]);
 
     const paymentType = useMemo(() => {
-        return searchParams.get('type') === 'remaining' ? 'remaining' : 'deposit';
+        const type = searchParams.get('type');
+        if (type === 'remaining') return 'remaining';
+        if (type === 'full') return 'full';
+        return 'deposit';
     }, [searchParams]);
 
     useEffect(() => {
@@ -66,9 +69,10 @@ export default function PaymentResultPage() {
 
     const isSuccess = status === 'success';
     const isRemaining = paymentType === 'remaining';
+    const isFull = paymentType === 'full';
 
     // Pick i18n key prefix based on payment type
-    const prefix = isRemaining ? 'paymentRemaining' : 'payment';
+    const prefix = isRemaining ? 'paymentRemaining' : isFull ? 'paymentFull' : 'payment';
 
     return (
         <>

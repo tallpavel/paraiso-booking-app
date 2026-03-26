@@ -464,6 +464,22 @@ const translations = {
         'paymentRemaining.cancelledStep2': 'You can try the payment again using the link in your email or contact us for assistance.',
         'paymentRemaining.cancelledStep3': 'You can also pay the remaining balance in cash upon arrival.',
         'paymentRemaining.cancelledNote': 'Your deposit is safe and your booking is confirmed. You can complete the remaining balance online or pay in cash when you arrive.',
+
+        // Full Payment Result Page (last-minute bookings)
+        'paymentFull.successTitle': 'Payment Received!',
+        'paymentFull.successSubtitle': 'Thank you — your full payment has been received. Your booking is fully confirmed.',
+        'paymentFull.cancelledTitle': 'Payment Cancelled',
+        'paymentFull.cancelledSubtitle': 'Your payment was not completed. No charges have been made.',
+        'paymentFull.successNextTitle': 'What Happens Next',
+        'paymentFull.successStep1': 'You will receive a payment confirmation email with your receipt shortly.',
+        'paymentFull.successStep2': 'Your booking is fully paid — no further payments are needed.',
+        'paymentFull.successStep3': 'We will send you check-in instructions with access codes, directions, and WiFi details before your arrival.',
+        'paymentFull.successNote': 'Your full payment has been successfully processed. Your booking at Verónica\'s Flat is 100% confirmed. We look forward to welcoming you!',
+        'paymentFull.cancelledNextTitle': 'What You Can Do',
+        'paymentFull.cancelledStep1': 'Your reservation is still on hold. You can complete the payment to secure your booking.',
+        'paymentFull.cancelledStep2': 'Try the payment again using the link in your email, or contact us for assistance.',
+        'paymentFull.cancelledStep3': 'Please note that unpaid reservations may be cancelled after 48 hours.',
+        'paymentFull.cancelledNote': 'No charges were made. You can try the payment again using the link in your email within 48 hours to secure your booking.',
     },
 
     es: {
@@ -917,6 +933,22 @@ const translations = {
         'paymentRemaining.cancelledStep2': 'Puedes intentar el pago de nuevo usando el enlace en tu email o contactarnos para asistencia.',
         'paymentRemaining.cancelledStep3': 'También puedes pagar el saldo restante en efectivo a tu llegada.',
         'paymentRemaining.cancelledNote': 'Tu depósito está seguro y tu reserva confirmada. Puedes completar el saldo restante online o pagar en efectivo cuando llegues.',
+
+        // Full Payment Result Page (last-minute bookings)
+        'paymentFull.successTitle': '¡Pago Recibido!',
+        'paymentFull.successSubtitle': 'Gracias — hemos recibido tu pago completo. Tu reserva está totalmente confirmada.',
+        'paymentFull.cancelledTitle': 'Pago Cancelado',
+        'paymentFull.cancelledSubtitle': 'El pago no se completó. No se ha realizado ningún cargo.',
+        'paymentFull.successNextTitle': '¿Qué Pasa Ahora?',
+        'paymentFull.successStep1': 'Recibirás un email de confirmación de pago con tu recibo en breve.',
+        'paymentFull.successStep2': 'Tu reserva está completamente pagada — no se requieren más pagos.',
+        'paymentFull.successStep3': 'Te enviaremos las instrucciones de check-in con códigos de acceso, indicaciones y datos del WiFi antes de tu llegada.',
+        'paymentFull.successNote': 'Tu pago completo se ha procesado correctamente. Tu reserva en Verónica\'s Flat está 100% confirmada. ¡Te esperamos!',
+        'paymentFull.cancelledNextTitle': '¿Qué Puedes Hacer?',
+        'paymentFull.cancelledStep1': 'Tu reserva sigue en espera. Puedes completar el pago para asegurar tu reserva.',
+        'paymentFull.cancelledStep2': 'Intenta el pago de nuevo usando el enlace en tu email o contáctanos para asistencia.',
+        'paymentFull.cancelledStep3': 'Ten en cuenta que las reservas no pagadas pueden ser canceladas después de 48 horas.',
+        'paymentFull.cancelledNote': 'No se realizó ningún cargo. Puedes intentar el pago de nuevo usando el enlace en tu email dentro de las 48 horas para asegurar tu reserva.',
     },
 
     cs: {
@@ -1370,6 +1402,22 @@ const translations = {
         'paymentRemaining.cancelledStep2': 'Platbu můžete zkusit znovu pomocí odkazu v emailu nebo nás kontaktovat pro pomoc.',
         'paymentRemaining.cancelledStep3': 'Zbývající částku můžete také zaplatit v hotovosti při příjezdu.',
         'paymentRemaining.cancelledNote': 'Váš deposit je v bezpečí a vaše rezervace potvrzena. Zbývající částku můžete doplatit online nebo v hotovosti při příjezdu.',
+
+        // Full Payment Result Page (last-minute bookings)
+        'paymentFull.successTitle': 'Platba přijata!',
+        'paymentFull.successSubtitle': 'Děkujeme — vaše plná platba byla přijata. Vaše rezervace je plně potvrzena.',
+        'paymentFull.cancelledTitle': 'Platba zrušena',
+        'paymentFull.cancelledSubtitle': 'Platba nebyla dokončena. Z vaší karty nebyly strženy žádné prostředky.',
+        'paymentFull.successNextTitle': 'Co bude následovat',
+        'paymentFull.successStep1': 'Brzy obdržíte potvrzovací email s účtenkou.',
+        'paymentFull.successStep2': 'Vaše rezervace je plně zaplacena — žádné další platby nejsou potřeba.',
+        'paymentFull.successStep3': 'Před příjezdem vám zašleme pokyny k check-inu s přístupovými kódy, navigací a údaji k WiFi.',
+        'paymentFull.successNote': 'Vaše plná platba byla úspěšně zpracována. Vaše rezervace v apartmánu Verónica\'s Flat je 100% potvrzena. Těšíme se na vás!',
+        'paymentFull.cancelledNextTitle': 'Co můžete udělat',
+        'paymentFull.cancelledStep1': 'Vaše rezervace je stále zadržena. Platbu můžete dokončit pro zajištění rezervace.',
+        'paymentFull.cancelledStep2': 'Zkuste platbu znovu pomocí odkazu v emailu nebo nás kontaktujte pro pomoc.',
+        'paymentFull.cancelledStep3': 'Nezaplacené rezervace mohou být po 48 hodinách zrušeny.',
+        'paymentFull.cancelledNote': 'Z vaší karty nebyly strženy žádné prostředky. Platbu můžete zkusit znovu pomocí odkazu v emailu do 48 hodin pro zajištění rezervace.',
     },
 } as const;
 
