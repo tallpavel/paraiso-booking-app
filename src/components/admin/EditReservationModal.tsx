@@ -193,8 +193,8 @@ export default function EditReservationModal({
             const payload: UpdateReservationPayload = {
                 guestName: guestName.trim(),
                 guestEmail: guestEmail.trim(),
-                checkIn: new Date(checkIn).toISOString(),
-                checkOut: new Date(checkOut).toISOString(),
+                checkIn,
+                checkOut,
                 nights,
                 totalPrice,
                 comment: comment.trim() || undefined,

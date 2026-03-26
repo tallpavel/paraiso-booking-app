@@ -241,7 +241,15 @@ export default function BookingCalendar() {
     // ── Validation (step 2) ──────────────────────────────────────────
     const validateDetails = (): FormErrors => {
         const errs: FormErrors = {};
-        if (!guestName.trim()) errs.name = t('booking.errorName');
+        if (!guestName.trim()) {
+            errs.name = t('booking.errorName');
+        } else if (guestName.trim().length < 2) {
+            errs.name = t('booking.errorNameInvalid');
+        } else if (/\d/.test(guestName)) {
+            errs.name = t('booking.errorNameInvalid');
+        } else if (!/^[\p{L}\s'\-\.]+$/u.test(guestName.trim())) {
+            errs.name = t('booking.errorNameInvalid');
+        }
         if (!guestEmail.trim()) {
             errs.email = t('booking.errorEmail');
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
@@ -314,11 +322,12 @@ export default function BookingCalendar() {
                 guestName: guestName.trim(),
                 guestEmail: guestEmail.trim(),
                 guestPhone: guestPhone.trim(),
-                checkIn: checkIn!.toISOString(),
-                checkOut: checkOut!.toISOString(),
+                checkIn: toDateKey(checkIn!),
+                checkOut: toDateKey(checkOut!),
                 nights: pricing!.nights,
                 totalPrice: pricing!.total,
                 comment: comment.trim() || undefined,
+                locale,
                 turnstileToken: spamCheck.turnstileToken,
             });
 

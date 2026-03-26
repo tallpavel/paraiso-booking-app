@@ -28,7 +28,15 @@ export default function ContactForm() {
 
     const validate = (data: ContactFormData): FieldError => {
         const errs: FieldError = {};
-        if (!data.name.trim()) errs.name = t('contact.errorName');
+        if (!data.name.trim()) {
+            errs.name = t('contact.errorName');
+        } else if (data.name.trim().length < 2) {
+            errs.name = t('contact.errorNameInvalid');
+        } else if (/\d/.test(data.name)) {
+            errs.name = t('contact.errorNameInvalid');
+        } else if (!/^[\p{L}\s'\-\.]+$/u.test(data.name.trim())) {
+            errs.name = t('contact.errorNameInvalid');
+        }
         if (!data.email.trim()) {
             errs.email = t('contact.errorEmail');
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {

@@ -10,6 +10,7 @@ export interface ReservationPayload {
     nights: number;
     totalPrice: number;
     comment?: string;
+    locale?: string;    // guest's chosen language ('en' | 'es' | 'cs')
     turnstileToken?: string;
 }
 
