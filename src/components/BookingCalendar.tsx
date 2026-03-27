@@ -230,6 +230,15 @@ export default function BookingCalendar() {
     const isBelowMinimum = nights > 0 && nights < MIN_NIGHTS;
     const datesValid = nights >= MIN_NIGHTS && pricing !== null;
 
+    // ── Last-minute flag (check-in < 14 days from today) ─────────────
+    const isLastMinute = useMemo(() => {
+        if (!checkIn) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const diff = Math.ceil((checkIn.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        return diff < 14;
+    }, [checkIn]);
+
     // ── Formatting ───────────────────────────────────────────────────
     const formatDate = useCallback(
         (date: Date): string => {
@@ -303,6 +312,7 @@ export default function BookingCalendar() {
         fetchConfirmedReservations()
             .then((data) => setBookedDates(expandBookedDays(data)))
             .catch(() => { });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 
     // ── Submit ───────────────────────────────────────────────────────
@@ -472,9 +482,20 @@ export default function BookingCalendar() {
                                         ? `${t('booking.next')} · €${pricing!.total}`
                                         : t('booking.next')}
                                 </button>
-                                <p className="mt-2 text-center text-xs text-warm-gray">
-                                    {t('booking.noPayment')}
-                                </p>
+                                {datesValid && isLastMinute ? (
+                                    <div className="mt-3 flex items-start gap-2 rounded-xl border border-coral/20 bg-coral/5 px-3 py-2.5">
+                                        <svg className="mt-0.5 h-4 w-4 shrink-0 text-coral" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.168 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                                        </svg>
+                                        <p className="text-xs font-medium leading-relaxed text-coral">
+                                            {t('booking.lastMinuteNote')}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <p className="mt-2 text-center text-xs text-warm-gray">
+                                        {t('booking.noPayment')}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     )}
@@ -839,12 +860,20 @@ export default function BookingCalendar() {
                                         </button>
                                     </div>
 
-                                    <p className="mt-4 text-center text-xs text-warm-gray">
-                                        {t('booking.noPayment')}
-                                    </p>
-                                    <p className="mt-1.5 text-center text-xs text-coral/80 italic">
-                                        {t('booking.lastMinuteNote')}
-                                    </p>
+                                    {isLastMinute ? (
+                                        <div className="mt-4 flex items-start gap-2 rounded-xl border border-coral/20 bg-coral/5 px-3 py-2.5">
+                                            <svg className="mt-0.5 h-4 w-4 shrink-0 text-coral" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.168 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                                            </svg>
+                                            <p className="text-xs font-medium leading-relaxed text-coral">
+                                                {t('booking.lastMinuteNote')}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p className="mt-4 text-center text-xs text-warm-gray">
+                                            {t('booking.noPayment')}
+                                        </p>
+                                    )}
                                 </div>
                             )}
                         </div>

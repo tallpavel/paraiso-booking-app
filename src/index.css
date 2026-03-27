@@ -138,12 +138,22 @@ a.btn {
   border: none !important;
 }
 
-/* Today */
-.flatpickr-booking-wrapper .flatpickr-day.today:not(.selected):not(.startRange):not(.endRange) {
+/* Today — available */
+.flatpickr-booking-wrapper .flatpickr-day.today:not(.selected):not(.startRange):not(.endRange):not(.flatpickr-disabled) {
   border: none !important;
   font-weight: 700 !important;
   color: var(--color-ocean) !important;
   box-shadow: inset 0 0 0 1.5px rgba(26, 140, 170, 0.3);
+}
+
+/* Today — unavailable (booked / blocked) */
+.flatpickr-booking-wrapper .flatpickr-day.today.flatpickr-disabled {
+  color: var(--color-coral) !important;
+  font-weight: 700 !important;
+  opacity: 0.55 !important;
+  text-decoration: line-through !important;
+  box-shadow: inset 0 0 0 1.5px rgba(224, 124, 90, 0.35);
+  background: rgba(224, 124, 90, 0.06) !important;
 }
 
 /* Selected endpoints (check-in / check-out) */
@@ -197,9 +207,14 @@ a.btn {
   opacity: 0.7;
 }
 
-/* Price hides on disabled / past days */
-.flatpickr-day.flatpickr-disabled .fp-day-price {
+/* Price hides on disabled / past days (except today — keep the indicator visible) */
+.flatpickr-day.flatpickr-disabled:not(.today) .fp-day-price {
   display: none;
+}
+
+.flatpickr-day.flatpickr-disabled.today .fp-day-price {
+  color: var(--color-coral) !important;
+  opacity: 0.6;
 }
 
 /* Softer price label for prev / next month overflow days */
