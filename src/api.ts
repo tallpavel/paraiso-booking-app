@@ -277,7 +277,16 @@ export interface ConfirmedReservationFull {
     updatedAt: string;
 }
 
-export async function adminLogin(password: string): Promise<{ token: string; expiresIn: number }> {
+export interface LoginResponse {
+    token?: string;
+    expiresIn?: number;
+    requires2FA?: boolean;
+    requires2FASetup?: boolean;
+    qrDataUrl?: string;
+    secret?: string;
+}
+
+export async function adminLogin(password: string): Promise<LoginResponse> {
     const res = await fetch(`${API_BASE}/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -287,6 +296,40 @@ export async function adminLogin(password: string): Promise<{ token: string; exp
     if (!res.ok) {
         const body: ApiError = await res.json().catch(() => ({
             message: 'Login failed',
+        }));
+        throw body;
+    }
+
+    return res.json();
+}
+
+export async function adminVerify2FA(password: string, token: string): Promise<{ token: string; expiresIn: number }> {
+    const res = await fetch(`${API_BASE}/admin/verify-2fa`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, token }),
+    });
+
+    if (!res.ok) {
+        const body: ApiError = await res.json().catch(() => ({
+            message: 'Invalid verification code',
+        }));
+        throw body;
+    }
+
+    return res.json();
+}
+
+export async function adminSetup2FA(password: string, token: string, secret: string): Promise<{ token: string; expiresIn: number }> {
+    const res = await fetch(`${API_BASE}/admin/setup-2fa`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, token, secret }),
+    });
+
+    if (!res.ok) {
+        const body: ApiError = await res.json().catch(() => ({
+            message: 'Failed to set up 2FA',
         }));
         throw body;
     }

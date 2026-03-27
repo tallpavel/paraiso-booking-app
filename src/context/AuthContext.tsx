@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
-import { adminLogin as apiLogin } from '../api';
+import { adminLogin as apiLogin, adminVerify2FA, adminSetup2FA, type LoginResponse } from '../api';
 
 interface AuthState {
     token: string | null;
@@ -8,7 +8,9 @@ interface AuthState {
 }
 
 interface AuthContextType extends AuthState {
-    login: (password: string) => Promise<void>;
+    login: (password: string) => Promise<LoginResponse>;
+    verify2FA: (password: string, code: string) => Promise<void>;
+    setup2FA: (password: string, code: string, secret: string) => Promise<void>;
     logout: () => void;
 }
 
@@ -42,10 +44,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
-    const login = useCallback(async (password: string) => {
+    /** Step 1: validate password, returns 2FA status (no JWT yet). */
+    const login = useCallback(async (password: string): Promise<LoginResponse> => {
         setState(s => ({ ...s, isLoading: true }));
         try {
-            const { token } = await apiLogin(password);
+            const response = await apiLogin(password);
+
+            // If the backend returned a JWT directly (2FA disabled), authenticate immediately
+            if (response.token) {
+                localStorage.setItem(TOKEN_KEY, response.token);
+                setState({ token: response.token, isAuthenticated: true, isLoading: false });
+            } else {
+                setState(s => ({ ...s, isLoading: false }));
+            }
+
+            return response;
+        } catch (err) {
+            setState(s => ({ ...s, isLoading: false }));
+            throw err;
+        }
+    }, []);
+
+    /** Step 2a: verify a TOTP code (returning user). */
+    const verify2FA = useCallback(async (password: string, code: string) => {
+        setState(s => ({ ...s, isLoading: true }));
+        try {
+            const { token } = await adminVerify2FA(password, code);
+            localStorage.setItem(TOKEN_KEY, token);
+            setState({ token, isAuthenticated: true, isLoading: false });
+        } catch (err) {
+            setState(s => ({ ...s, isLoading: false }));
+            throw err;
+        }
+    }, []);
+
+    /** Step 2b: verify + persist a TOTP secret (first-time setup). */
+    const setup2FA = useCallback(async (password: string, code: string, secret: string) => {
+        setState(s => ({ ...s, isLoading: true }));
+        try {
+            const { token } = await adminSetup2FA(password, code, secret);
             localStorage.setItem(TOKEN_KEY, token);
             setState({ token, isAuthenticated: true, isLoading: false });
         } catch (err) {
@@ -60,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ ...state, login, logout }}>
+        <AuthContext.Provider value={{ ...state, login, verify2FA, setup2FA, logout }}>
             {children}
         </AuthContext.Provider>
     );

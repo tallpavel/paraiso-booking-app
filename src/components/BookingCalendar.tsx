@@ -297,6 +297,7 @@ export default function BookingCalendar() {
     };
 
     const closeConfirmation = useCallback(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
         setGuestName('');
         setGuestEmail('');
         setGuestPhone('');
@@ -312,7 +313,6 @@ export default function BookingCalendar() {
         fetchConfirmedReservations()
             .then((data) => setBookedDates(expandBookedDays(data)))
             .catch(() => { });
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 
     // ── Submit ───────────────────────────────────────────────────────
