@@ -76,19 +76,26 @@ a.btn {
 /* Month header */
 .flatpickr-booking-wrapper .flatpickr-months {
   margin-bottom: 8px;
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 50 !important;
+}
+
+.flatpickr-booking-wrapper .flatpickr-months .flatpickr-month {
+  overflow: visible !important;
 }
 
 .flatpickr-booking-wrapper .flatpickr-current-month {
-  font-family: var(--font-heading) !important;
+  font-family: var(--font-body) !important;
   font-size: 1.2rem !important;
   font-weight: 700 !important;
   color: var(--color-navy) !important;
-  /* Let children flow naturally */
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 2px !important;
   padding-top: 6px !important;
+  overflow: visible !important;
 }
 
 .flatpickr-booking-wrapper .flatpickr-months .flatpickr-prev-month,
@@ -98,6 +105,10 @@ a.btn {
   padding: 8px !important;
   border-radius: 10px;
   transition: background 0.15s;
+  z-index: 10 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .flatpickr-booking-wrapper .flatpickr-months .flatpickr-prev-month:hover,
@@ -254,98 +265,167 @@ a.btn {
   opacity: 0.5;
 }
 
-/* ── Unified dropdown chevron (shared by month + year) ──────────────── */
-/* SVG chevron encoded as data URI — a thin 8×5 caret matching the editorial style */
+/* ── Weekend differentiation ───────────────────────────────────────── */
 
-/* Month dropdown — override flatpickr's native appearance */
-.flatpickr-booking-wrapper .flatpickr-current-month .flatpickr-monthDropdown-months {
-  font-family: var(--font-heading) !important;
-  font-size: 1.2rem !important;
-  font-weight: 700 !important;
-  color: var(--color-navy) !important;
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  background: transparent !important;
-  border: none !important;
-  cursor: pointer !important;
-  padding: 4px 20px 4px 8px !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' fill='none'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%232c3e50' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 6px center !important;
-  border-radius: 6px !important;
-  transition: background-color 0.15s !important;
-  outline: none !important;
-  margin: 0 !important;
-  line-height: 1.4 !important;
+/* Weekend header labels (last two columns: SAT + SUN) */
+.flatpickr-booking-wrapper .flatpickr-weekdays .flatpickr-weekday:nth-child(6),
+.flatpickr-booking-wrapper .flatpickr-weekdays .flatpickr-weekday:nth-child(7) {
+  color: var(--color-coral) !important;
+  opacity: 0.7;
 }
 
-.flatpickr-booking-wrapper .flatpickr-current-month .flatpickr-monthDropdown-months:hover,
-.flatpickr-booking-wrapper .flatpickr-current-month .flatpickr-monthDropdown-months:focus {
-  background-color: var(--color-sand) !important;
+/* Weekend day cells — subtle warm background tint */
+.flatpickr-booking-wrapper .flatpickr-day.fp-day--weekend {
+  background: rgba(224, 124, 90, 0.04);
 }
 
-.flatpickr-booking-wrapper .flatpickr-current-month .flatpickr-monthDropdown-months option {
-  font-family: var(--font-body) !important;
-  font-size: 0.95rem !important;
-  color: var(--color-navy) !important;
-  background: white !important;
+/* Weekend hover — slightly warmer */
+.flatpickr-booking-wrapper .flatpickr-day.fp-day--weekend:hover {
+  background: rgba(224, 124, 90, 0.09) !important;
 }
 
-/* ── Year dropdown (replaces the default numInput) ──────────────────── */
-.flatpickr-booking-wrapper .numInputWrapper span,
-.flatpickr-booking-wrapper .numInputWrapper:hover span {
-  display: none !important;
+/* Weekend — keep selected / range styles clean (no warm tint interference) */
+.flatpickr-booking-wrapper .flatpickr-day.fp-day--weekend.selected,
+.flatpickr-booking-wrapper .flatpickr-day.fp-day--weekend.startRange,
+.flatpickr-booking-wrapper .flatpickr-day.fp-day--weekend.endRange {
+  background: var(--color-ocean) !important;
 }
 
-.flatpickr-booking-wrapper .numInputWrapper:hover {
+.flatpickr-booking-wrapper .flatpickr-day.fp-day--weekend.inRange {
+  background: rgba(26, 140, 170, 0.12) !important;
+}
+
+/* Weekend disabled — stays transparent */
+.flatpickr-booking-wrapper .flatpickr-day.fp-day--weekend.flatpickr-disabled {
   background: transparent !important;
 }
 
-.flatpickr-booking-wrapper .flatpickr-current-month .numInputWrapper {
-  width: auto;
+/* ── Custom month/year dropdown header ──────────────────────────────── */
+.fp-custom-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: auto;
+  position: relative;
+  z-index: 20;
 }
 
-.flatpickr-booking-wrapper .flatpickr-current-month input.cur-year {
-  font-family: var(--font-heading) !important;
-  font-weight: 700 !important;
-  color: var(--color-navy) !important;
+.fp-custom-dropdown-wrap {
+  position: relative;
+  z-index: 200;
 }
 
-/* Custom year <select> — mirrors the month dropdown exactly */
-.fp-year-select {
-  font-family: var(--font-heading);
-  font-size: 1.2rem;
+.fp-custom-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--color-navy);
   background: transparent;
   border: none;
   cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  /* Match the month's padding exactly */
-  padding: 4px 20px 4px 8px;
-  /* Same chevron SVG as the month dropdown — thin stroked caret */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' fill='none'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%232c3e50' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 6px center;
-  border-radius: 6px;
-  transition: background-color 0.15s;
-  outline: none;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background-color 0.15s, color 0.15s;
+  text-transform: none;
+  letter-spacing: normal;
   line-height: 1.4;
 }
 
-.fp-year-select:hover,
-.fp-year-select:focus {
+.fp-custom-dropdown-btn:hover {
   background-color: var(--color-sand);
 }
 
-.fp-year-select option {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  color: var(--color-navy);
+.fp-custom-dropdown-btn svg {
+  width: 10px;
+  height: 6px;
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: opacity 0.15s, transform 0.2s;
+}
+
+.fp-custom-dropdown-btn:hover svg {
+  opacity: 1;
+}
+
+/* Dropdown panel (popover) */
+.fp-custom-dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
   background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 8px;
+  z-index: 200;
+  opacity: 0;
+  animation: fpDropdownIn 0.15s ease-out forwards;
+}
+
+.fp-custom-dropdown-panel--open {
+  display: grid;
+}
+
+/* Months: 3-column grid */
+.fp-custom-dropdown-panel--months {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  min-width: 180px;
+}
+
+/* Years: single column */
+.fp-custom-dropdown-panel--years {
+  grid-template-columns: 1fr;
+  gap: 4px;
+  min-width: 90px;
+}
+
+/* Option buttons */
+.fp-custom-dropdown-option {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-navy);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: background-color 0.12s, color 0.12s;
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.fp-custom-dropdown-option:hover:not(:disabled) {
+  background-color: var(--color-sand);
+}
+
+.fp-custom-dropdown-option--active {
+  background-color: var(--color-ocean) !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.fp-custom-dropdown-option--disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+@keyframes fpDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 /* ── Mobile: larger touch targets + readable prices ────────────────── */
@@ -354,14 +434,8 @@ a.btn {
     font-size: 1.05rem !important;
   }
 
-  .flatpickr-booking-wrapper .flatpickr-current-month .flatpickr-monthDropdown-months {
-    font-size: 1.05rem !important;
-    padding: 4px 18px 4px 6px !important;
-  }
-
-  .fp-year-select {
-    font-size: 1.05rem;
-    padding: 4px 18px 4px 6px;
+  .fp-custom-dropdown-btn {
+    font-size: 1rem;
   }
 
   .flatpickr-booking-wrapper .flatpickr-day {
@@ -371,6 +445,15 @@ a.btn {
 
   .fp-day-price {
     font-size: 11px;
+  }
+}
+
+/* ── Touch swipe support for calendar on mobile ────────────────────── */
+@media (pointer: coarse) {
+  .flatpickr-booking-wrapper {
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
   }
 }
 

@@ -309,8 +309,8 @@ export default function AdminDashboard() {
                                                 <span className="admin-table__name">{r.guestName}</span>
                                                 <span className="admin-table__email">{r.guestEmail}</span>
                                             </td>
-                                            <td>{r.checkIn}</td>
-                                            <td>{r.checkOut}</td>
+                                            <td>{formatDateShort(r.checkIn)}</td>
+                                            <td>{formatDateShort(r.checkOut)}</td>
                                             <td>{r.nights}</td>
                                             <td className="admin-table__price">€{r.totalPrice}</td>
                                             <td>{new Date(r.createdAt).toLocaleDateString()}</td>
@@ -347,8 +347,8 @@ export default function AdminDashboard() {
                                                 <span className="admin-table__name">{c.guestName}</span>
                                                 <span className="admin-table__email">{c.guestEmail}</span>
                                             </td>
-                                            <td>{c.checkIn}</td>
-                                            <td>{c.checkOut}</td>
+                                            <td>{formatDateShort(c.checkIn)}</td>
+                                            <td>{formatDateShort(c.checkOut)}</td>
                                             <td className="admin-table__price">€{c.totalPrice}</td>
                                             <td className="admin-table__price">€{c.depositAmount}</td>
                                             <td>

@@ -5,6 +5,14 @@ import ConfirmDialog from './ConfirmDialog';
 import CheckInDetailsModal from './CheckInDetailsModal';
 import type { ConfirmedReservationFull } from '../../api';
 
+function formatDateShort(dateStr: string): string {
+    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-GB', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+    });
+}
+
 function paymentLabel(status: string): string {
     switch (status) {
         case 'paid': return '✓ Deposit Paid';
@@ -139,11 +147,11 @@ export default function ConfirmedReservationsPanel() {
                                 <div className="admin-card__details">
                                     <div className="admin-card__detail">
                                         <span className="admin-card__label">Check-in</span>
-                                        <span className="admin-card__value">{c.checkIn}</span>
+                                        <span className="admin-card__value">{formatDateShort(c.checkIn)}</span>
                                     </div>
                                     <div className="admin-card__detail">
                                         <span className="admin-card__label">Check-out</span>
-                                        <span className="admin-card__value">{c.checkOut}</span>
+                                        <span className="admin-card__value">{formatDateShort(c.checkOut)}</span>
                                     </div>
                                     <div className="admin-card__detail">
                                         <span className="admin-card__label">Nights</span>
@@ -333,7 +341,7 @@ export default function ConfirmedReservationsPanel() {
                     details={[
                         { label: 'Guest', value: cancelling.guestName },
                         { label: 'Email', value: cancelling.guestEmail },
-                        { label: 'Dates', value: `${cancelling.checkIn} → ${cancelling.checkOut}` },
+                        { label: 'Dates', value: `${formatDateShort(cancelling.checkIn)} → ${formatDateShort(cancelling.checkOut)}` },
                         { label: 'Nights', value: String(cancelling.nights) },
                         { label: 'Total', value: `€${cancelling.totalPrice}` },
                         { label: 'Payment', value: cancelling.paymentStatus },

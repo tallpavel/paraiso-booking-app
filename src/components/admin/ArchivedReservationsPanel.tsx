@@ -2,6 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { fetchArchivedReservations, type ConfirmedReservationFull } from '../../api';
 
+function formatDateShort(dateStr: string): string {
+    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-GB', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+    });
+}
+
 function paymentLabel(status: string): string {
     switch (status) {
         case 'paid': return '✓ Deposit Paid';
@@ -119,11 +127,11 @@ export default function ArchivedReservationsPanel() {
                             <div className="admin-card__details">
                                 <div className="admin-card__detail">
                                     <span className="admin-card__label">Check-in</span>
-                                    <span className="admin-card__value">{r.checkIn}</span>
+                                    <span className="admin-card__value">{formatDateShort(r.checkIn)}</span>
                                 </div>
                                 <div className="admin-card__detail">
                                     <span className="admin-card__label">Check-out</span>
-                                    <span className="admin-card__value">{r.checkOut}</span>
+                                    <span className="admin-card__value">{formatDateShort(r.checkOut)}</span>
                                 </div>
                                 <div className="admin-card__detail">
                                     <span className="admin-card__label">Nights</span>

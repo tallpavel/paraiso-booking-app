@@ -4,6 +4,14 @@ import EditReservationModal from './EditReservationModal';
 import ConfirmDialog from './ConfirmDialog';
 import type { Reservation } from '../../api';
 
+function formatDateShort(dateStr: string): string {
+    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-GB', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+    });
+}
+
 export default function ReservationRequestsPanel() {
     const { requests, confirmed, isLoading, error, refresh, handleConfirm, handleRejectRequest, handleUpdateRequest } = useAdminData();
     const [actionState, setActionState] = useState<Record<string, 'confirming' | 'rejecting' | 'done' | 'error'>>({});
@@ -95,11 +103,11 @@ export default function ReservationRequestsPanel() {
                                 <div className="admin-card__details">
                                     <div className="admin-card__detail">
                                         <span className="admin-card__label">Check-in</span>
-                                        <span className="admin-card__value">{req.checkIn}</span>
+                                        <span className="admin-card__value">{formatDateShort(req.checkIn)}</span>
                                     </div>
                                     <div className="admin-card__detail">
                                         <span className="admin-card__label">Check-out</span>
-                                        <span className="admin-card__value">{req.checkOut}</span>
+                                        <span className="admin-card__value">{formatDateShort(req.checkOut)}</span>
                                     </div>
                                     <div className="admin-card__detail">
                                         <span className="admin-card__label">Nights</span>
@@ -175,7 +183,7 @@ export default function ReservationRequestsPanel() {
                     details={[
                         { label: 'Guest', value: rejecting.guestName },
                         { label: 'Email', value: rejecting.guestEmail },
-                        { label: 'Dates', value: `${rejecting.checkIn} → ${rejecting.checkOut}` },
+                        { label: 'Dates', value: `${formatDateShort(rejecting.checkIn)} → ${formatDateShort(rejecting.checkOut)}` },
                         { label: 'Nights', value: String(rejecting.nights) },
                         { label: 'Total', value: `€${rejecting.totalPrice}` },
                     ]}
