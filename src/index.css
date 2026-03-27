@@ -112,28 +112,33 @@ a.btn {
 
 /* Weekday header */
 .flatpickr-booking-wrapper .flatpickr-weekdays {
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .flatpickr-booking-wrapper span.flatpickr-weekday {
   color: var(--color-warm-gray) !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em;
 }
 
 /* ── Day cells ──────────────────────────────────────────────────────── */
+.flatpickr-booking-wrapper .dayContainer {
+  gap: 2px 0;
+}
+
 .flatpickr-booking-wrapper .flatpickr-day {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  height: 52px !important;
+  height: 62px !important;
   max-width: none !important;
   line-height: 1.2 !important;
   border-radius: 10px !important;
   border: none !important;
+  font-size: 15px !important;
   font-weight: 500 !important;
   color: var(--color-navy) !important;
   transition: all 0.15s !important;
@@ -204,13 +209,13 @@ a.btn {
 
 /* ── Price label inside each day ────────────────────────────────────── */
 .fp-day-price {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
   line-height: 1;
-  margin-top: 1px;
+  margin-top: 2px;
   pointer-events: none;
   color: var(--color-ocean);
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
 /* Price hides on disabled / past days (except today — keep the indicator visible) */
@@ -343,7 +348,7 @@ a.btn {
   background: white;
 }
 
-/* ── Mobile: slightly smaller header on small screens ───────────────── */
+/* ── Mobile: larger touch targets + readable prices ────────────────── */
 @media (max-width: 480px) {
   .flatpickr-booking-wrapper .flatpickr-current-month {
     font-size: 1.05rem !important;
@@ -357,6 +362,32 @@ a.btn {
   .fp-year-select {
     font-size: 1.05rem;
     padding: 4px 18px 4px 6px;
+  }
+
+  .flatpickr-booking-wrapper .flatpickr-day {
+    height: 58px !important;
+    font-size: 15px !important;
+  }
+
+  .fp-day-price {
+    font-size: 11px;
+  }
+}
+
+/* ── Desktop: comfortable sizing for larger screens ────────────────── */
+@media (min-width: 768px) {
+  .flatpickr-booking-wrapper .flatpickr-day {
+    height: 66px !important;
+    font-size: 16px !important;
+  }
+
+  .fp-day-price {
+    font-size: 12px;
+    margin-top: 3px;
+  }
+
+  .flatpickr-booking-wrapper span.flatpickr-weekday {
+    font-size: 13px !important;
   }
 }
 
