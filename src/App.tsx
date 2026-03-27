@@ -60,7 +60,7 @@ function PublicSite() {
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
+  if (!isAuthenticated) return <Navigate to="/centralni-mozek-stranky/vchod" replace />;
   return <>{children}</>;
 }
 
@@ -72,9 +72,9 @@ export default function App() {
       <Route path="/discover/:slug" element={<DiscoverDetailPage />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/checkin/:token" element={<CheckInForm />} />
-      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/centralni-mozek-stranky/vchod" element={<AdminLogin />} />
       <Route
-        path="/admin/*"
+        path="/centralni-mozek-stranky/*"
         element={
           <ProtectedRoute>
             <AdminLayout />

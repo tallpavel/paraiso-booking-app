@@ -27,6 +27,13 @@ export default function BookingCTA() {
         return () => window.removeEventListener('open-booking', handler);
     }, []);
 
+    // Close modal when booking confirmation is dismissed
+    useEffect(() => {
+        const handler = () => setOpen(false);
+        window.addEventListener('close-booking', handler);
+        return () => window.removeEventListener('close-booking', handler);
+    }, []);
+
     return (
         <>
             {/* CTA Section */}

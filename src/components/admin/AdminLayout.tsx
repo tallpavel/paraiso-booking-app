@@ -9,12 +9,12 @@ import BlockedDatesPanel from './BlockedDatesPanel';
 import PricingPanel from './PricingPanel';
 
 const NAV_ITEMS = [
-    { to: '/admin', label: 'Overview', icon: '◈' },
-    { to: '/admin/requests', label: 'Requests', icon: '◇' },
-    { to: '/admin/confirmed', label: 'Confirmed', icon: '◆' },
-    { to: '/admin/blocked-dates', label: 'Blocked Days', icon: '⊘' },
-    { to: '/admin/pricing', label: 'Pricing', icon: '€' },
-    { to: '/admin/history', label: 'History', icon: '▣' },
+    { to: '/centralni-mozek-stranky', label: 'Overview', icon: '◈' },
+    { to: '/centralni-mozek-stranky/requests', label: 'Requests', icon: '◇' },
+    { to: '/centralni-mozek-stranky/confirmed', label: 'Confirmed', icon: '◆' },
+    { to: '/centralni-mozek-stranky/blocked-dates', label: 'Blocked Days', icon: '⊘' },
+    { to: '/centralni-mozek-stranky/pricing', label: 'Pricing', icon: '€' },
+    { to: '/centralni-mozek-stranky/history', label: 'History', icon: '▣' },
 ];
 
 export default function AdminLayout() {
@@ -24,7 +24,7 @@ export default function AdminLayout() {
 
     function handleLogout() {
         logout();
-        navigate('/admin/login');
+        navigate('/centralni-mozek-stranky/vchod');
     }
 
     return (
@@ -53,7 +53,7 @@ export default function AdminLayout() {
                         <NavLink
                             key={item.to}
                             to={item.to}
-                            end={item.to === '/admin'}
+                            end={item.to === '/centralni-mozek-stranky'}
                             className={({ isActive }) =>
                                 `admin-nav-item ${isActive ? 'admin-nav-item--active' : ''}`
                             }
@@ -91,7 +91,7 @@ export default function AdminLayout() {
                     <Route path="blocked-dates" element={<BlockedDatesPanel />} />
                     <Route path="pricing" element={<PricingPanel />} />
                     <Route path="history" element={<ArchivedReservationsPanel />} />
-                    <Route path="*" element={<Navigate to="/admin" replace />} />
+                    <Route path="*" element={<Navigate to="/centralni-mozek-stranky" replace />} />
                 </Routes>
             </main>
         </div>

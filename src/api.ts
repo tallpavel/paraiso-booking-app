@@ -287,7 +287,7 @@ export interface LoginResponse {
 }
 
 export async function adminLogin(password: string): Promise<LoginResponse> {
-    const res = await fetch(`${API_BASE}/admin/login`, {
+    const res = await fetch(`${API_BASE}/centralni-mozek-stranky/vchod`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
@@ -304,7 +304,7 @@ export async function adminLogin(password: string): Promise<LoginResponse> {
 }
 
 export async function adminVerify2FA(password: string, token: string): Promise<{ token: string; expiresIn: number }> {
-    const res = await fetch(`${API_BASE}/admin/verify-2fa`, {
+    const res = await fetch(`${API_BASE}/centralni-mozek-stranky/verify-2fa`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password, token }),
@@ -321,7 +321,7 @@ export async function adminVerify2FA(password: string, token: string): Promise<{
 }
 
 export async function adminSetup2FA(password: string, token: string, secret: string): Promise<{ token: string; expiresIn: number }> {
-    const res = await fetch(`${API_BASE}/admin/setup-2fa`, {
+    const res = await fetch(`${API_BASE}/centralni-mozek-stranky/setup-2fa`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password, token, secret }),
@@ -338,11 +338,14 @@ export async function adminSetup2FA(password: string, token: string, secret: str
 }
 
 export async function fetchAdminStats(token: string): Promise<AdminStats> {
-    const res = await fetch(`${API_BASE}/admin/stats`, {
+    const res = await fetch(`${API_BASE}/centralni-mozek-stranky/stats`, {
         headers: authHeaders(token),
     });
 
-    if (!res.ok) throw new Error('Failed to fetch stats');
+    if (!res.ok) {
+        if (res.status === 401) throw new Error('401: Unauthorized');
+        throw new Error('Failed to fetch stats');
+    }
     return res.json();
 }
 
@@ -351,7 +354,10 @@ export async function fetchReservationsAuth(token: string): Promise<Reservation[
         headers: authHeaders(token),
     });
 
-    if (!res.ok) throw new Error('Failed to fetch reservations');
+    if (!res.ok) {
+        if (res.status === 401) throw new Error('401: Unauthorized');
+        throw new Error('Failed to fetch reservations');
+    }
     return res.json();
 }
 
@@ -360,7 +366,10 @@ export async function fetchConfirmedReservationsFull(token: string): Promise<Con
         headers: authHeaders(token),
     });
 
-    if (!res.ok) throw new Error('Failed to fetch confirmed reservations');
+    if (!res.ok) {
+        if (res.status === 401) throw new Error('401: Unauthorized');
+        throw new Error('Failed to fetch confirmed reservations');
+    }
     return res.json();
 }
 

@@ -297,6 +297,8 @@ export default function BookingCalendar() {
     };
 
     const closeConfirmation = useCallback(() => {
+        // Tell parent modals (BookingCTA / DiscoverDetailPage) to close
+        window.dispatchEvent(new CustomEvent('close-booking'));
         window.scrollTo({ top: 0, behavior: 'instant' });
         setGuestName('');
         setGuestEmail('');

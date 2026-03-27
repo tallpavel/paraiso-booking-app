@@ -98,6 +98,13 @@ export default function DiscoverDetailPage() {
     const [bookingOpen, setBookingOpen] = useState(false);
     const [pageReady, setPageReady] = useState(false);
 
+    // Close booking modal when confirmation is dismissed
+    useEffect(() => {
+        const handler = () => setBookingOpen(false);
+        window.addEventListener('close-booking', handler);
+        return () => window.removeEventListener('close-booking', handler);
+    }, []);
+
     useEffect(() => {
         window.scrollTo(0, 0);
         setPageReady(false);

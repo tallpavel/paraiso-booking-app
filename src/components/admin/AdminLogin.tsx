@@ -20,7 +20,7 @@ export default function AdminLogin() {
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     if (isAuthenticated) {
-        navigate('/admin', { replace: true });
+        navigate('/centralni-mozek-stranky', { replace: true });
         return null;
     }
 
@@ -41,7 +41,7 @@ export default function AdminLogin() {
                 setStage('verify');
             } else if (response.token) {
                 // Authenticated directly (shouldn't happen with 2FA enabled)
-                navigate('/admin', { replace: true });
+                navigate('/centralni-mozek-stranky', { replace: true });
             }
         } catch {
             setError('Invalid password');
@@ -61,7 +61,7 @@ export default function AdminLogin() {
             } else {
                 await verify2FA(password, token);
             }
-            navigate('/admin', { replace: true });
+            navigate('/centralni-mozek-stranky', { replace: true });
         } catch {
             setError('Invalid code. Please try again.');
             setCode(['', '', '', '', '', '']);
