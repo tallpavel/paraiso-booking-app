@@ -243,10 +243,14 @@ a.btn {
   opacity: 0.5;
 }
 
-/* ── Remove the default year dropdown arrow ─────────────────────────── */
-.flatpickr-booking-wrapper .numInputWrapper:hover,
-.flatpickr-booking-wrapper .numInputWrapper span {
+/* ── Remove the default year dropdown arrows ────────────────────────── */
+.flatpickr-booking-wrapper .numInputWrapper span,
+.flatpickr-booking-wrapper .numInputWrapper:hover span {
   display: none !important;
+}
+
+.flatpickr-booking-wrapper .numInputWrapper:hover {
+  background: transparent !important;
 }
 
 .flatpickr-booking-wrapper .flatpickr-current-month .numInputWrapper {

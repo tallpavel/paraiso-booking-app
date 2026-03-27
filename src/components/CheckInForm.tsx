@@ -16,6 +16,12 @@ const EMPTY_GUEST: CheckInGuest = {
     documentNumber: '',
 };
 
+function formatDate(iso: string): string {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+}
+
 const DOC_TYPE_LABELS: Record<string, string> = {
     passport: 'Passport',
     id_card: 'ID Card',
@@ -183,8 +189,8 @@ export default function CheckInForm() {
                     <h1>Check-In Complete!</h1>
                     <p>Thank you, <strong>{formData.guestName}</strong>. Your check-in data has been saved successfully.</p>
                     <div className="checkin-success-card__details">
-                        <p><strong>Check-in:</strong> {formData.checkIn}</p>
-                        <p><strong>Check-out:</strong> {formData.checkOut}</p>
+                        <p><strong>Check-in:</strong> {formatDate(formData.checkIn)}</p>
+                        <p><strong>Check-out:</strong> {formatDate(formData.checkOut)}</p>
                         <p><strong>Guests registered:</strong> {guests.length}</p>
                     </div>
                     <p className="checkin-success-card__hint">
@@ -217,9 +223,9 @@ export default function CheckInForm() {
                         Welcome, <strong>{formData.guestName}</strong>!
                     </p>
                     <div className="checkin-summary__dates">
-                        <span>📅 {formData.checkIn}</span>
+                        <span>📅 {formatDate(formData.checkIn)}</span>
                         <span className="checkin-summary__arrow">→</span>
-                        <span>📅 {formData.checkOut}</span>
+                        <span>📅 {formatDate(formData.checkOut)}</span>
                     </div>
                     <p className="checkin-summary__hint">
                         Please enter the details of <strong>all guests</strong> who will be staying.
