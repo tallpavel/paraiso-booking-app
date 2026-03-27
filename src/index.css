@@ -391,6 +391,32 @@ a.btn {
   }
 }
 
+/* ── Sticky CTA bottom bar — slide-up animation + safe-area ─────── */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Add bottom padding on mobile so sticky bar doesn't cover content */
+@media (max-width: 1023px) {
+  #booking {
+    padding-bottom: 80px;
+  }
+}
+
+/* iOS safe-area: push sticky bars above the home indicator */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .sticky-cta-bar {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

@@ -291,6 +291,7 @@ const translations = {
         'booking.sentStep2': 'We\'ll review availability and respond within 24 hours.',
         'booking.sentStep3': 'Once confirmed, you\'ll receive payment instructions.',
         'booking.sentClose': 'Close',
+        'booking.scrollConsent': 'Accept the terms above to continue',
 
         // Contact
         'contact.label': 'Get in Touch',
@@ -770,6 +771,7 @@ const translations = {
         'booking.sentStep2': 'Revisaremos la disponibilidad y responderemos en 24 horas.',
         'booking.sentStep3': 'Una vez confirmado, recibirás instrucciones de pago.',
         'booking.sentClose': 'Cerrar',
+        'booking.scrollConsent': 'Acepta los términos arriba para continuar',
 
         // Contact
         'contact.label': 'Contacto',
@@ -1239,6 +1241,7 @@ const translations = {
         'booking.sentStep2': 'Ověříme dostupnost a odpovíme do 24 hodin.',
         'booking.sentStep3': 'Po potvrzení obdržíte platební instrukce.',
         'booking.sentClose': 'Zavřít',
+        'booking.scrollConsent': 'Přijměte podmínky výše pro pokračování',
 
         // Contact
         'contact.label': 'Kontaktujte Nás',

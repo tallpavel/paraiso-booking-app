@@ -159,11 +159,20 @@ export default function BookingCalendar() {
         return () => { cancelled = true; };
     }, []);
 
-    // ── Flatpickr ────────────────────────────────────────────────────
+    // ── Refs ──────────────────────────────────────────────────────────
     const calendarRef = useRef<HTMLDivElement>(null);
     const fpRef = useRef<FlatpickrInstance | null>(null);
+    const cardRef = useRef<HTMLDivElement>(null);
 
     const flatpickrLocale = useMemo(() => ({ firstDayOfWeek: 1 as const }), []);
+
+    // ── Auto-scroll to top of card on step change ────────────────────
+    useEffect(() => {
+        if (step > 1 && cardRef.current) {
+            const top = cardRef.current.getBoundingClientRect().top + window.scrollY - 16;
+            window.scrollTo({ top, behavior: 'smooth' });
+        }
+    }, [step]);
 
     useEffect(() => {
         if (!calendarRef.current || !dataReady) return;
@@ -415,7 +424,7 @@ export default function BookingCalendar() {
             <div className="mx-auto max-w-7xl px-6">
 
                 {/* Card container — wider on step 1 for the two-column layout */}
-                <div className={`relative mx-auto rounded-3xl bg-white p-5 shadow-lg transition-all sm:p-10 ${step === 1 ? 'max-w-5xl' : 'max-w-2xl'}`}>
+                <div ref={cardRef} className={`relative mx-auto rounded-3xl bg-white p-5 shadow-lg transition-all sm:p-10 ${step === 1 ? 'max-w-5xl' : 'max-w-2xl'}`}>
 
                     {/* Integrated header + step indicator */}
                     <div className="mb-6 text-center sm:mb-8">
@@ -932,6 +941,73 @@ export default function BookingCalendar() {
                         </div>
                     )}
                 </div>
+
+                {/* ── Sticky Mobile CTA Bar ─────────────────────────────────── */}
+                {/* Visible only on mobile (<lg) when there's an actionable state */}
+                {step === 1 && datesValid && pricing && (
+                    <div className="sticky-cta-bar fixed inset-x-0 bottom-0 z-50 border-t border-navy/10 bg-white/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] lg:hidden animate-[slideUp_0.3s_ease-out]">
+                        <div className="mx-auto flex max-w-lg items-center gap-3">
+                            <div className="min-w-0 flex-1">
+                                <p className="text-sm font-bold text-navy">
+                                    {nights} {nights > 1 ? t('booking.nights') : t('booking.night')} · <span className="text-ocean">€{pricing.total}</span>
+                                </p>
+                                <p className="truncate text-[11px] text-warm-gray">
+                                    {formatDate(checkIn!)} → {formatDate(checkOut!)}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={goNext}
+                                className="shrink-0 rounded-full bg-ocean px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all active:scale-95 hover:bg-ocean-dark"
+                            >
+                                {t('booking.next')}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {step === 2 && (
+                    <div className="sticky-cta-bar fixed inset-x-0 bottom-0 z-50 border-t border-navy/10 bg-white/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] sm:hidden animate-[slideUp_0.3s_ease-out]">
+                        <div className="mx-auto flex max-w-lg items-center gap-3">
+                            <div className="min-w-0 flex-1">
+                                <p className="text-sm font-bold text-navy">
+                                    {pricing ? `€${pricing.total}` : ''} · {nights} {nights > 1 ? t('booking.nights') : t('booking.night')}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={goNext}
+                                className="shrink-0 rounded-full bg-ocean px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all active:scale-95 hover:bg-ocean-dark"
+                            >
+                                {t('booking.next')}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {step === 3 && status !== 'sent' && (
+                    <div className="sticky-cta-bar fixed inset-x-0 bottom-0 z-50 border-t border-navy/10 bg-white/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] sm:hidden animate-[slideUp_0.3s_ease-out]">
+                        <div className="mx-auto max-w-lg">
+                            <button
+                                type="button"
+                                onClick={handleSubmit}
+                                disabled={status === 'sending' || !gdprConsent || !termsConsent}
+                                className={`w-full rounded-full py-3.5 text-sm font-semibold shadow-lg transition-all active:scale-[0.98] ${
+                                    status === 'sending' || !gdprConsent || !termsConsent
+                                        ? 'cursor-not-allowed bg-navy/15 text-navy/30'
+                                        : 'bg-coral text-white hover:bg-coral-dark'
+                                }`}
+                            >
+                                {status === 'sending'
+                                    ? t('booking.sending')
+                                    : `${t('booking.request')} · €${pricing!.total}`}
+                            </button>
+                            {(!gdprConsent || !termsConsent) && (
+                                <p className="mt-1.5 text-center text-[11px] text-warm-gray">↑ {t('booking.scrollConsent' as TranslationKey)}</p>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
         </section>
     );
