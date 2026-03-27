@@ -243,7 +243,7 @@ a.btn {
   opacity: 0.5;
 }
 
-/* ── Remove the default year dropdown arrows ────────────────────────── */
+/* ── Year dropdown (replaces the default numInput) ──────────────────── */
 .flatpickr-booking-wrapper .numInputWrapper span,
 .flatpickr-booking-wrapper .numInputWrapper:hover span {
   display: none !important;
@@ -254,13 +254,46 @@ a.btn {
 }
 
 .flatpickr-booking-wrapper .flatpickr-current-month .numInputWrapper {
-  width: 5ch;
+  width: auto;
 }
 
 .flatpickr-booking-wrapper .flatpickr-current-month input.cur-year {
   font-family: var(--font-heading) !important;
   font-weight: 700 !important;
   color: var(--color-navy) !important;
+}
+
+/* Custom year <select> injected via JS */
+.fp-year-select {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 2px 18px 2px 4px;
+  /* Chevron via CSS background */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='%232c3e50'%3E%3Cpath d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  border-radius: 6px;
+  transition: background-color 0.15s;
+  outline: none;
+}
+
+.fp-year-select:hover,
+.fp-year-select:focus {
+  background-color: var(--color-sand);
+}
+
+.fp-year-select option {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-navy);
+  background: white;
 }
 
 @keyframes fade-in {

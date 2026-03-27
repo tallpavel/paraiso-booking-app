@@ -171,6 +171,42 @@ export default function BookingCalendar() {
         const bookedSet = bookedDates;
         const blockedSet = blockedDates;
 
+        // Helper: inject a year <select> dropdown to replace the default numInput
+        function injectYearDropdown(instance: FlatpickrInstance) {
+            const container = instance.calendarContainer;
+            if (!container) return;
+
+            const numWrapper = container.querySelector('.flatpickr-current-month .numInputWrapper');
+            if (!numWrapper) return;
+
+            // Remove old select if present (prevents duplicates on re-render)
+            const existing = numWrapper.querySelector('.fp-year-select');
+            if (existing) existing.remove();
+
+            const currentYear = new Date().getFullYear();
+            const maxYear = currentYear + 2; // allow booking up to 2 years ahead
+
+            const select = document.createElement('select');
+            select.className = 'fp-year-select';
+
+            for (let y = currentYear; y <= maxYear; y++) {
+                const opt = document.createElement('option');
+                opt.value = String(y);
+                opt.textContent = String(y);
+                if (y === instance.currentYear) opt.selected = true;
+                select.appendChild(opt);
+            }
+
+            select.addEventListener('change', () => {
+                instance.changeYear(Number(select.value));
+            });
+
+            // Hide the original input, insert our select next to it
+            const origInput = numWrapper.querySelector('input.cur-year') as HTMLElement;
+            if (origInput) origInput.style.display = 'none';
+            numWrapper.appendChild(select);
+        }
+
         const fp = flatpickr(calendarRef.current, {
             mode: 'range',
             minDate: 'today',
@@ -179,6 +215,18 @@ export default function BookingCalendar() {
             showMonths: 1,
             locale: flatpickrLocale,
             disable: [(date: Date) => bookedSet.has(toDateKey(date)) || blockedSet.has(toDateKey(date))],
+
+            onReady(_dObj: Date[], _dStr: string, instance: FlatpickrInstance) {
+                injectYearDropdown(instance);
+            },
+
+            onYearChange(_dObj: Date[], _dStr: string, instance: FlatpickrInstance) {
+                injectYearDropdown(instance);
+            },
+
+            onMonthChange(_dObj: Date[], _dStr: string, instance: FlatpickrInstance) {
+                injectYearDropdown(instance);
+            },
 
             onDayCreate(_dObj: Date[], _dStr: string, _fp: FlatpickrInstance, dayElem: HTMLElement) {
                 const dayEl = dayElem as HTMLElement & { dateObj: Date };
