@@ -83,6 +83,12 @@ a.btn {
   font-size: 1.2rem !important;
   font-weight: 700 !important;
   color: var(--color-navy) !important;
+  /* Let children flow naturally */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  padding-top: 6px !important;
 }
 
 .flatpickr-booking-wrapper .flatpickr-months .flatpickr-prev-month,
@@ -243,6 +249,44 @@ a.btn {
   opacity: 0.5;
 }
 
+/* ── Unified dropdown chevron (shared by month + year) ──────────────── */
+/* SVG chevron encoded as data URI — a thin 8×5 caret matching the editorial style */
+
+/* Month dropdown — override flatpickr's native appearance */
+.flatpickr-booking-wrapper .flatpickr-current-month .flatpickr-monthDropdown-months {
+  font-family: var(--font-heading) !important;
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  color: var(--color-navy) !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  padding: 4px 20px 4px 8px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' fill='none'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%232c3e50' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 6px center !important;
+  border-radius: 6px !important;
+  transition: background-color 0.15s !important;
+  outline: none !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+.flatpickr-booking-wrapper .flatpickr-current-month .flatpickr-monthDropdown-months:hover,
+.flatpickr-booking-wrapper .flatpickr-current-month .flatpickr-monthDropdown-months:focus {
+  background-color: var(--color-sand) !important;
+}
+
+.flatpickr-booking-wrapper .flatpickr-current-month .flatpickr-monthDropdown-months option {
+  font-family: var(--font-body) !important;
+  font-size: 0.95rem !important;
+  color: var(--color-navy) !important;
+  background: white !important;
+}
+
 /* ── Year dropdown (replaces the default numInput) ──────────────────── */
 .flatpickr-booking-wrapper .numInputWrapper span,
 .flatpickr-booking-wrapper .numInputWrapper:hover span {
@@ -263,7 +307,7 @@ a.btn {
   color: var(--color-navy) !important;
 }
 
-/* Custom year <select> injected via JS */
+/* Custom year <select> — mirrors the month dropdown exactly */
 .fp-year-select {
   font-family: var(--font-heading);
   font-size: 1.2rem;
@@ -274,14 +318,17 @@ a.btn {
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
-  padding: 2px 18px 2px 4px;
-  /* Chevron via CSS background */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='%232c3e50'%3E%3Cpath d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+  -moz-appearance: none;
+  /* Match the month's padding exactly */
+  padding: 4px 20px 4px 8px;
+  /* Same chevron SVG as the month dropdown — thin stroked caret */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' fill='none'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%232c3e50' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 4px center;
+  background-position: right 6px center;
   border-radius: 6px;
   transition: background-color 0.15s;
   outline: none;
+  line-height: 1.4;
 }
 
 .fp-year-select:hover,
@@ -294,6 +341,23 @@ a.btn {
   font-size: 0.95rem;
   color: var(--color-navy);
   background: white;
+}
+
+/* ── Mobile: slightly smaller header on small screens ───────────────── */
+@media (max-width: 480px) {
+  .flatpickr-booking-wrapper .flatpickr-current-month {
+    font-size: 1.05rem !important;
+  }
+
+  .flatpickr-booking-wrapper .flatpickr-current-month .flatpickr-monthDropdown-months {
+    font-size: 1.05rem !important;
+    padding: 4px 18px 4px 6px !important;
+  }
+
+  .fp-year-select {
+    font-size: 1.05rem;
+    padding: 4px 18px 4px 6px;
+  }
 }
 
 @keyframes fade-in {
