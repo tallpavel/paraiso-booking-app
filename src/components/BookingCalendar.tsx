@@ -11,6 +11,9 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const MIN_NIGHTS = 3;
 
+// Fallback defaults if the seasonal-rates API is unreachable (must match backend DEFAULT_RATES)
+const FALLBACK_RATES = [150, 175, 165, 155, 145, 155, 180, 190, 160, 150, 145, 180] as const;
+
 function toDateKey(d: Date): string {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
@@ -32,7 +35,7 @@ function expandBookedDays(reservations: ConfirmedReservation[]): Set<string> {
 function getRateForDate(d: Date, customRates: Map<string, number>, seasonalRates: readonly number[]): number {
     const key = toDateKey(d);
     if (customRates.has(key)) return customRates.get(key)!;
-    return seasonalRates[d.getMonth()];
+    return seasonalRates[d.getMonth()] ?? FALLBACK_RATES[d.getMonth()];
 }
 
 function calculateStayPrice(checkIn: Date, checkOut: Date, customRates: Map<string, number>, seasonalRates: readonly number[]) {
@@ -136,7 +139,7 @@ export default function BookingCalendar() {
             fetchConfirmedReservations().catch(() => []),
             fetchDailyRates().catch(() => []),
             fetchBlockedDates().catch(() => []),
-            fetchSeasonalRates().catch(() => ({ rates: [] as number[], updatedAt: null })),
+            fetchSeasonalRates().catch(() => ({ rates: [...FALLBACK_RATES] as number[], updatedAt: null })),
         ]).then(([confirmed, rates, blocked, seasonal]) => {
             if (cancelled) return;
             setBookedDates(expandBookedDays(confirmed));
