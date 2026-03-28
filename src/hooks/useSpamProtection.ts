@@ -151,12 +151,12 @@ export function useSpamProtection(formId: string): SpamProtection {
             return { ok: false, reason: 'Please take a moment to fill out the form.' };
         }
 
-        // Layer 1: Turnstile token — include if available, gracefully degrade if not
+        // Layer 1: Turnstile token — REQUIRED for backend verification
         if (!turnstileTokenRef.current) {
-            console.warn('[SpamProtection] Turnstile token not available — submitting without it');
+            return { ok: false, reason: 'Security verification required. Please complete the challenge.' };
         }
 
-        return { ok: true, turnstileToken: turnstileTokenRef.current ?? undefined };
+        return { ok: true, turnstileToken: turnstileTokenRef.current };
     }, []);
 
     const resetProtection = useCallback(() => {
