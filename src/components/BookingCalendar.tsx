@@ -509,9 +509,13 @@ export default function BookingCalendar() {
         // Spam protection check
         const spamCheck = spam.validate();
         if (!spamCheck.ok) {
+            // If Turnstile token is missing, reset the widget to trigger re-verification
+            if (!spam.isReady) {
+                spam.reset();
+            }
             setStatus('error');
             setServerError(spamCheck.reason || 'Security check failed.');
-            setTimeout(() => setStatus('idle'), 6000);
+            setTimeout(() => setStatus('idle'), 8000);
             return;
         }
 
@@ -537,10 +541,15 @@ export default function BookingCalendar() {
         } catch (err: unknown) {
             setStatus('error');
             const apiErr = err as { message?: string; errors?: string[] };
-            setServerError(
-                apiErr?.errors?.join(', ') || apiErr?.message || t('booking.errorServer'),
-            );
-            setTimeout(() => setStatus('idle'), 6000);
+            const errorMsg = apiErr?.errors?.join(', ') || apiErr?.message || t('booking.errorServer');
+
+            // If backend rejected the Turnstile token (403), reset the widget for retry
+            if (errorMsg.toLowerCase().includes('security') || errorMsg.toLowerCase().includes('verification')) {
+                spam.reset();
+            }
+
+            setServerError(errorMsg);
+            setTimeout(() => setStatus('idle'), 8000);
         }
     };
 
@@ -566,6 +575,9 @@ export default function BookingCalendar() {
                         </p>
                     </div>
                     <StepIndicator current={step} labels={stepLabels} />
+
+                    {/* Spam protection (honeypot + Turnstile) — always mounted so the token persists across steps */}
+                    {spam.honeypotField}
 
                     {/* Close button — resets wizard to step 1 */}
                     {step > 1 && (
@@ -846,7 +858,6 @@ export default function BookingCalendar() {
                                     />
                                 </div>
 
-                                {spam.honeypotField}
                             </div>
 
                             {/* Navigation — stacked on mobile, side-by-side on sm+ */}
