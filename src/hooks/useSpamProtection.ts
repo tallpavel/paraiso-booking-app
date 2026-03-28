@@ -1,9 +1,13 @@
 /**
  * Multi-layer spam & bot protection for forms.
  *
- * Layer 1 — Cloudflare Turnstile (invisible CAPTCHA)
+ * Layer 1 — Cloudflare Turnstile (managed CAPTCHA)
  * Layer 2 — Honeypot field (hidden input bots fill automatically)
  * Layer 3 — Timing check (rejects submissions faster than a human could type)
+ *
+ * Graceful degradation: if Turnstile consistently fails (network/config issues),
+ * layers 2 + 3 still protect and submissions proceed without a token.
+ * The backend should treat a missing token as "unverified" and apply its own logic.
  *
  * Usage:
  *   const spam = useSpamProtection('contact-form');
@@ -25,6 +29,9 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAAACvd6ET3qQxt_3sZ';
 // Minimum seconds before a form can be submitted (bots submit instantly)
 const MIN_FILL_TIME_SECONDS = 3;
 
+// How many Turnstile errors before we give up and degrade gracefully
+const MAX_RETRIES = 3;
+
 // ── Types ────────────────────────────────────────────────────────────
 interface TurnstileAPI {
     render: (
@@ -32,10 +39,10 @@ interface TurnstileAPI {
         opts: {
             sitekey: string;
             callback: (token: string) => void;
-            'error-callback'?: () => void;
+            'error-callback'?: (errorCode?: string) => void;
             'expired-callback'?: () => void;
             theme?: 'light' | 'dark' | 'auto';
-            size?: 'normal' | 'compact' | 'invisible';
+            size?: 'normal' | 'compact' | 'flexible' | 'invisible';
         },
     ) => string;
     reset: (widgetId: string) => void;
@@ -55,7 +62,7 @@ interface ValidationResult {
 }
 
 interface SpamProtection {
-    /** Render this inside your form (invisible honeypot + Turnstile container) */
+    /** Render this inside your form (honeypot + Turnstile container) */
     honeypotField: ReactNode;
     /** Call before submitting — returns { ok, reason?, turnstileToken? } */
     validate: () => ValidationResult;
@@ -85,6 +92,8 @@ export function useSpamProtection(formId: string): SpamProtection {
     const turnstileTokenRef = useRef<string | null>(null);
     const widgetIdRef = useRef<string | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const retryCountRef = useRef(0);
+    const degradedRef = useRef(false);
     const [isReady, setIsReady] = useState(false);
 
     // Load the Turnstile script once
@@ -93,9 +102,6 @@ export function useSpamProtection(formId: string): SpamProtection {
     }, []);
 
     // Render Turnstile widget when script is ready
-    const retryCountRef = useRef(0);
-    const MAX_RETRIES = 3;
-
     useEffect(() => {
         let attempts = 0;
         const maxAttempts = 40; // 40 × 250ms = 10 s
@@ -116,14 +122,19 @@ export function useSpamProtection(formId: string): SpamProtection {
                 callback: (token: string) => {
                     turnstileTokenRef.current = token;
                     retryCountRef.current = 0;
+                    degradedRef.current = false;
                     setIsReady(true);
                 },
-                'error-callback': () => {
+                'error-callback': (errorCode?: string) => {
                     turnstileTokenRef.current = null;
-                    setIsReady(false);
 
-                    // Auto-retry on error with exponential backoff
-                    if (retryCountRef.current < MAX_RETRIES && window.turnstile && widgetIdRef.current) {
+                    console.warn(
+                        `[Turnstile] Challenge error (attempt ${retryCountRef.current + 1}/${MAX_RETRIES})`,
+                        errorCode ? `code: ${errorCode}` : '',
+                    );
+
+                    if (retryCountRef.current < MAX_RETRIES) {
+                        // Auto-retry with exponential backoff
                         retryCountRef.current++;
                         const delay = 1000 * Math.pow(2, retryCountRef.current - 1); // 1s, 2s, 4s
                         setTimeout(() => {
@@ -131,6 +142,13 @@ export function useSpamProtection(formId: string): SpamProtection {
                                 window.turnstile.reset(widgetIdRef.current);
                             }
                         }, delay);
+                        setIsReady(false);
+                    } else {
+                        // All retries exhausted — degrade gracefully
+                        // Honeypot + timing still protect; backend decides whether to accept
+                        console.warn('[Turnstile] All retries exhausted — degrading gracefully. Honeypot + timing checks still active.');
+                        degradedRef.current = true;
+                        setIsReady(true); // Mark as "ready" so user can submit
                     }
                 },
                 'expired-callback': () => {
@@ -170,16 +188,19 @@ export function useSpamProtection(formId: string): SpamProtection {
             return { ok: false, reason: 'Please take a moment to fill out the form.' };
         }
 
-        // Layer 1: Turnstile token — REQUIRED for backend verification
-        if (!turnstileTokenRef.current) {
-            return { ok: false, reason: 'Security verification required. Please complete the challenge.' };
+        // Layer 1: Turnstile token
+        // If we have a token, include it. If degraded (Turnstile failed), allow without token.
+        if (!turnstileTokenRef.current && !degradedRef.current) {
+            return { ok: false, reason: 'Security verification in progress. Please wait a moment and try again.' };
         }
 
-        return { ok: true, turnstileToken: turnstileTokenRef.current };
+        return { ok: true, turnstileToken: turnstileTokenRef.current ?? undefined };
     }, []);
 
     const resetProtection = useCallback(() => {
         turnstileTokenRef.current = null;
+        degradedRef.current = false;
+        retryCountRef.current = 0;
         setIsReady(false);
         mountTimeRef.current = Date.now();
         if (widgetIdRef.current && window.turnstile) {
@@ -214,7 +235,7 @@ export function useSpamProtection(formId: string): SpamProtection {
                     },
                 }),
             ),
-            // Turnstile managed widget container (visible when Cloudflare shows a challenge)
+            // Turnstile managed widget container
             createElement('div', {
                 ref: containerRef,
                 id: `${formId}-turnstile`,
