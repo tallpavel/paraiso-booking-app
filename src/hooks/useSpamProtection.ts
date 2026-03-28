@@ -93,6 +93,9 @@ export function useSpamProtection(formId: string): SpamProtection {
     }, []);
 
     // Render Turnstile widget when script is ready
+    const retryCountRef = useRef(0);
+    const MAX_RETRIES = 3;
+
     useEffect(() => {
         let attempts = 0;
         const maxAttempts = 40; // 40 × 250ms = 10 s
@@ -112,18 +115,34 @@ export function useSpamProtection(formId: string): SpamProtection {
                 sitekey: TURNSTILE_SITE_KEY,
                 callback: (token: string) => {
                     turnstileTokenRef.current = token;
+                    retryCountRef.current = 0;
                     setIsReady(true);
                 },
                 'error-callback': () => {
                     turnstileTokenRef.current = null;
                     setIsReady(false);
+
+                    // Auto-retry on error with exponential backoff
+                    if (retryCountRef.current < MAX_RETRIES && window.turnstile && widgetIdRef.current) {
+                        retryCountRef.current++;
+                        const delay = 1000 * Math.pow(2, retryCountRef.current - 1); // 1s, 2s, 4s
+                        setTimeout(() => {
+                            if (window.turnstile && widgetIdRef.current) {
+                                window.turnstile.reset(widgetIdRef.current);
+                            }
+                        }, delay);
+                    }
                 },
                 'expired-callback': () => {
                     turnstileTokenRef.current = null;
                     setIsReady(false);
+                    // Auto-reset on expiry so user doesn't get stuck
+                    if (window.turnstile && widgetIdRef.current) {
+                        window.turnstile.reset(widgetIdRef.current);
+                    }
                 },
                 theme: 'auto',
-                size: 'invisible',
+                size: 'normal',
             });
 
             widgetIdRef.current = id;
@@ -195,10 +214,15 @@ export function useSpamProtection(formId: string): SpamProtection {
                     },
                 }),
             ),
-            // Turnstile invisible container
+            // Turnstile managed widget container (visible when Cloudflare shows a challenge)
             createElement('div', {
                 ref: containerRef,
                 id: `${formId}-turnstile`,
+                style: {
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: '8px',
+                },
             }),
         );
     }, [formId]);
