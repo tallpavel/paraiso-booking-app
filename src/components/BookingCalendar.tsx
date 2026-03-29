@@ -108,6 +108,7 @@ export default function BookingCalendar() {
 
     // ── Wizard step (1 = dates, 2 = details, 3 = summary) ───────────
     const [step, setStep] = useState(1);
+    const [preferredPaymentMethod, setPreferredPaymentMethod] = useState<'stripe' | 'paypal'>('stripe');
 
     // ── Date selection ───────────────────────────────────────────────
     const [checkIn, setCheckIn] = useState<Date | null>(null);
@@ -476,6 +477,8 @@ export default function BookingCalendar() {
                 return;
             }
             setStep(3);
+        } else if (step === 3) {
+            setStep(4);
         }
     };
 
@@ -491,6 +494,7 @@ export default function BookingCalendar() {
         setGuestEmail('');
         setGuestPhone('');
         setComment('');
+        setPreferredPaymentMethod('stripe');
         setCheckIn(null);
         setCheckOut(null);
         setGuests(2);
@@ -534,6 +538,7 @@ export default function BookingCalendar() {
                 comment: comment.trim() || undefined,
                 locale,
                 turnstileToken: spamCheck.turnstileToken,
+                preferredPaymentMethod,
             });
 
             setStatus('sent');
@@ -553,17 +558,22 @@ export default function BookingCalendar() {
         }
     };
 
-    const stepLabels = [t('booking.stepDates'), t('booking.stepDetails'), t('booking.stepConfirm')];
+    const stepLabels = [
+        t('booking.stepDates'),
+        t('booking.stepDetails'),
+        t('booking.stepPayment'),
+        t('booking.stepConfirm')
+    ];
 
     return (
         <section id="booking" className="bg-sand-light py-10 sm:py-16 lg:py-20">
             <div className="mx-auto max-w-7xl px-6">
 
                 {/* Card container — wider on step 1 for the two-column layout */}
-                <div ref={cardRef} className={`relative mx-auto rounded-3xl bg-white p-5 shadow-lg transition-all sm:p-10 ${step === 1 ? 'max-w-5xl' : 'max-w-2xl'}`}>
+                <div ref={cardRef} className={`relative mx-auto rounded-3xl bg-white p-4 shadow-lg transition-all sm:p-10 ${step === 1 ? 'max-w-5xl' : 'max-w-2xl'}`}>
 
                     {/* Integrated header + step indicator */}
-                    <div className="mb-6 text-center sm:mb-8">
+                    <div className="mb-3 text-center sm:mb-8">
                         <span className="mb-1 hidden text-sm font-semibold uppercase tracking-[0.15em] text-ocean sm:inline-block sm:mb-2">
                             {t('booking.label')}
                         </span>
@@ -596,7 +606,7 @@ export default function BookingCalendar() {
                     {/*  STEP 1: Select Dates                              */}
                     {/* ═══════════════════════════════════════════════════ */}
                     {step === 1 && (
-                        <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+                        <div className="grid gap-4 sm:gap-8 lg:grid-cols-[1fr_320px]">
                             {/* Left — Calendar */}
                             <div>
 
@@ -883,7 +893,166 @@ export default function BookingCalendar() {
                     {/* ═══════════════════════════════════════════════════ */}
                     {/*  STEP 3: Summary & Submit                          */}
                     {/* ═══════════════════════════════════════════════════ */}
+                    {/* ═══════════════════════════════════════════════════ */}
+                    {/*  STEP 3: Payment Preference                        */}
+                    {/* ═══════════════════════════════════════════════════ */}
                     {step === 3 && (
+                        <div className="animate-[fadeIn_0.4s_ease-out]">
+                            <div className="mb-6 text-center">
+                                <h3 className="font-heading text-xl font-bold text-navy sm:text-2xl">
+                                    {t('booking.stepPaymentTitle')}
+                                </h3>
+                                <p className="mt-2 text-sm text-warm-gray">
+                                    {t('booking.paymentSubtitle')}
+                                </p>
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                {/* Stripe Tile */}
+                                <button
+                                    type="button"
+                                    onClick={() => setPreferredPaymentMethod('stripe')}
+                                    className={`group relative flex flex-col items-start rounded-2xl border-2 p-5 text-left transition-all duration-300 ${preferredPaymentMethod === 'stripe'
+                                        ? 'border-ocean bg-ocean/5 shadow-md shadow-ocean/10'
+                                        : 'border-navy/10 bg-white hover:border-ocean/40 hover:bg-sand-light/50'
+                                        }`}
+                                >
+                                    <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors ${preferredPaymentMethod === 'stripe' ? 'bg-ocean text-white' : 'bg-navy/5 text-navy/40 group-hover:bg-ocean/10 group-hover:text-ocean'
+                                        }`}>
+                                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                        </svg>
+                                    </div>
+                                    <h4 className="font-bold text-navy">{t('booking.paymentStripeTitle')}</h4>
+                                    <p className="mt-1 text-xs text-warm-gray leading-relaxed">{t('booking.paymentStripeDesc')}</p>
+                                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                                        {/* Visa */}
+                                        <svg className="h-6 w-auto opacity-60 group-hover:opacity-80 transition-opacity" viewBox="0 0 780 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M293.2 348.7l33.4-195.8h53.4l-33.4 195.8H293.2z" fill="#1a1f71"/>
+                                            <path d="M560.9 157.8c-10.6-4-27.2-8.2-47.9-8.2-52.8 0-90 26.5-90.3 64.5-.3 28.1 26.6 43.8 46.9 53.1 20.8 9.6 27.8 15.7 27.7 24.3-.1 13.1-16.6 19.1-31.9 19.1-21.4 0-32.7-3-50.3-10.2l-6.9-3.1-7.5 43.8c12.5 5.4 35.6 10.2 59.6 10.4 56.2 0 92.7-26.2 93.1-66.8.2-22.3-14.1-39.2-45-53.1-18.7-9.1-30.2-15.1-30.1-24.3 0-8.1 9.7-16.8 30.7-16.8 17.5-.3 30.2 3.5 40.1 7.5l4.8 2.3 7.3-42.5z" fill="#1a1f71"/>
+                                            <path d="M632.2 152.9h-41.3c-12.8 0-22.4 3.5-28 16.2l-79.4 179.6h56.2s9.2-24.1 11.3-29.4h68.6c1.6 6.9 6.5 29.4 6.5 29.4h49.7l-43.6-195.8zm-66 126.4c4.4-11.3 21.4-54.8 21.4-54.8-.3.5 4.4-11.4 7.1-18.7l3.6 16.9s10.3 46.8 12.4 56.6h-44.5z" fill="#1a1f71"/>
+                                            <path d="M247.8 152.9L195.5 284l-5.6-27c-9.7-31.2-39.9-65-73.7-81.9l47.9 172.3h56.6l84.2-194.5h-57.1z" fill="#1a1f71"/>
+                                            <path d="M146.9 152.9H60.8l-.7 3.9c67.2 16.2 111.7 55.3 130.1 102.2l-18.8-90.2c-3.2-12.3-12.7-15.5-24.5-15.9z" fill="#f9a533"/>
+                                        </svg>
+                                        {/* Mastercard */}
+                                        <svg className="h-6 w-auto opacity-60 group-hover:opacity-80 transition-opacity" viewBox="0 0 780 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="312" cy="250" r="150" fill="#eb001b"/>
+                                            <circle cx="468" cy="250" r="150" fill="#f79e1b"/>
+                                            <path d="M390 130.7c38.5 30.8 63.1 78.4 63.1 131.3s-24.6 100.5-63.1 131.3c-38.5-30.8-63.1-78.4-63.1-131.3s24.6-100.5 63.1-131.3z" fill="#ff5f00"/>
+                                        </svg>
+                                        {/* Amex */}
+                                        <svg className="h-6 w-auto opacity-60 group-hover:opacity-80 transition-opacity" viewBox="0 0 780 500" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="780" height="500" rx="40" fill="#2e77bc"/>
+                                            <path d="M207 181l-76 168h55l11-27h62l11 27h57l-76-168h-44zm22 53l18 44h-36l18-44zM389 181v168h49l55-83v83h44V181h-49l-55 83v-83h-44zM591 181v168h133v-37h-89v-25h87v-36h-87v-33h89v-37H591z" fill="white"/>
+                                        </svg>
+                                        {/* Apple Pay */}
+                                        <span className="flex h-6 items-center rounded bg-navy/5 px-2">
+                                            <svg className="h-4 w-auto opacity-50 group-hover:opacity-70 transition-opacity" viewBox="0 0 165.52 105.97" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M30.54 13.83c-2.04 2.41-5.33 4.28-8.61 4.01-.41-3.28 1.2-6.77 3.07-8.93 2.04-2.53 5.58-4.4 8.48-4.52.34 3.4-1.02 6.85-2.94 9.44m2.9 4.8c-4.75-.28-8.8 2.7-11.06 2.7s-5.73-2.56-9.47-2.49c-4.87.08-9.37 2.83-11.86 7.21-5.09 8.75-1.31 21.72 3.6 28.86 2.45 3.53 5.33 7.49 9.14 7.35 3.6-.14 5.01-2.35 9.37-2.35s5.62 2.35 9.44 2.28c3.95-.07 6.42-3.54 8.87-7.08 2.77-4.03 3.88-7.95 3.95-8.15-.07-.07-7.63-2.97-7.7-11.65-.07-7.28 5.95-10.75 6.22-10.96-3.4-5.01-8.69-5.57-10.5-5.72M68.82 10.34v50.4h7.78v-17.23h10.77c9.83 0 16.73-6.75 16.73-16.63 0-9.87-6.77-16.54-16.46-16.54H68.82zm7.78 6.54h8.96c6.75 0 10.61 3.6 10.61 9.95 0 6.36-3.86 9.99-10.64 9.99h-8.93V16.88zM117.4 61.2c4.88 0 9.4-2.49 11.45-6.42h.16v6.02h7.21V36.07c0-7.24-5.78-11.89-14.68-11.89-8.31 0-14.4 4.72-14.63 11.2h7.01c.57-3.08 3.47-5.1 7.35-5.1 4.75 0 7.42 2.21 7.42 6.29v2.76l-9.71.58c-9.03.54-13.92 4.24-13.92 10.66 0 6.49 5.03 10.63 12.34 10.63zm2.08-5.91c-4.14 0-6.77-1.99-6.77-5.03 0-3.14 2.53-4.96 7.35-5.24l8.65-.55v2.83c0 4.65-3.92 7.99-9.23 7.99zM152.42 71.97c7.59 0 11.15-2.9 14.26-11.72L182 16.88h-7.92l-10.36 32.83h-.17L153.2 16.88h-8.12L159.81 59l-.85 2.66c-1.43 4.48-3.74 6.22-7.87 6.22-.74 0-2.15-.07-2.73-.14v6.02c.54.14 2.63.21 4.06.21z" fill="#1d1d1b"/>
+                                            </svg>
+                                        </span>
+                                        {/* Google Pay */}
+                                        <span className="flex h-6 items-center rounded bg-navy/5 px-2">
+                                            <svg className="h-4 w-auto opacity-50 group-hover:opacity-70 transition-opacity" viewBox="0 0 435.97 173.14" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M206.2 84.58v50.75h-16.1V10h42.7a38.61 38.61 0 0 1 27.65 10.85A34.88 34.88 0 0 1 272 48.35a35.27 35.27 0 0 1-11.55 27.3 37.9 37.9 0 0 1-27.65 11.2h-26.6zm0-59.15v43.75h27c7 0 12.95-2.45 17.85-7.35a23.83 23.83 0 0 0 .17-34 23.42 23.42 0 0 0-17.5-7.35h-27.52z" fill="#5f6368"/>
+                                                <path d="M309.1 46.78c12.07 0 21.53 3.22 28.35 9.62s10.15 15.05 10.15 25.9v52.33h-15.4v-11.73h-.7c-6.72 9.98-15.58 14.88-26.6 14.88a36.3 36.3 0 0 1-25.03-9.1 28.96 28.96 0 0 1-10.33-22.58c0-9.52 3.6-17.08 10.85-22.58s17.15-8.27 29.75-8.27c10.71 0 19.51 1.96 26.43 5.88v-4.13a19.74 19.74 0 0 0-7.53-15.58 25.57 25.57 0 0 0-17.15-6.47c-9.91 0-17.78 4.2-23.63 12.6l-14.18-8.93c8.4-12.42 20.83-18.54 37.02-18.54zm-23.28 62.65a14.17 14.17 0 0 0 5.95 11.73 21.2 21.2 0 0 0 13.65 4.73 27.6 27.6 0 0 0 19.6-8.23c5.78-5.42 8.62-11.73 8.62-18.9-5.6-4.48-13.44-6.72-23.45-6.72-7.28 0-13.35 1.78-18.2 5.42-4.73 3.5-6.17 7.88-6.17 11.97z" fill="#5f6368"/>
+                                                <path d="M436 49.93l-53.48 123.03h-16.63l19.83-42.88-35.18-80.15h17.5l25.2 60.9h.35l24.5-60.9z" fill="#5f6368"/>
+                                                <path d="M141.14 73.64c0-4.56-.38-9.12-1.14-13.55H72v25.62h38.89a33.24 33.24 0 0 1-14.39 21.79v17.85h23.1c13.59-12.52 21.41-31.04 21.41-51.71z" fill="#4285f4"/>
+                                                <path d="M72 143.5c19.36 0 35.63-6.38 47.53-17.32l-23.1-17.85c-6.42 4.34-14.68 6.82-24.43 6.82-18.72 0-34.58-12.64-40.25-29.64H8.04v18.41A71.81 71.81 0 0 0 72 143.5z" fill="#34a853"/>
+                                                <path d="M31.75 85.51a43.27 43.27 0 0 1 0-27.56V39.54H8.04a71.59 71.59 0 0 0 0 64.38z" fill="#fbbc04"/>
+                                                <path d="M72 28.18a39.08 39.08 0 0 1 27.62 10.78l20.55-20.55A69.18 69.18 0 0 0 72 .14 71.81 71.81 0 0 0 8.04 39.54l23.71 18.41C37.42 40.94 53.28 28.18 72 28.18z" fill="#ea4335"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    {preferredPaymentMethod === 'stripe' && (
+                                        <div className="absolute right-3 top-3 h-5 w-5 rounded-full bg-ocean text-white flex items-center justify-center">
+                                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                </button>
+
+                                {/* PayPal Tile */}
+                                <button
+                                    type="button"
+                                    onClick={() => setPreferredPaymentMethod('paypal')}
+                                    className={`group relative flex flex-col items-start rounded-2xl border-2 p-5 text-left transition-all duration-300 ${preferredPaymentMethod === 'paypal'
+                                        ? 'border-[#003087] bg-[#003087]/5 shadow-md shadow-[#003087]/10'
+                                        : 'border-navy/10 bg-white hover:border-[#003087]/40 hover:bg-sand-light/50'
+                                        }`}
+                                >
+                                    <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors ${preferredPaymentMethod === 'paypal' ? 'bg-[#003087] text-white' : 'bg-navy/5 text-navy/40 group-hover:bg-[#003087]/10 group-hover:text-[#003087]'
+                                        }`}>
+                                        <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M20.067 8.478c.492.296.884.773 1.132 1.341a4.238 4.238 0 0 1 .45 1.944 4.1 4.1 0 0 1-1.01 2.822 6.8 6.8 0 0 1-2.613 1.838 8.01 8.01 0 0 1-3.23.633H12.91c-.482 0-.895.326-1.03.774l-1.396 4.603-.01.03a.475.475 0 0 1-.462.336H7.13a.417.417 0 0 1-.424-.485c0-.026.002-.05.006-.075l2.427-8a.472.472 0 0 1 .462-.336h2.245c1.173 0 2.222-.244 3.018-.738.744-.462 1.32-.977 1.706-1.572.396-.61.594-1.285.594-2.022a3.83 3.83 0 0 0-.298-1.503l.2.2c-.375.435-.91.801-1.606 1.096-.694.296-1.488.441-2.383.441h-2.22c-.483 0-.897.327-1.032.775L7.494 20h-3.37a.418.418 0 0 1-.426-.486c0-.025.003-.05.007-.074L6.96 4.98l.004-.025a.473.473 0 0 1 .462-.336h5.814c1.378 0 2.61.287 3.518.892 1.063.712 1.63 1.734 1.309 2.967zm-9.06 1.442l-.248.815a.262.262 0 0 0 .257.34h2.245c.82 0 1.543-.171 2.08-.501.53-.326.87-.714 1.05-1.157a.262.262 0 0 0-.256-.34h-4.32a1.034 1.034 0 0 0-1.008.843z" />
+                                        </svg>
+                                    </div>
+                                    <h4 className="font-bold text-navy">{t('booking.paymentPaypalTitle')}</h4>
+                                    <p className="mt-1 text-xs text-warm-gray leading-relaxed">{t('booking.paymentPaypalDesc')}</p>
+                                    <div className="mt-3 flex flex-wrap gap-1.5">
+                                        {['Balance', 'Bank', 'Protection'].map((tag) => (
+                                            <span key={tag} className="rounded-md bg-navy/5 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-navy/50">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                    {preferredPaymentMethod === 'paypal' && (
+                                        <div className="absolute right-3 top-3 h-5 w-5 rounded-full bg-[#003087] text-white flex items-center justify-center">
+                                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                </button>
+                            </div>
+
+                            <div className="mt-8 rounded-2xl bg-sand p-5 sm:p-6 shadow-sm shadow-navy/5">
+                                <div className="flex items-start gap-3">
+                                    <div className="mt-0.5 shrink-0 rounded-full bg-navy/5 p-1.5 text-navy/40">
+                                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <p className="text-[13px] leading-relaxed text-navy/70">
+                                            {t('booking.paymentNote')}
+                                        </p>
+                                        {isLastMinute && (
+                                            <div className="flex items-center gap-2 text-[12px] font-semibold text-ocean bg-ocean/5 rounded-lg px-3 py-2">
+                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 15c-.77 1.333.192 3 1.732 3z" />
+                                                </svg>
+                                                {t('booking.paymentLastMinuteNote')}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row">
+                                <button
+                                    type="button"
+                                    onClick={goBack}
+                                    className="flex-1 rounded-full border border-navy/20 py-3 text-base font-semibold text-navy transition-colors hover:bg-sand-light"
+                                >
+                                    {t('booking.back')}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={goNext}
+                                    className="flex-[2] rounded-full bg-gradient-to-r from-ocean to-ocean-dark py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:brightness-110"
+                                >
+                                    {t('booking.next')}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ═══════════════════════════════════════════════════ */}
+                    {/*  STEP 4: Review & Confirm                             */}
+                    {/* ═══════════════════════════════════════════════════ */}
+                    {step === 4 && (
                         <div>
                             {/* ── CONFIRMATION VIEW ── */}
                             {status === 'sent' ? (
@@ -1016,6 +1185,22 @@ export default function BookingCalendar() {
                                                     <p className="text-sm text-navy">{comment}</p>
                                                 </div>
                                             )}
+                                            <div>
+                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.paymentPreferred')}</p>
+                                                <p className="flex items-center gap-1.5 text-sm font-semibold text-navy">
+                                                    {preferredPaymentMethod === 'stripe' ? (
+                                                        <>
+                                                            <span className="h-2 w-2 rounded-full bg-ocean" />
+                                                            {t('booking.paymentStripeTitle')}
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <span className="h-2 w-2 rounded-full bg-[#003087]" />
+                                                            {t('booking.paymentPaypalTitle')}
+                                                        </>
+                                                    )}
+                                                </p>
+                                            </div>
                                         </div>
 
                                         <hr className="border-navy/10" />

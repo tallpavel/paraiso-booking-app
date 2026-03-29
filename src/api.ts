@@ -12,6 +12,7 @@ export interface ReservationPayload {
     comment?: string;
     locale?: string;    // guest's chosen language ('en' | 'es' | 'cs')
     turnstileToken?: string;
+    preferredPaymentMethod?: 'stripe' | 'paypal';
 }
 
 export interface Reservation extends ReservationPayload {
@@ -266,8 +267,12 @@ export interface ConfirmedReservationFull {
     remainingPaymentStatus?: 'not_requested' | 'pending' | 'paid' | 'failed';
     remainingStripeSessionId?: string;
     remainingPaymentUrl?: string;
+    preferredPaymentMethod?: 'stripe' | 'paypal';
+    paypalPaymentUrl?: string;
+    remainingPaypalPaymentUrl?: string;
     status?: 'active' | 'cancelled' | 'completed';
     cancelledAt?: string;
+    cancellationReason?: string;
     checkedIn?: boolean;
     checkedInAt?: string;
     checkInStatus?: 'pending' | 'sent' | 'completed';
@@ -405,10 +410,11 @@ export async function sendCheckInEmail(token: string, reservationId: string): Pr
     return res.json();
 }
 
-export async function sendRemainingPaymentEmail(token: string, id: string): Promise<{ message: string; paymentUrl: string; remainingBalance: number }> {
+export async function sendRemainingPaymentEmail(token: string, id: string, paymentMethod?: 'stripe' | 'paypal'): Promise<{ message: string; paymentUrl: string; remainingBalance: number }> {
     const res = await fetch(`${API_BASE}/reservations-confirmed/${id}/send-remaining-payment`, {
         method: 'POST',
-        headers: authHeaders(token),
+        headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentMethod }),
     });
 
     if (!res.ok) {
@@ -418,10 +424,30 @@ export async function sendRemainingPaymentEmail(token: string, id: string): Prom
     return res.json();
 }
 
-export async function sendFullPaymentEmail(token: string, id: string): Promise<{ message: string; paymentUrl: string; totalAmount: number }> {
+export async function sendDepositPaymentEmail(
+    token: string,
+    id: string,
+    paymentMethod?: 'stripe' | 'paypal',
+): Promise<{ message: string; paymentUrl: string; depositAmount: number }> {
+    const res = await fetch(`${API_BASE}/reservations-confirmed/${id}/send-deposit`, {
+        method: 'POST',
+        headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentMethod }),
+    });
+
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({ message: 'Failed to resend deposit email' }));
+        throw body;
+    }
+
+    return res.json();
+}
+
+export async function sendFullPaymentEmail(token: string, id: string, paymentMethod?: 'stripe' | 'paypal'): Promise<{ message: string; paymentUrl: string; totalAmount: number }> {
     const res = await fetch(`${API_BASE}/reservations-confirmed/${id}/send-full-payment`, {
         method: 'POST',
-        headers: authHeaders(token),
+        headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentMethod }),
     });
 
     if (!res.ok) {
@@ -515,10 +541,12 @@ export async function submitCheckInData(
 export async function confirmReservation(
     token: string,
     id: string,
+    paymentMethod?: 'stripe' | 'paypal',
 ): Promise<{ message: string; confirmed: ConfirmedReservationFull; paymentUrl: string; emailSent: boolean }> {
     const res = await fetch(`${API_BASE}/reservations/${id}/confirm`, {
         method: 'POST',
-        headers: authHeaders(token),
+        headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentMethod }),
     });
 
     if (!res.ok) {
@@ -531,20 +559,22 @@ export async function confirmReservation(
     return res.json();
 }
 
-export async function deleteReservationRequest(token: string, id: string): Promise<{ message: string }> {
+export async function deleteReservationRequest(token: string, id: string, reason?: string): Promise<{ message: string }> {
     const res = await fetch(`${API_BASE}/reservations/${id}`, {
         method: 'DELETE',
-        headers: authHeaders(token),
+        headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: reason || '' }),
     });
 
     if (!res.ok) throw new Error('Failed to delete reservation request');
     return res.json();
 }
 
-export async function deleteConfirmedReservation(token: string, id: string): Promise<{ message: string }> {
+export async function deleteConfirmedReservation(token: string, id: string, reason?: string): Promise<{ message: string }> {
     const res = await fetch(`${API_BASE}/reservations-confirmed/${id}`, {
         method: 'DELETE',
-        headers: authHeaders(token),
+        headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: reason || '' }),
     });
 
     if (!res.ok) throw new Error('Failed to cancel confirmed reservation');
@@ -563,6 +593,7 @@ export interface UpdateReservationPayload {
     totalPrice?: number;
     comment?: string;
     paymentStatus?: 'pending' | 'paid' | 'failed';
+    preferredPaymentMethod?: 'stripe' | 'paypal';
 }
 
 export async function updateReservationRequest(

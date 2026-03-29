@@ -1,23 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { fetchArchivedReservations, type ConfirmedReservationFull } from '../../api';
-
-function formatDateShort(dateStr: string): string {
-    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-GB', {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-    });
-}
-
-function paymentLabel(status: string): string {
-    switch (status) {
-        case 'paid': return '✓ Deposit Paid';
-        case 'pending': return '⏳ Pending';
-        case 'failed': return '✕ Failed';
-        default: return status;
-    }
-}
+import { formatDateShort, paymentLabel } from './adminUtils';
 
 type FilterType = 'all' | 'completed' | 'cancelled';
 
@@ -168,6 +152,13 @@ export default function ArchivedReservationsPanel() {
                                 <p className="admin-card__comment">
                                     <span className="admin-card__label">Comment</span>
                                     {r.comment}
+                                </p>
+                            )}
+
+                            {r.status === 'cancelled' && r.cancellationReason && (
+                                <p className="admin-card__comment" style={{ color: '#e07c5a' }}>
+                                    <span className="admin-card__label">Reason</span>
+                                    {r.cancellationReason}
                                 </p>
                             )}
 

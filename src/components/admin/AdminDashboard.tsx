@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useAdminData } from '../../hooks/useAdminData';
 import CheckInDetailsModal from './CheckInDetailsModal';
+import { formatDateShort, paymentLabel, daysUntil, toDateStr, stayProgress } from './adminUtils';
 import type { ConfirmedReservationFull } from '../../api';
 
 interface StatCardProps {
@@ -16,45 +17,6 @@ function StatCard({ label, value, accent = 'default' }: StatCardProps) {
             <p className="admin-stat-card__label">{label}</p>
         </div>
     );
-}
-
-// ── Helpers ──────────────────────────────────────────────────────────
-function toDateStr(d: Date): string {
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
-function paymentLabel(status: string): string {
-    switch (status) {
-        case 'paid': return '✓ Deposit Paid';
-        case 'pending': return '⏳ Pending';
-        case 'failed': return '✕ Failed';
-        default: return status;
-    }
-}
-
-function daysUntil(dateStr: string): number {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const target = new Date(dateStr);
-    return Math.round((target.getTime() - today.getTime()) / 86_400_000);
-}
-
-function stayProgress(checkIn: string, checkOut: string): number {
-    const now = new Date();
-    const start = new Date(checkIn);
-    const end = new Date(checkOut);
-    const total = end.getTime() - start.getTime();
-    if (total <= 0) return 100;
-    const elapsed = now.getTime() - start.getTime();
-    return Math.min(100, Math.max(0, Math.round((elapsed / total) * 100)));
-}
-
-function formatDateShort(dateStr: string): string {
-    return new Date(dateStr).toLocaleDateString('en-GB', {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-    });
 }
 
 // ── Sub-components ───────────────────────────────────────────────────

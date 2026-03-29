@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import AdminDashboard from './AdminDashboard';
 import ReservationRequestsPanel from './ReservationRequestsPanel';
 import ConfirmedReservationsPanel from './ConfirmedReservationsPanel';
+import FullyPaidPanel from './FullyPaidPanel';
 import ArchivedReservationsPanel from './ArchivedReservationsPanel';
 import BlockedDatesPanel from './BlockedDatesPanel';
 import PricingPanel from './PricingPanel';
@@ -12,6 +13,7 @@ const NAV_ITEMS = [
     { to: '/centralni-mozek-stranky', label: 'Overview', icon: '◈' },
     { to: '/centralni-mozek-stranky/requests', label: 'Requests', icon: '◇' },
     { to: '/centralni-mozek-stranky/confirmed', label: 'Confirmed', icon: '◆' },
+    { to: '/centralni-mozek-stranky/fully-paid', label: 'Fully Paid', icon: '✓' },
     { to: '/centralni-mozek-stranky/blocked-dates', label: 'Blocked Days', icon: '⊘' },
     { to: '/centralni-mozek-stranky/pricing', label: 'Pricing', icon: '€' },
     { to: '/centralni-mozek-stranky/history', label: 'History', icon: '▣' },
@@ -88,6 +90,7 @@ export default function AdminLayout() {
                     <Route index element={<AdminDashboard />} />
                     <Route path="requests" element={<ReservationRequestsPanel />} />
                     <Route path="confirmed" element={<ConfirmedReservationsPanel />} />
+                    <Route path="fully-paid" element={<FullyPaidPanel />} />
                     <Route path="blocked-dates" element={<BlockedDatesPanel />} />
                     <Route path="pricing" element={<PricingPanel />} />
                     <Route path="history" element={<ArchivedReservationsPanel />} />

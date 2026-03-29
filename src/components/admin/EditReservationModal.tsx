@@ -91,6 +91,7 @@ export default function EditReservationModal({
     const [totalPrice, setTotalPrice] = useState(reservation.totalPrice);
     const initialPaymentStatus = type === 'confirmed' ? (reservation as ConfirmedReservationFull).paymentStatus : undefined;
     const [paymentStatus, setPaymentStatus] = useState<'pending' | 'paid' | 'failed'>(initialPaymentStatus || 'pending');
+    const [preferredPaymentMethod, setPreferredPaymentMethod] = useState<'stripe' | 'paypal'>(reservation.preferredPaymentMethod || 'stripe');
     const [autoPrice, setAutoPrice] = useState(true);
 
     const [saving, setSaving] = useState(false);
@@ -172,6 +173,8 @@ export default function EditReservationModal({
             list.push({ field: 'Comment', from: reservation.comment || '(empty)', to: comment.trim() || '(empty)' });
         if (type === 'confirmed' && paymentStatus !== initialPaymentStatus)
             list.push({ field: 'Payment Status', from: initialPaymentStatus || 'pending', to: paymentStatus });
+        if (preferredPaymentMethod !== reservation.preferredPaymentMethod)
+            list.push({ field: 'Payment Method', from: reservation.preferredPaymentMethod || 'stripe', to: preferredPaymentMethod });
         return list;
     }, [guestName, guestEmail, checkIn, checkOut, totalPrice, comment, reservation]);
 
@@ -201,6 +204,9 @@ export default function EditReservationModal({
             };
             if (type === 'confirmed' && paymentStatus !== initialPaymentStatus) {
                 payload.paymentStatus = paymentStatus;
+            }
+            if (preferredPaymentMethod !== reservation.preferredPaymentMethod) {
+                payload.preferredPaymentMethod = preferredPaymentMethod;
             }
             await onSave(reservation._id, payload);
             onClose();
@@ -375,6 +381,19 @@ export default function EditReservationModal({
                                     </select>
                                 </div>
                             )}
+                            
+                            {/* Preferred Payment Method */}
+                            <div className="admin-modal__field">
+                                <label className="admin-modal__label">Preferred Payment Method</label>
+                                <select
+                                    value={preferredPaymentMethod}
+                                    onChange={(e) => setPreferredPaymentMethod(e.target.value as 'stripe' | 'paypal')}
+                                    className="admin-modal__input"
+                                >
+                                    <option value="stripe">💳 Card (Stripe)</option>
+                                    <option value="paypal">🅿️ PayPal</option>
+                                </select>
+                            </div>
 
                             {/* Comment */}
                             <div className="admin-modal__field">

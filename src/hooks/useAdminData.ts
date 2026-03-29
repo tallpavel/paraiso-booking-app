@@ -12,6 +12,7 @@ import {
     toggleCheckIn,
     sendCheckInEmail,
     sendRemainingPaymentEmail,
+    sendDepositPaymentEmail,
     sendFullPaymentEmail,
     sendAccessInfoEmail,
     type AdminStats,
@@ -30,15 +31,16 @@ interface AdminData {
 
 interface AdminActions {
     refresh: () => Promise<void>;
-    handleConfirm: (id: string) => Promise<{ paymentUrl: string; emailSent: boolean }>;
-    handleRejectRequest: (id: string) => Promise<void>;
-    handleCancelConfirmed: (id: string) => Promise<void>;
+    handleConfirm: (id: string, paymentMethod?: 'stripe' | 'paypal') => Promise<{ paymentUrl: string; emailSent: boolean }>;
+    handleRejectRequest: (id: string, reason?: string) => Promise<void>;
+    handleCancelConfirmed: (id: string, reason?: string) => Promise<void>;
     handleUpdateRequest: (id: string, data: UpdateReservationPayload) => Promise<void>;
     handleUpdateConfirmed: (id: string, data: UpdateReservationPayload) => Promise<void>;
     handleToggleCheckIn: (id: string) => Promise<void>;
     handleSendCheckIn: (id: string) => Promise<void>;
-    handleSendRemainingPayment: (id: string) => Promise<void>;
-    handleSendFullPayment: (id: string) => Promise<void>;
+    handleSendDepositPayment: (id: string, paymentMethod?: 'stripe' | 'paypal') => Promise<void>;
+    handleSendRemainingPayment: (id: string, paymentMethod?: 'stripe' | 'paypal') => Promise<void>;
+    handleSendFullPayment: (id: string, paymentMethod?: 'stripe' | 'paypal') => Promise<void>;
     handleSendAccessInfo: (id: string) => Promise<void>;
 }
 
@@ -80,22 +82,22 @@ export function useAdminData(): AdminData & AdminActions {
         return () => clearInterval(interval);
     }, [refresh]);
 
-    const handleConfirm = useCallback(async (id: string) => {
+    const handleConfirm = useCallback(async (id: string, paymentMethod?: 'stripe' | 'paypal') => {
         if (!token) throw new Error('Not authenticated');
-        const result = await confirmReservation(token, id);
+        const result = await confirmReservation(token, id, paymentMethod);
         await refresh();
         return { paymentUrl: result.paymentUrl, emailSent: result.emailSent };
     }, [token, refresh]);
 
-    const handleRejectRequest = useCallback(async (id: string) => {
+    const handleRejectRequest = useCallback(async (id: string, reason?: string) => {
         if (!token) throw new Error('Not authenticated');
-        await deleteReservationRequest(token, id);
+        await deleteReservationRequest(token, id, reason);
         await refresh();
     }, [token, refresh]);
 
-    const handleCancelConfirmed = useCallback(async (id: string) => {
+    const handleCancelConfirmed = useCallback(async (id: string, reason?: string) => {
         if (!token) throw new Error('Not authenticated');
-        await deleteConfirmedReservation(token, id);
+        await deleteConfirmedReservation(token, id, reason);
         await refresh();
     }, [token, refresh]);
 
@@ -123,15 +125,21 @@ export function useAdminData(): AdminData & AdminActions {
         await refresh();
     }, [token, refresh]);
 
-    const handleSendRemainingPayment = useCallback(async (id: string) => {
+    const handleSendRemainingPayment = useCallback(async (id: string, paymentMethod?: 'stripe' | 'paypal') => {
         if (!token) throw new Error('Not authenticated');
-        await sendRemainingPaymentEmail(token, id);
+        await sendRemainingPaymentEmail(token, id, paymentMethod);
         await refresh();
     }, [token, refresh]);
 
-    const handleSendFullPayment = useCallback(async (id: string) => {
+    const handleSendDepositPayment = useCallback(async (id: string, paymentMethod?: 'stripe' | 'paypal') => {
         if (!token) throw new Error('Not authenticated');
-        await sendFullPaymentEmail(token, id);
+        await sendDepositPaymentEmail(token, id, paymentMethod);
+        await refresh();
+    }, [token, refresh]);
+
+    const handleSendFullPayment = useCallback(async (id: string, paymentMethod?: 'stripe' | 'paypal') => {
+        if (!token) throw new Error('Not authenticated');
+        await sendFullPaymentEmail(token, id, paymentMethod);
         await refresh();
     }, [token, refresh]);
 
@@ -145,6 +153,6 @@ export function useAdminData(): AdminData & AdminActions {
         stats, requests, confirmed, isLoading, error,
         refresh, handleConfirm, handleRejectRequest, handleCancelConfirmed,
         handleUpdateRequest, handleUpdateConfirmed, handleToggleCheckIn, handleSendCheckIn,
-        handleSendRemainingPayment, handleSendFullPayment, handleSendAccessInfo,
+        handleSendRemainingPayment, handleSendDepositPayment, handleSendFullPayment, handleSendAccessInfo,
     };
 }

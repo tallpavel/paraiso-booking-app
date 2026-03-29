@@ -2,15 +2,8 @@ import { useState } from 'react';
 import { useAdminData } from '../../hooks/useAdminData';
 import EditReservationModal from './EditReservationModal';
 import ConfirmDialog from './ConfirmDialog';
+import { formatDateShort } from './adminUtils';
 import type { Reservation } from '../../api';
-
-function formatDateShort(dateStr: string): string {
-    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-GB', {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-    });
-}
 
 export default function ReservationRequestsPanel() {
     const { requests, confirmed, isLoading, error, refresh, handleConfirm, handleRejectRequest, handleUpdateRequest } = useAdminData();
@@ -19,10 +12,10 @@ export default function ReservationRequestsPanel() {
     const [editing, setEditing] = useState<Reservation | null>(null);
     const [rejecting, setRejecting] = useState<Reservation | null>(null);
 
-    async function onConfirm(id: string) {
+    async function onConfirm(id: string, paymentMethod: 'stripe' | 'paypal') {
         setActionState(s => ({ ...s, [id]: 'confirming' }));
         try {
-            const result = await handleConfirm(id);
+            const result = await handleConfirm(id, paymentMethod);
             setActionState(s => ({ ...s, [id]: 'done' }));
             setConfirmResult({ id, ...result });
         } catch {
@@ -30,10 +23,10 @@ export default function ReservationRequestsPanel() {
         }
     }
 
-    async function onReject(id: string) {
+    async function onReject(id: string, reason?: string) {
         setActionState(s => ({ ...s, [id]: 'rejecting' }));
         try {
-            await handleRejectRequest(id);
+            await handleRejectRequest(id, reason);
             setActionState(s => ({ ...s, [id]: 'done' }));
             setRejecting(null);
         } catch {
@@ -97,7 +90,14 @@ export default function ReservationRequestsPanel() {
                                         <p className="admin-card__email">{req.guestEmail}</p>
                                         {req.guestPhone && <p className="admin-card__email">📞 {req.guestPhone}</p>}
                                     </div>
-                                    <span className="admin-badge admin-badge--pending">Pending</span>
+                                    <div className="admin-card__badges">
+                                        <span className="admin-badge admin-badge--pending">Pending</span>
+                                        {req.preferredPaymentMethod && (
+                                            <span className={`admin-badge ${req.preferredPaymentMethod === 'paypal' ? 'admin-badge--paypal' : 'admin-badge--stripe'}`}>
+                                                Prefers {req.preferredPaymentMethod === 'paypal' ? 'PayPal' : 'Stripe'}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="admin-card__details">
@@ -131,40 +131,53 @@ export default function ReservationRequestsPanel() {
                                 </p>
 
                                 <div className="admin-card__actions">
-                                    <button
-                                        onClick={() => setEditing(req)}
-                                        disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                        className="admin-btn admin-btn--outline"
-                                    >
-                                        ✎ Edit
-                                    </button>
-                                    {(() => {
-                                        const checkInDate = new Date(req.checkIn + 'T00:00:00');
-                                        const now = new Date();
-                                        const daysUntilCheckIn = Math.ceil((checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-                                        const isShortNotice = daysUntilCheckIn < 14;
+                                    <div className="admin-card__action-row">
+                                        {(() => {
+                                            const checkInDate = new Date(req.checkIn + 'T12:00:00');
+                                            const now = new Date();
+                                            const daysUntilCheckIn = Math.ceil((checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                                            const isShortNotice = daysUntilCheckIn < 14;
+                                            const isPaypalPref = req.preferredPaymentMethod === 'paypal';
 
-                                        return (
-                                            <button
-                                                onClick={() => onConfirm(req._id)}
-                                                disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                                className={`admin-btn ${isShortNotice ? 'admin-btn--remaining' : 'admin-btn--confirm'}`}
-                                            >
-                                                {state === 'confirming'
-                                                    ? 'Confirming…'
-                                                    : isShortNotice
-                                                        ? `💳 Confirm & Send Full Payment €${req.totalPrice}`
-                                                        : '✓ Confirm & Send Payment'}
-                                            </button>
-                                        );
-                                    })()}
-                                    <button
-                                        onClick={() => setRejecting(req)}
-                                        disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                        className="admin-btn admin-btn--reject"
-                                    >
-                                        {state === 'rejecting' ? 'Rejecting…' : '✕ Reject'}
-                                    </button>
+                                            return (
+                                                <div className="admin-btn-group">
+                                                    <button
+                                                        onClick={() => onConfirm(req._id, 'stripe')}
+                                                        disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
+                                                        className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                        title={isShortNotice ? "Confirm & Send FULL card payment request" : "Confirm & Send card deposit request"}
+                                                    >
+                                                        {state === 'confirming' ? '⌛ Card...' : `✉ Send Card (${isShortNotice ? 'Full' : 'Dep'})`}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => onConfirm(req._id, 'paypal')}
+                                                        disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
+                                                        className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                        title={isShortNotice ? "Confirm & Send FULL PayPal request" : "Confirm & Send PayPal deposit request"}
+                                                    >
+                                                        {state === 'confirming' ? '⌛ PayPal...' : `✉ Send PayPal (${isShortNotice ? 'Full' : 'Dep'})`}
+                                                    </button>
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
+
+                                    <div className="admin-card__action-row admin-card__action-row--secondary">
+                                        <button
+                                            onClick={() => setEditing(req)}
+                                            disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
+                                            className="admin-btn admin-btn--outline admin-btn--sm"
+                                        >
+                                            ✎ Edit
+                                        </button>
+                                        <button
+                                            onClick={() => setRejecting(req)}
+                                            disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
+                                            className="admin-btn admin-btn--reject admin-btn--sm"
+                                        >
+                                            {state === 'rejecting' ? 'Rejecting…' : '✕ Reject'}
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {state === 'error' && (
@@ -190,7 +203,17 @@ export default function ReservationRequestsPanel() {
                     confirmLabel="✕ Reject Request"
                     confirmVariant="danger"
                     isLoading={actionState[rejecting._id] === 'rejecting'}
-                    onConfirm={() => onReject(rejecting._id)}
+                    showReasonInput
+                    reasonLabel="Why is this being rejected?"
+                    reasonPlaceholder="Enter a reason (optional, will be shown to the guest)…"
+                    reasonPresets={[
+                        'Dates no longer available',
+                        'Minimum stay not met',
+                        'Property maintenance',
+                        'Double booking',
+                        'Unable to accommodate special request',
+                    ]}
+                    onConfirm={(reason) => onReject(rejecting._id, reason)}
                     onCancel={() => setRejecting(null)}
                 />
             )}
