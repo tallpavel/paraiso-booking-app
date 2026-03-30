@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAdminData } from '../../hooks/useAdminData';
 import EditReservationModal from './EditReservationModal';
 import ConfirmDialog from './ConfirmDialog';
+import ConfirmPopover from './ConfirmPopover';
 import { formatDateShort, paymentLabel } from './adminUtils';
 import type { ConfirmedReservationFull } from '../../api';
 
@@ -228,28 +229,42 @@ export default function ConfirmedReservationsPanel() {
                                             if (isShortNotice && !isFullyPaid) {
                                                 return (
                                                     <div className="admin-btn-group">
-                                                        <button
-                                                            onClick={async () => {
+                                                        <ConfirmPopover
+                                                            message={`Send full €${c.totalPrice} payment request via Card?`}
+                                                            confirmLabel="Yes, Send"
+                                                            confirmVariant="stripe"
+                                                            onConfirm={async () => {
                                                                 setSendingFullPayment(prev => ({ ...prev, [c._id]: true }));
                                                                 try { await handleSendFullPayment(c._id, 'stripe'); } catch { }
                                                                 setSendingFullPayment(prev => ({ ...prev, [c._id]: false }));
                                                             }}
                                                             disabled={sendingFullPayment[c._id] || state === 'cancelling' || state === 'done'}
-                                                            className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
                                                         >
-                                                            {sendingFullPayment[c._id] ? '⌛ Card...' : `✉ Send Card (€${c.totalPrice})`}
-                                                        </button>
-                                                        <button
-                                                            onClick={async () => {
+                                                            <button
+                                                                disabled={sendingFullPayment[c._id] || state === 'cancelling' || state === 'done'}
+                                                                className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                            >
+                                                                {sendingFullPayment[c._id] ? '⌛ Card...' : `✉ Send Card (€${c.totalPrice})`}
+                                                            </button>
+                                                        </ConfirmPopover>
+                                                        <ConfirmPopover
+                                                            message={`Send full €${c.totalPrice} payment request via PayPal?`}
+                                                            confirmLabel="Yes, Send"
+                                                            confirmVariant="paypal"
+                                                            onConfirm={async () => {
                                                                 setSendingFullPayment(prev => ({ ...prev, [c._id]: true }));
                                                                 try { await handleSendFullPayment(c._id, 'paypal'); } catch { }
                                                                 setSendingFullPayment(prev => ({ ...prev, [c._id]: false }));
                                                             }}
                                                             disabled={sendingFullPayment[c._id] || state === 'cancelling' || state === 'done'}
-                                                            className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
                                                         >
-                                                            {sendingFullPayment[c._id] ? '⌛ PayPal...' : `✉ Send PayPal (€${c.totalPrice})`}
-                                                        </button>
+                                                            <button
+                                                                disabled={sendingFullPayment[c._id] || state === 'cancelling' || state === 'done'}
+                                                                className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                            >
+                                                                {sendingFullPayment[c._id] ? '⌛ PayPal...' : `✉ Send PayPal (€${c.totalPrice})`}
+                                                            </button>
+                                                        </ConfirmPopover>
                                                     </div>
                                                 );
                                             }
@@ -257,57 +272,86 @@ export default function ConfirmedReservationsPanel() {
                                             if (c.paymentStatus === 'pending') {
                                                 return (
                                                     <div className="admin-btn-group">
-                                                        <button
-                                                            onClick={async () => {
+                                                        <ConfirmPopover
+                                                            message={`Resend €${c.depositAmount} deposit request via Card?`}
+                                                            confirmLabel="Yes, Send"
+                                                            confirmVariant="stripe"
+                                                            onConfirm={async () => {
                                                                 setSendingDeposit(prev => ({ ...prev, [c._id]: true }));
                                                                 try { await handleSendDepositPayment(c._id, 'stripe'); } catch { }
                                                                 setSendingDeposit(prev => ({ ...prev, [c._id]: false }));
                                                             }}
                                                             disabled={sendingDeposit[c._id] || state === 'cancelling' || state === 'done'}
-                                                            className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
                                                         >
-                                                            {sendingDeposit[c._id] ? '⌛ Card...' : `✉ Resend Card (€${c.depositAmount})`}
-                                                        </button>
-                                                        <button
-                                                            onClick={async () => {
+                                                            <button
+                                                                disabled={sendingDeposit[c._id] || state === 'cancelling' || state === 'done'}
+                                                                className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                            >
+                                                                {sendingDeposit[c._id] ? '⌛ Card...' : `✉ Resend Card (€${c.depositAmount})`}
+                                                            </button>
+                                                        </ConfirmPopover>
+                                                        <ConfirmPopover
+                                                            message={`Resend €${c.depositAmount} deposit request via PayPal?`}
+                                                            confirmLabel="Yes, Send"
+                                                            confirmVariant="paypal"
+                                                            onConfirm={async () => {
                                                                 setSendingDeposit(prev => ({ ...prev, [c._id]: true }));
                                                                 try { await handleSendDepositPayment(c._id, 'paypal'); } catch { }
                                                                 setSendingDeposit(prev => ({ ...prev, [c._id]: false }));
                                                             }}
                                                             disabled={sendingDeposit[c._id] || state === 'cancelling' || state === 'done'}
-                                                            className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
                                                         >
-                                                            {sendingDeposit[c._id] ? '⌛ PayPal...' : `✉ Resend PayPal (€${c.depositAmount})`}
-                                                        </button>
+                                                            <button
+                                                                disabled={sendingDeposit[c._id] || state === 'cancelling' || state === 'done'}
+                                                                className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                            >
+                                                                {sendingDeposit[c._id] ? '⌛ PayPal...' : `✉ Resend PayPal (€${c.depositAmount})`}
+                                                            </button>
+                                                        </ConfirmPopover>
                                                     </div>
                                                 );
                                             }
 
                                             if (c.paymentStatus === 'paid' && c.remainingPaymentStatus !== 'paid') {
+                                                const remaining = c.totalPrice - c.depositAmount;
                                                 return (
                                                     <div className="admin-btn-group">
-                                                        <button
-                                                            onClick={async () => {
+                                                        <ConfirmPopover
+                                                            message={`Send €${remaining} remaining payment request via Card?`}
+                                                            confirmLabel="Yes, Send"
+                                                            confirmVariant="stripe"
+                                                            onConfirm={async () => {
                                                                 setSendingRemaining(prev => ({ ...prev, [c._id]: true }));
                                                                 try { await handleSendRemainingPayment(c._id, 'stripe'); } catch { }
                                                                 setSendingRemaining(prev => ({ ...prev, [c._id]: false }));
                                                             }}
                                                             disabled={sendingRemaining[c._id] || state === 'cancelling' || state === 'done'}
-                                                            className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
                                                         >
-                                                            {sendingRemaining[c._id] ? '⌛ Card...' : `✉ Send Card (€${c.totalPrice - c.depositAmount})`}
-                                                        </button>
-                                                        <button
-                                                            onClick={async () => {
+                                                            <button
+                                                                disabled={sendingRemaining[c._id] || state === 'cancelling' || state === 'done'}
+                                                                className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                            >
+                                                                {sendingRemaining[c._id] ? '⌛ Card...' : `✉ Send Card (€${remaining})`}
+                                                            </button>
+                                                        </ConfirmPopover>
+                                                        <ConfirmPopover
+                                                            message={`Send €${remaining} remaining payment request via PayPal?`}
+                                                            confirmLabel="Yes, Send"
+                                                            confirmVariant="paypal"
+                                                            onConfirm={async () => {
                                                                 setSendingRemaining(prev => ({ ...prev, [c._id]: true }));
                                                                 try { await handleSendRemainingPayment(c._id, 'paypal'); } catch { }
                                                                 setSendingRemaining(prev => ({ ...prev, [c._id]: false }));
                                                             }}
                                                             disabled={sendingRemaining[c._id] || state === 'cancelling' || state === 'done'}
-                                                            className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
                                                         >
-                                                            {sendingRemaining[c._id] ? '⌛ PayPal...' : `✉ Send PayPal (€${c.totalPrice - c.depositAmount})`}
-                                                        </button>
+                                                            <button
+                                                                disabled={sendingRemaining[c._id] || state === 'cancelling' || state === 'done'}
+                                                                className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                            >
+                                                                {sendingRemaining[c._id] ? '⌛ PayPal...' : `✉ Send PayPal (€${remaining})`}
+                                                            </button>
+                                                        </ConfirmPopover>
                                                     </div>
                                                 );
                                             }

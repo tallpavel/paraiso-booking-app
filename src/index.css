@@ -422,6 +422,7 @@ a.btn {
     opacity: 0;
     transform: translateX(-50%) translateY(-4px);
   }
+
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
@@ -489,6 +490,7 @@ a.btn {
     transform: translateY(100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -578,6 +580,392 @@ a.btn {
   .animate-scroll-dot,
   .animate-bounce {
     animation: none;
+  }
+}
+
+/* ── Phone Input with Country Selector ─────────────────────────────── */
+.phone-input-wrapper {
+  position: relative;
+}
+
+.phone-input-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-sand);
+  background: var(--color-sand-light);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.phone-input-container:focus-within {
+  border-color: var(--color-ocean);
+  box-shadow: 0 0 0 2px var(--color-ocean);
+}
+
+.phone-input-container--error {
+  border-color: var(--color-coral) !important;
+}
+
+.phone-input-container--error:focus-within {
+  box-shadow: 0 0 0 2px var(--color-coral);
+}
+
+.phone-input-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.75rem 0.25rem 0.75rem 0.875rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-navy);
+  flex-shrink: 0;
+  border-radius: 0.75rem 0 0 0.75rem;
+  transition: background 0.15s;
+}
+
+.phone-input-selector:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.phone-flag-img {
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+}
+
+.phone-input-dial {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-navy);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.phone-input-chevron {
+  width: 10px;
+  height: 6px;
+  color: var(--color-warm-gray);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.phone-input-chevron--open {
+  transform: rotate(180deg);
+}
+
+.phone-input-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--color-sand);
+  flex-shrink: 0;
+}
+
+.phone-input-field {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0.75rem;
+  font-size: 1rem;
+  color: var(--color-navy);
+  outline: none;
+}
+
+.phone-input-field::placeholder {
+  color: rgba(26, 42, 58, 0.3);
+}
+
+/* ── Dropdown ──────────────────────────────────────────────────────── */
+.phone-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #fff;
+  border: 1px solid var(--color-sand);
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+  animation: phoneDropdownReveal 0.2s ease;
+  overflow: hidden;
+}
+
+@keyframes phoneDropdownReveal {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.phone-dropdown-search-wrap {
+  position: relative;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--color-sand);
+}
+
+.phone-dropdown-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-warm-gray);
+  pointer-events: none;
+}
+
+.phone-dropdown-search {
+  width: 100%;
+  border: 1px solid var(--color-sand);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem 0.5rem 2rem;
+  font-size: 0.875rem;
+  color: var(--color-navy);
+  background: var(--color-sand-light);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.phone-dropdown-search:focus {
+  border-color: var(--color-ocean);
+}
+
+.phone-dropdown-search::placeholder {
+  color: rgba(26, 42, 58, 0.3);
+}
+
+.phone-dropdown-list {
+  max-height: 240px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-sand) transparent;
+}
+
+.phone-dropdown-empty {
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-warm-gray);
+}
+
+.phone-dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--color-navy);
+  transition: background 0.1s;
+}
+
+.phone-dropdown-option--highlight {
+  background: var(--color-sand-light);
+}
+
+.phone-dropdown-option--active {
+  background: rgba(26, 140, 170, 0.06);
+}
+
+.phone-dropdown-option--active .phone-dropdown-option-dial {
+  color: var(--color-ocean);
+  font-weight: 700;
+}
+
+.phone-dropdown-option:hover {
+  background: var(--color-sand-light);
+}
+
+.phone-dropdown-option .phone-flag-img {
+  width: 24px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.phone-dropdown-option-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.phone-dropdown-option-dial {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-warm-gray);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Contact form uses white bg, so adapt container bg */
+.contact-phone-wrap .phone-input-container {
+  background: #fff;
+}
+
+/* ── Backdrop (transparent on desktop, scrim on mobile) ────────────── */
+.phone-dropdown-backdrop {
+  display: none;
+}
+
+/* ── Drag handle (hidden on desktop, shown on mobile) ──────────────── */
+.phone-dropdown-handle {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .phone-input-selector {
+    padding: 0.625rem 0.125rem 0.625rem 0.625rem;
+    gap: 0.25rem;
+  }
+
+  .phone-flag-img {
+    width: 18px;
+    height: 13px;
+  }
+
+  .phone-input-dial {
+    font-size: 0.8125rem;
+  }
+
+  .phone-input-field {
+    padding: 0.625rem 0.625rem;
+    font-size: 0.9375rem;
+  }
+
+  .phone-dropdown-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: rgba(0, 0, 0, 0.4);
+    animation: phoneBackdropFade 0.2s ease;
+  }
+
+  @keyframes phoneBackdropFade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .phone-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    border-radius: 1rem 1rem 0 0;
+    max-height: 60vh;
+    animation: phoneDropdownSlideUp 0.25s ease;
+  }
+
+  @keyframes phoneDropdownSlideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .phone-dropdown-handle {
+    display: flex;
+    justify-content: center;
+    padding: 0.625rem 0 0.25rem;
+  }
+
+  .phone-dropdown-handle-bar {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-sand);
+  }
+
+  .phone-dropdown-list {
+    max-height: calc(60vh - 100px);
+  }
+}
+
+/* ── VV Licence Badge ──────────────────────────────────────────────── */
+.vv-licence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1.25rem 0.625rem 0.875rem;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.vv-licence-badge:hover {
+  border-color: rgba(26, 140, 170, 0.25);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.vv-licence-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(26, 140, 170, 0.2), rgba(26, 140, 170, 0.08));
+  color: var(--color-ocean);
+  flex-shrink: 0;
+}
+
+.vv-licence-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.vv-licence-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.2;
+}
+
+.vv-licence-number {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+@media (max-width: 480px) {
+  .vv-licence-badge {
+    padding: 0.5rem 1rem 0.5rem 0.75rem;
+    gap: 0.625rem;
+  }
+
+  .vv-licence-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .vv-licence-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .vv-licence-label {
+    font-size: 0.6rem;
+  }
+
+  .vv-licence-number {
+    font-size: 0.8rem;
   }
 }
 
@@ -1639,42 +2027,232 @@ a.btn {
 .admin-card__actions {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-top: auto; /* Push to bottom of card */
+  gap: 0;
+  margin-top: auto;
+  /* Push to bottom of card */
 }
 
-/* Row-based grouping within actions */
+/* ── Primary action row — full-width stacked buttons ─────────────── */
 .admin-card__action-row {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  width: 100%;
 }
 
-.admin-card__action-row--secondary {
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: 0.75rem;
-  margin-top: 0.25rem;
+/* When primary row has side-by-side buttons (e.g. checked-in + access) */
+.admin-card__action-row--inline {
+  flex-direction: row;
 }
+
+.admin-card__action-row--inline .admin-btn {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Primary buttons always stretch full-width */
+.admin-card__action-row>.admin-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ── Secondary action row — Edit / Cancel in a clean split ───────── */
+.admin-card__action-row--secondary {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 0.85rem;
+  margin-top: 0.85rem;
+}
+
+.admin-card__action-row--secondary .admin-btn {
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+/* ── Inline Confirm Popover ──────────────────────────────────────────── */
+.admin-popover-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-popover-wrap>.admin-btn {
+  width: 100%;
+}
+
+
+.admin-popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 220px;
+  background: #252b3d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  animation: adminPopoverIn 0.15s ease-out;
+}
+
+@keyframes adminPopoverIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.admin-popover__msg {
+  font-size: 0.82rem;
+  color: rgba(245, 240, 232, 0.7);
+  line-height: 1.45;
+  margin: 0 0 0.85rem;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.admin-popover__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.admin-popover__btn {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.admin-popover__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-popover__btn--cancel {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(245, 240, 232, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-popover__btn--cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(245, 240, 232, 0.7);
+}
+
+.admin-popover__btn--confirm {
+  background: rgba(26, 140, 170, 0.15);
+  color: #1cbde4;
+}
+
+.admin-popover__btn--confirm:hover:not(:disabled) {
+  background: rgba(26, 140, 170, 0.25);
+}
+
+.admin-popover__btn--danger {
+  background: rgba(224, 124, 90, 0.12);
+  color: #e07c5a;
+}
+
+.admin-popover__btn--danger:hover:not(:disabled) {
+  background: rgba(224, 124, 90, 0.22);
+}
+
+.admin-popover__btn--stripe {
+  background: rgba(100, 95, 255, 0.12);
+  color: #7a73ff;
+}
+
+.admin-popover__btn--stripe:hover:not(:disabled) {
+  background: rgba(100, 95, 255, 0.22);
+}
+
+.admin-popover__btn--paypal {
+  background: rgba(0, 112, 186, 0.12);
+  color: #3d9be9;
+}
+
+.admin-popover__btn--paypal:hover:not(:disabled) {
+  background: rgba(0, 112, 186, 0.22);
+}
+
 
 .admin-btn-group {
   display: flex;
   gap: 1px;
-  background: rgba(255, 255, 255, 0.08); /* Slightly more subtle background */
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .admin-btn-group .admin-btn {
-  flex: 1; /* Allow buttons to share space equally */
+  flex: 1;
+  min-width: 0;
   border-radius: 0;
   border: none;
+}
+
+/* Round corners on first/last children instead of overflow:hidden */
+.admin-btn-group> :first-child,
+.admin-btn-group> :first-child .admin-btn {
+  border-radius: 8px 0 0 8px;
+}
+
+.admin-btn-group> :last-child,
+.admin-btn-group> :last-child .admin-btn {
+  border-radius: 0 8px 8px 0;
+}
+
+/* Stripe button variant */
+.admin-btn--stripe {
+  background: rgba(100, 95, 255, 0.1);
+  color: #7a73ff;
+}
+
+.admin-btn--stripe:hover:not(:disabled) {
+  background: rgba(100, 95, 255, 0.18);
+  color: #8a85ff;
+}
+
+/* PayPal button variant */
+.admin-btn--paypal {
+  background: rgba(0, 112, 186, 0.1);
+  color: #3d9be9;
+}
+
+.admin-btn--paypal:hover:not(:disabled) {
+  background: rgba(0, 112, 186, 0.18);
+  color: #5aadee;
 }
 
 @media (max-width: 768px) {
   .admin-card__action-row {
     flex-direction: column !important;
-    gap: 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+
+  /* Secondary row stays horizontal even on mobile */
+  .admin-card__action-row--secondary {
+    flex-direction: row !important;
+    gap: 0.5rem !important;
   }
 
   .admin-btn-group {
@@ -1685,8 +2263,8 @@ a.btn {
 
   .admin-btn-group .admin-btn {
     width: 100% !important;
-    flex: none !important; /* Force full width, don't share row */
-    white-space: normal !important; /* Allow wrapping if text is very long */
+    flex: none !important;
+    white-space: normal !important;
     text-align: center;
     padding: 0.8rem 1rem;
   }

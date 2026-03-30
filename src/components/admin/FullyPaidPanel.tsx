@@ -133,59 +133,57 @@ export default function FullyPaidPanel() {
                                 </p>
 
                                 <div className="admin-card__actions">
-                                    <div className="admin-card__action-row">
-                                        {ciStatus === 'completed' ? (
-                                            <>
+                                    {ciStatus === 'completed' ? (
+                                        <div className="admin-card__action-row admin-card__action-row--inline">
+                                            <button
+                                                onClick={() => setViewingCheckIn(c)}
+                                                className="admin-btn admin-btn--checkedin"
+                                            >
+                                                ☑ Checked In
+                                            </button>
+                                            <button
+                                                onClick={async () => {
+                                                    setSendingAccessInfo(prev => ({ ...prev, [c._id]: true }));
+                                                    try { await handleSendAccessInfo(c._id); } catch { }
+                                                    setSendingAccessInfo(prev => ({ ...prev, [c._id]: false }));
+                                                }}
+                                                disabled={sendingAccessInfo[c._id] || state === 'cancelling' || state === 'done'}
+                                                className={`admin-btn ${c.accessInfoSent ? 'admin-btn--checkin-sent' : 'admin-btn--checkin'}`}
+                                            >
+                                                {sendingAccessInfo[c._id]
+                                                    ? 'Sending…'
+                                                    : c.accessInfoSent
+                                                        ? '🔑 Resend Access'
+                                                        : '🔑 Send Access'}
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="admin-card__action-row">
+                                            <button
+                                                onClick={async () => {
+                                                    setSendingCheckIn(prev => ({ ...prev, [c._id]: true }));
+                                                    try { await handleSendCheckIn(c._id); } catch { }
+                                                    setSendingCheckIn(prev => ({ ...prev, [c._id]: false }));
+                                                }}
+                                                disabled={sendingCheckIn[c._id] || state === 'cancelling' || state === 'done'}
+                                                className={`admin-btn ${ciStatus === 'sent' ? 'admin-btn--checkin-sent' : 'admin-btn--checkin'}`}
+                                            >
+                                                {sendingCheckIn[c._id]
+                                                    ? 'Sending…'
+                                                    : ciStatus === 'sent'
+                                                        ? '✉ Resend Check-in'
+                                                        : '✉ Send Check-in'}
+                                            </button>
+                                            {ciStatus === 'sent' && (
                                                 <button
                                                     onClick={() => setViewingCheckIn(c)}
-                                                    className="admin-btn admin-btn--checkedin"
+                                                    className="admin-btn admin-btn--outline"
                                                 >
-                                                    ☑ Checked In
+                                                    📋 View Check-in
                                                 </button>
-                                                <button
-                                                    onClick={async () => {
-                                                        setSendingAccessInfo(prev => ({ ...prev, [c._id]: true }));
-                                                        try { await handleSendAccessInfo(c._id); } catch { }
-                                                        setSendingAccessInfo(prev => ({ ...prev, [c._id]: false }));
-                                                    }}
-                                                    disabled={sendingAccessInfo[c._id] || state === 'cancelling' || state === 'done'}
-                                                    className={`admin-btn ${c.accessInfoSent ? 'admin-btn--checkin-sent' : 'admin-btn--checkin'}`}
-                                                >
-                                                    {sendingAccessInfo[c._id]
-                                                        ? 'Sending…'
-                                                        : c.accessInfoSent
-                                                            ? '🔑 Resend Access'
-                                                            : '🔑 Send Access'}
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <button
-                                                    onClick={async () => {
-                                                        setSendingCheckIn(prev => ({ ...prev, [c._id]: true }));
-                                                        try { await handleSendCheckIn(c._id); } catch { }
-                                                        setSendingCheckIn(prev => ({ ...prev, [c._id]: false }));
-                                                    }}
-                                                    disabled={sendingCheckIn[c._id] || state === 'cancelling' || state === 'done'}
-                                                    className={`admin-btn ${ciStatus === 'sent' ? 'admin-btn--checkin-sent' : 'admin-btn--checkin'}`}
-                                                >
-                                                    {sendingCheckIn[c._id]
-                                                        ? 'Sending…'
-                                                        : ciStatus === 'sent'
-                                                            ? '✉ Resend Check-in'
-                                                            : '✉ Send Check-in'}
-                                                </button>
-                                                {ciStatus === 'sent' && (
-                                                    <button
-                                                        onClick={() => setViewingCheckIn(c)}
-                                                        className="admin-btn admin-btn--outline"
-                                                    >
-                                                        📋 View Check-in
-                                                    </button>
-                                                )}
-                                            </>
-                                        )}
-                                    </div>
+                                            )}
+                                        </div>
+                                    )}
 
                                     <div className="admin-card__action-row admin-card__action-row--secondary">
                                         <button

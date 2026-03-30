@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAdminData } from '../../hooks/useAdminData';
 import EditReservationModal from './EditReservationModal';
 import ConfirmDialog from './ConfirmDialog';
+import ConfirmPopover from './ConfirmPopover';
 import { formatDateShort } from './adminUtils';
 import type { Reservation } from '../../api';
 
@@ -138,25 +139,43 @@ export default function ReservationRequestsPanel() {
                                             const daysUntilCheckIn = Math.ceil((checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                                             const isShortNotice = daysUntilCheckIn < 14;
                                             const isPaypalPref = req.preferredPaymentMethod === 'paypal';
+                                            const depositAmount = Math.round(req.totalPrice * 0.3);
+                                            const amountLabel = isShortNotice ? `full €${req.totalPrice}` : `€${depositAmount} deposit`;
 
                                             return (
                                                 <div className="admin-btn-group">
-                                                    <button
-                                                        onClick={() => onConfirm(req._id, 'stripe')}
+                                                    <ConfirmPopover
+                                                        message={`Confirm & send ${amountLabel} via Card?`}
+                                                        confirmLabel="Yes, Send"
+                                                        confirmVariant="stripe"
+                                                        onConfirm={() => onConfirm(req._id, 'stripe')}
+                                                        isLoading={state === 'confirming'}
                                                         disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                                        className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
-                                                        title={isShortNotice ? "Confirm & Send FULL card payment request" : "Confirm & Send card deposit request"}
                                                     >
-                                                        {state === 'confirming' ? '⌛ Card...' : `✉ Send Card (${isShortNotice ? 'Full' : 'Dep'})`}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => onConfirm(req._id, 'paypal')}
+                                                        <button
+                                                            disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
+                                                            className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                            title={isShortNotice ? "Confirm & Send FULL card payment request" : "Confirm & Send card deposit request"}
+                                                        >
+                                                            {state === 'confirming' ? '⌛ Card...' : `✉ Send Card (${isShortNotice ? 'Full' : 'Dep'})`}
+                                                        </button>
+                                                    </ConfirmPopover>
+                                                    <ConfirmPopover
+                                                        message={`Confirm & send ${amountLabel} via PayPal?`}
+                                                        confirmLabel="Yes, Send"
+                                                        confirmVariant="paypal"
+                                                        onConfirm={() => onConfirm(req._id, 'paypal')}
+                                                        isLoading={state === 'confirming'}
                                                         disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                                        className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
-                                                        title={isShortNotice ? "Confirm & Send FULL PayPal request" : "Confirm & Send PayPal deposit request"}
                                                     >
-                                                        {state === 'confirming' ? '⌛ PayPal...' : `✉ Send PayPal (${isShortNotice ? 'Full' : 'Dep'})`}
-                                                    </button>
+                                                        <button
+                                                            disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
+                                                            className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                            title={isShortNotice ? "Confirm & Send FULL PayPal request" : "Confirm & Send PayPal deposit request"}
+                                                        >
+                                                            {state === 'confirming' ? '⌛ PayPal...' : `✉ Send PayPal (${isShortNotice ? 'Full' : 'Dep'})`}
+                                                        </button>
+                                                    </ConfirmPopover>
                                                 </div>
                                             );
                                         })()}

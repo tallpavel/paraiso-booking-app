@@ -4,6 +4,7 @@ import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n';
 import { sendContactMessage } from '../api';
 import { useSpamProtection } from '../hooks/useSpamProtection';
+import PhoneInput, { guessCountry } from './PhoneInput';
 
 const initialForm: ContactFormData = {
     name: '',
@@ -24,6 +25,7 @@ export default function ContactForm() {
     const [errors, setErrors] = useState<FieldError>({});
     const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
     const [gdprConsent, setGdprConsent] = useState(false);
+    const [dialCode, setDialCode] = useState(() => guessCountry().dial);
     const spam = useSpamProtection('contact-form');
 
     const validate = (data: ContactFormData): FieldError => {
@@ -78,13 +80,14 @@ export default function ContactForm() {
             await sendContactMessage({
                 name: form.name.trim(),
                 email: form.email.trim(),
-                phone: form.phone.trim() || undefined,
+                phone: form.phone.trim() ? `${dialCode} ${form.phone.trim()}` : undefined,
                 message: form.message.trim(),
                 turnstileToken: spamCheck.turnstileToken,
             });
 
             setStatus('sent');
             setForm(initialForm);
+            setDialCode(guessCountry().dial);
             setGdprConsent(false);
             spam.reset();
             setTimeout(() => setStatus('idle'), 5000);
@@ -209,19 +212,17 @@ export default function ContactForm() {
                             )}
                         </div>
 
-                        <div className="mb-6">
+                        <div className="mb-6 contact-phone-wrap">
                             <label htmlFor="contact-phone" className="mb-2 block text-sm font-semibold text-navy">
                                 {t('contact.phone')} <span className="text-warm-gray">{t('contact.phoneOptional')}</span>
                             </label>
-                            <input
-                                type="tel"
+                            <PhoneInput
                                 id="contact-phone"
-                                name="phone"
                                 value={form.phone}
-                                onChange={handleChange}
-                                autoComplete="tel"
+                                dialCode={dialCode}
+                                onChangeNumber={(v) => setForm(prev => ({ ...prev, phone: v }))}
+                                onChangeDialCode={setDialCode}
                                 placeholder={t('contact.phonePlaceholder')}
-                                className="w-full rounded-xl border border-sand bg-white px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean"
                             />
                         </div>
 

@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import PhoneInput, { guessCountry } from './PhoneInput';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n';
@@ -119,6 +120,7 @@ export default function BookingCalendar() {
     const [guestName, setGuestName] = useState('');
     const [guestEmail, setGuestEmail] = useState('');
     const [guestPhone, setGuestPhone] = useState('');
+    const [dialCode, setDialCode] = useState(() => guessCountry().dial);
     const [comment, setComment] = useState('');
     const [errors, setErrors] = useState<FormErrors>({});
     const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
@@ -453,8 +455,13 @@ export default function BookingCalendar() {
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
             errs.email = t('booking.errorEmailInvalid');
         }
-        if (!guestPhone.trim() || guestPhone.trim().length < 6) {
+        const fullPhone = `${dialCode} ${guestPhone}`.trim();
+        if (!guestPhone.trim()) {
             errs.phone = t('booking.errorPhone');
+        } else if (!/^[\d\s\-()]{4,18}$/.test(guestPhone.trim()) || guestPhone.replace(/\D/g, '').length < 4) {
+            errs.phone = t('booking.errorPhoneInvalid');
+        } else if (fullPhone.replace(/\D/g, '').length < 6) {
+            errs.phone = t('booking.errorPhoneInvalid');
         }
         return errs;
     };
@@ -493,6 +500,7 @@ export default function BookingCalendar() {
         setGuestName('');
         setGuestEmail('');
         setGuestPhone('');
+        setDialCode(guessCountry().dial);
         setComment('');
         setPreferredPaymentMethod('stripe');
         setCheckIn(null);
@@ -530,7 +538,7 @@ export default function BookingCalendar() {
             await createReservation({
                 guestName: guestName.trim(),
                 guestEmail: guestEmail.trim(),
-                guestPhone: guestPhone.trim(),
+                guestPhone: `${dialCode} ${guestPhone.trim()}`,
                 checkIn: toDateKey(checkIn!),
                 checkOut: toDateKey(checkOut!),
                 nights: pricing!.nights,
@@ -822,14 +830,14 @@ export default function BookingCalendar() {
                                     <label htmlFor="booking-phone" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
                                         {t('booking.phone')} <span className="text-coral">*</span>
                                     </label>
-                                    <input
-                                        type="tel"
+                                    <PhoneInput
                                         id="booking-phone"
                                         value={guestPhone}
-                                        onChange={(e) => { setGuestPhone(e.target.value); handleFieldChange('phone'); }}
-                                        autoComplete="tel"
+                                        dialCode={dialCode}
+                                        onChangeNumber={(v) => { setGuestPhone(v); handleFieldChange('phone'); }}
+                                        onChangeDialCode={setDialCode}
                                         placeholder={t('booking.phonePlaceholder')}
-                                        className={`w-full rounded-xl border bg-sand-light px-4 py-3 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ocean ${errors.phone ? 'border-coral' : 'border-sand'}`}
+                                        hasError={!!errors.phone}
                                     />
                                     {errors.phone && <p className="mt-1 text-xs text-coral" role="alert">{errors.phone}</p>}
                                 </div>
@@ -925,44 +933,15 @@ export default function BookingCalendar() {
                                     </div>
                                     <h4 className="font-bold text-navy">{t('booking.paymentStripeTitle')}</h4>
                                     <p className="mt-1 text-xs text-warm-gray leading-relaxed">{t('booking.paymentStripeDesc')}</p>
-                                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                                        {/* Visa */}
-                                        <svg className="h-6 w-auto opacity-60 group-hover:opacity-80 transition-opacity" viewBox="0 0 780 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M293.2 348.7l33.4-195.8h53.4l-33.4 195.8H293.2z" fill="#1a1f71"/>
-                                            <path d="M560.9 157.8c-10.6-4-27.2-8.2-47.9-8.2-52.8 0-90 26.5-90.3 64.5-.3 28.1 26.6 43.8 46.9 53.1 20.8 9.6 27.8 15.7 27.7 24.3-.1 13.1-16.6 19.1-31.9 19.1-21.4 0-32.7-3-50.3-10.2l-6.9-3.1-7.5 43.8c12.5 5.4 35.6 10.2 59.6 10.4 56.2 0 92.7-26.2 93.1-66.8.2-22.3-14.1-39.2-45-53.1-18.7-9.1-30.2-15.1-30.1-24.3 0-8.1 9.7-16.8 30.7-16.8 17.5-.3 30.2 3.5 40.1 7.5l4.8 2.3 7.3-42.5z" fill="#1a1f71"/>
-                                            <path d="M632.2 152.9h-41.3c-12.8 0-22.4 3.5-28 16.2l-79.4 179.6h56.2s9.2-24.1 11.3-29.4h68.6c1.6 6.9 6.5 29.4 6.5 29.4h49.7l-43.6-195.8zm-66 126.4c4.4-11.3 21.4-54.8 21.4-54.8-.3.5 4.4-11.4 7.1-18.7l3.6 16.9s10.3 46.8 12.4 56.6h-44.5z" fill="#1a1f71"/>
-                                            <path d="M247.8 152.9L195.5 284l-5.6-27c-9.7-31.2-39.9-65-73.7-81.9l47.9 172.3h56.6l84.2-194.5h-57.1z" fill="#1a1f71"/>
-                                            <path d="M146.9 152.9H60.8l-.7 3.9c67.2 16.2 111.7 55.3 130.1 102.2l-18.8-90.2c-3.2-12.3-12.7-15.5-24.5-15.9z" fill="#f9a533"/>
-                                        </svg>
-                                        {/* Mastercard */}
-                                        <svg className="h-6 w-auto opacity-60 group-hover:opacity-80 transition-opacity" viewBox="0 0 780 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <circle cx="312" cy="250" r="150" fill="#eb001b"/>
-                                            <circle cx="468" cy="250" r="150" fill="#f79e1b"/>
-                                            <path d="M390 130.7c38.5 30.8 63.1 78.4 63.1 131.3s-24.6 100.5-63.1 131.3c-38.5-30.8-63.1-78.4-63.1-131.3s24.6-100.5 63.1-131.3z" fill="#ff5f00"/>
-                                        </svg>
-                                        {/* Amex */}
-                                        <svg className="h-6 w-auto opacity-60 group-hover:opacity-80 transition-opacity" viewBox="0 0 780 500" xmlns="http://www.w3.org/2000/svg">
-                                            <rect width="780" height="500" rx="40" fill="#2e77bc"/>
-                                            <path d="M207 181l-76 168h55l11-27h62l11 27h57l-76-168h-44zm22 53l18 44h-36l18-44zM389 181v168h49l55-83v83h44V181h-49l-55 83v-83h-44zM591 181v168h133v-37h-89v-25h87v-36h-87v-33h89v-37H591z" fill="white"/>
-                                        </svg>
-                                        {/* Apple Pay */}
-                                        <span className="flex h-6 items-center rounded bg-navy/5 px-2">
-                                            <svg className="h-4 w-auto opacity-50 group-hover:opacity-70 transition-opacity" viewBox="0 0 165.52 105.97" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M30.54 13.83c-2.04 2.41-5.33 4.28-8.61 4.01-.41-3.28 1.2-6.77 3.07-8.93 2.04-2.53 5.58-4.4 8.48-4.52.34 3.4-1.02 6.85-2.94 9.44m2.9 4.8c-4.75-.28-8.8 2.7-11.06 2.7s-5.73-2.56-9.47-2.49c-4.87.08-9.37 2.83-11.86 7.21-5.09 8.75-1.31 21.72 3.6 28.86 2.45 3.53 5.33 7.49 9.14 7.35 3.6-.14 5.01-2.35 9.37-2.35s5.62 2.35 9.44 2.28c3.95-.07 6.42-3.54 8.87-7.08 2.77-4.03 3.88-7.95 3.95-8.15-.07-.07-7.63-2.97-7.7-11.65-.07-7.28 5.95-10.75 6.22-10.96-3.4-5.01-8.69-5.57-10.5-5.72M68.82 10.34v50.4h7.78v-17.23h10.77c9.83 0 16.73-6.75 16.73-16.63 0-9.87-6.77-16.54-16.46-16.54H68.82zm7.78 6.54h8.96c6.75 0 10.61 3.6 10.61 9.95 0 6.36-3.86 9.99-10.64 9.99h-8.93V16.88zM117.4 61.2c4.88 0 9.4-2.49 11.45-6.42h.16v6.02h7.21V36.07c0-7.24-5.78-11.89-14.68-11.89-8.31 0-14.4 4.72-14.63 11.2h7.01c.57-3.08 3.47-5.1 7.35-5.1 4.75 0 7.42 2.21 7.42 6.29v2.76l-9.71.58c-9.03.54-13.92 4.24-13.92 10.66 0 6.49 5.03 10.63 12.34 10.63zm2.08-5.91c-4.14 0-6.77-1.99-6.77-5.03 0-3.14 2.53-4.96 7.35-5.24l8.65-.55v2.83c0 4.65-3.92 7.99-9.23 7.99zM152.42 71.97c7.59 0 11.15-2.9 14.26-11.72L182 16.88h-7.92l-10.36 32.83h-.17L153.2 16.88h-8.12L159.81 59l-.85 2.66c-1.43 4.48-3.74 6.22-7.87 6.22-.74 0-2.15-.07-2.73-.14v6.02c.54.14 2.63.21 4.06.21z" fill="#1d1d1b"/>
-                                            </svg>
+                                    <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                                        <span className="flex h-6 items-center rounded border border-navy/10 bg-white px-1.5 text-[10px] font-bold tracking-tight text-[#1a1f71]">VISA</span>
+                                        <span className="flex h-6 items-center gap-0.5 rounded border border-navy/10 bg-white px-1.5">
+                                            <span className="h-3 w-3 rounded-full bg-[#eb001b]" />
+                                            <span className="-ml-1.5 h-3 w-3 rounded-full bg-[#f79e1b] opacity-80" />
                                         </span>
-                                        {/* Google Pay */}
-                                        <span className="flex h-6 items-center rounded bg-navy/5 px-2">
-                                            <svg className="h-4 w-auto opacity-50 group-hover:opacity-70 transition-opacity" viewBox="0 0 435.97 173.14" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M206.2 84.58v50.75h-16.1V10h42.7a38.61 38.61 0 0 1 27.65 10.85A34.88 34.88 0 0 1 272 48.35a35.27 35.27 0 0 1-11.55 27.3 37.9 37.9 0 0 1-27.65 11.2h-26.6zm0-59.15v43.75h27c7 0 12.95-2.45 17.85-7.35a23.83 23.83 0 0 0 .17-34 23.42 23.42 0 0 0-17.5-7.35h-27.52z" fill="#5f6368"/>
-                                                <path d="M309.1 46.78c12.07 0 21.53 3.22 28.35 9.62s10.15 15.05 10.15 25.9v52.33h-15.4v-11.73h-.7c-6.72 9.98-15.58 14.88-26.6 14.88a36.3 36.3 0 0 1-25.03-9.1 28.96 28.96 0 0 1-10.33-22.58c0-9.52 3.6-17.08 10.85-22.58s17.15-8.27 29.75-8.27c10.71 0 19.51 1.96 26.43 5.88v-4.13a19.74 19.74 0 0 0-7.53-15.58 25.57 25.57 0 0 0-17.15-6.47c-9.91 0-17.78 4.2-23.63 12.6l-14.18-8.93c8.4-12.42 20.83-18.54 37.02-18.54zm-23.28 62.65a14.17 14.17 0 0 0 5.95 11.73 21.2 21.2 0 0 0 13.65 4.73 27.6 27.6 0 0 0 19.6-8.23c5.78-5.42 8.62-11.73 8.62-18.9-5.6-4.48-13.44-6.72-23.45-6.72-7.28 0-13.35 1.78-18.2 5.42-4.73 3.5-6.17 7.88-6.17 11.97z" fill="#5f6368"/>
-                                                <path d="M436 49.93l-53.48 123.03h-16.63l19.83-42.88-35.18-80.15h17.5l25.2 60.9h.35l24.5-60.9z" fill="#5f6368"/>
-                                                <path d="M141.14 73.64c0-4.56-.38-9.12-1.14-13.55H72v25.62h38.89a33.24 33.24 0 0 1-14.39 21.79v17.85h23.1c13.59-12.52 21.41-31.04 21.41-51.71z" fill="#4285f4"/>
-                                                <path d="M72 143.5c19.36 0 35.63-6.38 47.53-17.32l-23.1-17.85c-6.42 4.34-14.68 6.82-24.43 6.82-18.72 0-34.58-12.64-40.25-29.64H8.04v18.41A71.81 71.81 0 0 0 72 143.5z" fill="#34a853"/>
-                                                <path d="M31.75 85.51a43.27 43.27 0 0 1 0-27.56V39.54H8.04a71.59 71.59 0 0 0 0 64.38z" fill="#fbbc04"/>
-                                                <path d="M72 28.18a39.08 39.08 0 0 1 27.62 10.78l20.55-20.55A69.18 69.18 0 0 0 72 .14 71.81 71.81 0 0 0 8.04 39.54l23.71 18.41C37.42 40.94 53.28 28.18 72 28.18z" fill="#ea4335"/>
-                                            </svg>
-                                        </span>
+                                        <span className="flex h-6 items-center rounded bg-[#2e77bc] px-1.5 text-[10px] font-bold tracking-tight text-white">AMEX</span>
+                                        <span className="flex h-6 items-center gap-0.5 rounded border border-navy/10 bg-white px-1.5 text-[10px] font-medium text-navy/60"><svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>Pay</span>
+                                        <span className="flex h-6 items-center gap-0.5 rounded border border-navy/10 bg-white px-1.5 text-[10px] font-medium text-navy/60"><svg className="h-3 w-3" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.33v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.11z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Pay</span>
                                     </div>
                                     {preferredPaymentMethod === 'stripe' && (
                                         <div className="absolute right-3 top-3 h-5 w-5 rounded-full bg-ocean text-white flex items-center justify-center">
@@ -1010,23 +989,22 @@ export default function BookingCalendar() {
                             <div className="mt-8 rounded-2xl bg-sand p-5 sm:p-6 shadow-sm shadow-navy/5">
                                 <div className="flex items-start gap-3">
                                     <div className="mt-0.5 shrink-0 rounded-full bg-navy/5 p-1.5 text-navy/40">
-                                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <p className="text-[13px] leading-relaxed text-navy/70">
-                                            {t('booking.paymentNote')}
-                                        </p>
-                                        {isLastMinute && (
-                                            <div className="flex items-center gap-2 text-[12px] font-semibold text-ocean bg-ocean/5 rounded-lg px-3 py-2">
-                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 15c-.77 1.333.192 3 1.732 3z" />
-                                                </svg>
-                                                {t('booking.paymentLastMinuteNote')}
-                                            </div>
+                                        {isLastMinute ? (
+                                            <svg className="h-4 w-4 text-coral" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 15c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                        ) : (
+                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
                                         )}
                                     </div>
+                                    <p className="text-[13px] leading-relaxed text-navy/70">
+                                        {isLastMinute
+                                            ? t('booking.paymentLastMinuteNote')
+                                            : t('booking.paymentNote')
+                                        }
+                                    </p>
                                 </div>
                             </div>
 
@@ -1132,97 +1110,136 @@ export default function BookingCalendar() {
                             ) : (
                                 /* ── REVIEW & SUBMIT VIEW ── */
                                 <div>
-                                    <h3 className="mb-6 text-center font-heading text-xl font-bold text-navy">
+                                    <h3 className="mb-5 text-center font-heading text-xl font-bold text-navy sm:mb-6">
                                         {t('booking.stepConfirmTitle')}
                                     </h3>
 
                                     {/* Summary card */}
-                                    <div className="space-y-4 rounded-2xl bg-sand-light p-6">
-                                        {/* Dates */}
-                                        <div className="flex items-start justify-between">
-                                            <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">
+                                    <div className="overflow-hidden rounded-2xl border border-navy/8 bg-sand-light">
+                                        {/* ─ Dates Row ─ */}
+                                        <div className="flex items-stretch">
+                                            <div className="flex-1 px-4 py-4 sm:px-6 sm:py-5">
+                                                <p className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">
                                                     {t('booking.checkIn')}
                                                 </p>
-                                                <p className="text-base font-medium text-navy">{formatDate(checkIn!)}</p>
-                                                <p className="mt-0.5 text-xs text-warm-gray">{t('booking.checkInTime')}</p>
+                                                <p className="mt-1 text-[15px] font-bold text-navy sm:text-base">{formatDate(checkIn!)}</p>
+                                                <p className="mt-0.5 text-[11px] text-warm-gray">{t('booking.checkInTime')}</p>
                                             </div>
-                                            <div className="px-3 pt-3 text-warm-gray">→</div>
-                                            <div className="text-right">
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">
+                                            <div className="flex w-10 items-center justify-center sm:w-12">
+                                                <svg className="h-4 w-4 text-ocean/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 px-4 py-4 text-right sm:px-6 sm:py-5">
+                                                <p className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">
                                                     {t('booking.checkOut')}
                                                 </p>
-                                                <p className="text-base font-medium text-navy">{formatDate(checkOut!)}</p>
-                                                <p className="mt-0.5 text-xs text-warm-gray">{t('booking.checkOutTime')}</p>
+                                                <p className="mt-1 text-[15px] font-bold text-navy sm:text-base">{formatDate(checkOut!)}</p>
+                                                <p className="mt-0.5 text-[11px] text-warm-gray">{t('booking.checkOutTime')}</p>
                                             </div>
                                         </div>
 
-                                        <hr className="border-navy/10" />
-
-                                        {/* Guest info */}
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.name')}</p>
-                                                <p className="text-sm font-medium text-navy">{guestName}</p>
-                                            </div>
-                                            <div className="min-w-0">
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.email')}</p>
-                                                <p className="text-sm font-medium text-navy break-all">{guestEmail}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.phone')}</p>
-                                                <p className="text-sm font-medium text-navy">{guestPhone}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.guests')}</p>
-                                                <p className="text-sm font-medium text-navy">
-                                                    {guests} {guests > 1 ? t('booking.guests_plural') : t('booking.guest')}
-                                                </p>
+                                        {/* ─ Guest Details ─ */}
+                                        <div className="border-t border-navy/6 px-4 py-4 sm:px-6 sm:py-5">
+                                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                                                <div className="flex items-center gap-2.5">
+                                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ocean/8">
+                                                        <svg className="h-3.5 w-3.5 text-ocean" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" />
+                                                        </svg>
+                                                    </span>
+                                                    <div className="min-w-0">
+                                                        <p className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">{t('booking.name')}</p>
+                                                        <p className="truncate text-sm font-medium text-navy">{guestName}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2.5">
+                                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ocean/8">
+                                                        <svg className="h-3.5 w-3.5 text-ocean" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                                                        </svg>
+                                                    </span>
+                                                    <div className="min-w-0">
+                                                        <p className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">{t('booking.email')}</p>
+                                                        <p className="truncate text-sm font-medium text-navy">{guestEmail}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2.5">
+                                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ocean/8">
+                                                        <svg className="h-3.5 w-3.5 text-ocean" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                                                        </svg>
+                                                    </span>
+                                                    <div className="min-w-0">
+                                                        <p className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">{t('booking.phone')}</p>
+                                                        <p className="text-sm font-medium text-navy">{dialCode} {guestPhone}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2.5">
+                                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ocean/8">
+                                                        <svg className="h-3.5 w-3.5 text-ocean" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H5.228A2.25 2.25 0 013 16.878V16.5a9.001 9.001 0 0112-8.485M15 19.128v.003" />
+                                                        </svg>
+                                                    </span>
+                                                    <div className="min-w-0">
+                                                        <p className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">{t('booking.guests')}</p>
+                                                        <p className="text-sm font-medium text-navy">
+                                                            {guests} {guests > 1 ? t('booking.guests_plural') : t('booking.guest')}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
                                             {comment.trim() && (
-                                                <div>
-                                                    <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.comment')}</p>
-                                                    <p className="text-sm text-navy">{comment}</p>
+                                                <div className="mt-3 flex items-start gap-2.5 border-t border-navy/6 pt-3">
+                                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ocean/8">
+                                                        <svg className="h-3.5 w-3.5 text-ocean" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                                                        </svg>
+                                                    </span>
+                                                    <div className="min-w-0">
+                                                        <p className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">{t('booking.comment')}</p>
+                                                        <p className="text-sm text-navy">{comment}</p>
+                                                    </div>
                                                 </div>
                                             )}
-                                            <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-warm-gray">{t('booking.paymentPreferred')}</p>
-                                                <p className="flex items-center gap-1.5 text-sm font-semibold text-navy">
-                                                    {preferredPaymentMethod === 'stripe' ? (
-                                                        <>
-                                                            <span className="h-2 w-2 rounded-full bg-ocean" />
-                                                            {t('booking.paymentStripeTitle')}
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <span className="h-2 w-2 rounded-full bg-[#003087]" />
-                                                            {t('booking.paymentPaypalTitle')}
-                                                        </>
-                                                    )}
-                                                </p>
+                                        </div>
+
+                                        {/* ─ Payment Method ─ */}
+                                        <div className="border-t border-navy/6 px-4 py-3.5 sm:px-6">
+                                            <div className="flex items-center gap-2.5">
+                                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ocean/8">
+                                                    <svg className="h-3.5 w-3.5 text-ocean" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                                                    </svg>
+                                                </span>
+                                                <div className="min-w-0">
+                                                    <p className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">{t('booking.paymentPreferred')}</p>
+                                                    <p className="flex items-center gap-1.5 text-sm font-semibold text-navy">
+                                                        <span className={`h-2 w-2 rounded-full ${preferredPaymentMethod === 'stripe' ? 'bg-ocean' : 'bg-[#003087]'}`} />
+                                                        {preferredPaymentMethod === 'stripe' ? t('booking.paymentStripeTitle') : t('booking.paymentPaypalTitle')}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <hr className="border-navy/10" />
-
-                                        {/* Price */}
+                                        {/* ─ Pricing Summary ─ */}
                                         {pricing && (
-                                            <div>
+                                            <div className="border-t-2 border-navy/10 bg-white/60 px-4 py-4 sm:px-6">
                                                 <div className="flex justify-between text-sm text-warm-gray">
                                                     <span>€{pricing.avgPerNight} × {nights} {nights > 1 ? t('booking.nights') : t('booking.night')}</span>
                                                     <span>€{pricing.total}</span>
                                                 </div>
-                                                <div className="mt-2 flex justify-between text-lg font-bold text-navy">
-                                                    <span>{t('booking.total')}</span>
-                                                    <span>€{pricing.total}</span>
+                                                <div className="mt-3 flex items-baseline justify-between border-t border-dashed border-navy/10 pt-3">
+                                                    <span className="text-sm font-bold uppercase tracking-wider text-navy">{t('booking.total')}</span>
+                                                    <span className="text-xl font-bold text-navy">€{pricing.total}</span>
                                                 </div>
-                                                <p className="mt-1 text-right text-[11px] text-warm-gray">{t('booking.includesCleaning')}</p>
+                                                <p className="mt-1 text-right text-[10px] text-warm-gray">{t('booking.includesCleaning')}</p>
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* GDPR consent — improved readability on mobile */}
-                                    <div className="mt-6 rounded-xl border border-navy/8 bg-sand-light/60 p-4 sm:p-5">
+                                    {/* GDPR consent */}
+                                    <div className="mt-5 rounded-xl border border-navy/8 bg-sand-light/60 p-4 sm:mt-6 sm:p-5">
                                         <label className="flex cursor-pointer items-start gap-3">
                                             <input
                                                 type="checkbox"
@@ -1269,8 +1286,8 @@ export default function BookingCalendar() {
                                         </div>
                                     )}
 
-                                    {/* Navigation — stacked on mobile, side-by-side on sm+ */}
-                                    <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row">
+                                    {/* Navigation */}
+                                    <div className="mt-6 flex flex-col-reverse gap-3 sm:mt-8 sm:flex-row">
                                         <button
                                             type="button"
                                             onClick={goBack}

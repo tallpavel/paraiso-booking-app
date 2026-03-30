@@ -106,8 +106,24 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Divider + Legal */}
+                {/* VV Licence Badge */}
                 <div className="mt-12 border-t border-white/10 pt-8">
+                    <div className="mb-6 flex justify-center">
+                        <div className="vv-licence-badge">
+                            <div className="vv-licence-icon">
+                                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                    <path d="M9 12l2 2 4-4" />
+                                </svg>
+                            </div>
+                            <div className="vv-licence-text">
+                                <span className="vv-licence-label">{t('footer.vvLicence')}</span>
+                                <span className="vv-licence-number">{t('footer.vvNumber')}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Copyright + Links */}
                     <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
                         <p className="text-xs text-white/40">
                             © {year} {t('footer.copyright')}
