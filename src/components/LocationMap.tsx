@@ -1,153 +1,324 @@
+import { useEffect, useRef, useState, useCallback } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { useI18n } from '../i18n';
-import type { TranslationKey } from '../i18n';
 
-import type { ReactNode } from 'react';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
-const FLAT_ADDRESS = 'Av. Adeje 300, 16, 38678 Adeje, Santa Cruz de Tenerife, Spain';
+const FLAT_COORDS: [number, number] = [28.12220241081338, -16.77592957957124];
 
-const NEARBY: { icon: ReactNode; titleKey: TranslationKey; distKey: TranslationKey }[] = [
+interface NearbyPoint {
+    name: string;
+    description?: string;
+    linkUrl?: string;
+    linkTextKey?: string;
+    lat: number;
+    lng: number;
+}
+
+interface NearbyPlace {
+    id: string;
+    titleKey: string;
+    emoji: string;
+    zoom?: number;
+    walkTimeKey: string;
+    points: NearbyPoint[];
+}
+
+const NEARBY_PLACES: NearbyPlace[] = [
     {
-        icon: (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                <path d="M2 12c1.5-2 3.5-3 5.5-3s4 1 5.5 3c1.5-2 3.5-3 5.5-3s4 1 5.5 3" />
-                <path d="M2 17c1.5-2 3.5-3 5.5-3s4 1 5.5 3c1.5-2 3.5-3 5.5-3s4 1 5.5 3" />
-            </svg>
-        ),
-        titleKey: 'map.beach',
-        distKey: 'map.beachDist',
-    },
-    {
-        icon: (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
-                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
-                <path d="M6 1v3M10 1v3M14 1v3" />
-            </svg>
-        ),
-        titleKey: 'map.restaurants',
-        distKey: 'map.restaurantsDist',
-    },
-    {
-        icon: (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                <path d="M3 6h18" />
-                <path d="M16 10a4 4 0 01-8 0" />
-            </svg>
-        ),
-        titleKey: 'map.supermarket',
-        distKey: 'map.supermarketDist',
-    },
-    {
-        icon: (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-            </svg>
-        ),
-        titleKey: 'map.pharmacy',
-        distKey: 'map.pharmacyDist',
-    },
-    {
-        icon: (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                <rect x="2" y="4" width="20" height="14" rx="2" />
-                <path d="M8 21h8M12 18v3" />
-            </svg>
-        ),
+        id: 'pool',
         titleKey: 'map.pool',
-        distKey: 'map.poolDist',
+        emoji: '🏊',
+        zoom: 19,
+        walkTimeKey: 'map.walkPool',
+        points: [{ name: 'Community Pool', description: 'In the complex', lat: 28.121828278202468, lng: -16.776358462989503 }]
     },
     {
-        icon: (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 6v6l4 2" />
-            </svg>
-        ),
+        id: 'beach-galgas',
+        titleKey: 'Playa Las Galgas',
+        emoji: '🏖️',
+        zoom: 17,
+        walkTimeKey: 'map.walkBeachGalgas',
+        points: [{ name: 'Playa Las Galgas', linkTextKey: 'map.discoverBeach', linkUrl: '/discover/beaches#section-0', lat: 28.12186663107742, lng: -16.77819468138301 }]
+    },
+    {
+        id: 'beach-ajabo',
+        titleKey: 'Playa de Ajabo',
+        emoji: '🌊',
+        zoom: 17,
+        walkTimeKey: 'map.walkBeachAjabo',
+        points: [{ name: 'Playa de Ajabo', linkTextKey: 'map.discoverBeach', linkUrl: '/discover/beaches#section-1', lat: 28.127530502130437, lng: -16.782543495179922 }]
+    },
+    {
+        id: 'restaurants',
+        titleKey: 'map.restaurants',
+        emoji: '🍽️',
+        walkTimeKey: 'map.walkRestaurants',
+        points: [
+            { name: 'Francis II', description: 'European cuisine', lat: 28.121571665655395, lng: -16.775953901265066 },
+            { name: 'Mumbai Masala', description: 'Indian food', lat: 28.1217497277246, lng: -16.775725707607265 },
+            { name: 'Cafe Paraiso', description: 'Coffee & snacks', lat: 28.121739168439056, lng: -16.775499936995143 },
+            { name: 'Pizzeria', description: 'Italian pizza', lat: 28.12225204682833, lng: -16.773596280175415 },
+            { name: 'Burger Pizza', description: 'Casual dining', lat: 28.1218040326065, lng: -16.775183516038005 },
+            { name: 'DownTown Sushi', description: 'Japanese sushi', lat: 28.118208377243597, lng: -16.77665757465786 }
+        ]
+    },
+    {
+        id: 'supermarket',
+        titleKey: 'map.supermarket',
+        emoji: '🛒',
+        zoom: 18,
+        walkTimeKey: 'map.walkSupermarket',
+        points: [{ name: 'HiperDino Express', description: 'Quality regional supermarket', lat: 28.121624053354303, lng: -16.77577570156476 }]
+    },
+    {
+        id: 'pharmacy',
+        titleKey: 'map.pharmacy',
+        emoji: '💊',
+        zoom: 18,
+        walkTimeKey: 'map.walkPharmacy',
+        points: [{ name: 'Pharmacy', description: 'Local pharmacy', lat: 28.122698757884592, lng: -16.773615177755865 }]
+    },
+    {
+        id: 'medical',
+        titleKey: 'map.medical',
+        emoji: '🏥',
+        zoom: 17,
+        walkTimeKey: 'map.walkMedical',
+        points: [{ name: 'Family Doctors Medical Center', description: 'English-speaking medical clinic', lat: 28.126026265222226, lng: -16.774176133988554 }]
+    },
+    {
+        id: 'shopping',
+        titleKey: 'map.shopping',
+        emoji: '🛍️',
+        zoom: 17,
+        walkTimeKey: 'map.walkShopping',
+        points: [{ name: 'C.C. Rosa Center', description: 'Shopping center with shops & services', lat: 28.126043754039575, lng: -16.77400420415362 }]
+    },
+    {
+        id: 'airport',
         titleKey: 'map.airport',
-        distKey: 'map.airportDist',
+        emoji: '✈️',
+        zoom: 13,
+        walkTimeKey: 'map.walkAirport',
+        points: [{ name: 'Tenerife South Airport', description: 'TFS — 20 min drive', lat: 28.04695626053044, lng: -16.572508866970395 }]
     },
 ];
 
 export default function LocationMap() {
     const { t } = useI18n();
+    const mapRef = useRef<HTMLDivElement>(null);
+    const mapInstance = useRef<L.Map | null>(null);
+    const markersRef = useRef<{ [key: string]: L.Marker | L.FeatureGroup }>({});
+    const currentLayerRef = useRef<L.Layer | null>(null);
+    const [activeId, setActiveId] = useState<string>('flat');
+
+    useEffect(() => {
+        if (!mapRef.current) return;
+
+        const DefaultIcon = L.icon({
+            iconUrl: markerIcon,
+            shadowUrl: markerShadow,
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+        });
+        L.Marker.prototype.options.icon = DefaultIcon;
+
+        const map = L.map(mapRef.current, {
+            zoomControl: false,
+            scrollWheelZoom: false,
+            trackResize: true,
+        }).setView(FLAT_COORDS, 16);
+
+        mapInstance.current = map;
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
+        }).addTo(map);
+
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // Logo marker with pulse ring
+        const mainIcon = L.divIcon({
+            className: 'custom-main-icon',
+            html: `
+                <div class="location-logo-pin">
+                    <div class="location-logo-pulse"></div>
+                    <div class="location-logo-img">
+                        <img src="/logo.png" alt="Verónica's Flat" />
+                    </div>
+                </div>`,
+            iconSize: [56, 56],
+            iconAnchor: [28, 28],
+        });
+
+        const flatMarker = L.marker(FLAT_COORDS, { icon: mainIcon }).addTo(map);
+        markersRef.current['flat'] = flatMarker;
+
+        // Category marker icon — emoji circle
+        const createCategoryIcon = (emoji: string) => L.divIcon({
+            className: 'custom-category-icon',
+            html: `<div class="location-category-pin"><span>${emoji}</span></div>`,
+            iconSize: [40, 40],
+            iconAnchor: [20, 20],
+            popupAnchor: [0, -24],
+        });
+
+        NEARBY_PLACES.forEach(place => {
+            const group = L.featureGroup();
+            place.points.forEach(point => {
+                const icon = createCategoryIcon(place.emoji);
+                L.marker([point.lat, point.lng], { icon })
+                    .addTo(group)
+                    .bindPopup(`
+                        <div class="location-popup">
+                            <strong>${point.name}</strong>
+                            ${
+                                point.linkUrl 
+                                    ? `<a href="${point.linkUrl}" class="location-popup-link">${t(point.linkTextKey as any) || 'Discover'} &rarr;</a>` 
+                                    : `<span>${point.description}</span>`
+                            }
+                        </div>
+                    `);
+            });
+            markersRef.current[place.id] = group;
+        });
+
+        setTimeout(() => map.invalidateSize(), 100);
+
+        return () => { map.remove(); };
+    }, [t]);
+
+    const handlePlaceClick = useCallback((category: NearbyPlace | 'flat') => {
+        if (!mapInstance.current) return;
+
+        if (currentLayerRef.current) {
+            mapInstance.current.removeLayer(currentLayerRef.current);
+            currentLayerRef.current = null;
+        }
+
+        if (category === 'flat') {
+            setActiveId('flat');
+            mapInstance.current.flyTo(FLAT_COORDS, 17, { duration: 1.5 });
+        } else {
+            setActiveId(category.id);
+            const group = markersRef.current[category.id];
+
+            if (group instanceof L.FeatureGroup) {
+                group.addTo(mapInstance.current);
+                currentLayerRef.current = group;
+
+                if (category.points.length === 1) {
+                    mapInstance.current.flyTo(
+                        [category.points[0].lat, category.points[0].lng],
+                        category.zoom || 17,
+                        { duration: 1.5 }
+                    );
+                    setTimeout(() => {
+                        const layers = group.getLayers();
+                        if (layers.length > 0) (layers[0] as L.Marker).openPopup();
+                    }, 800);
+                } else {
+                    mapInstance.current.flyToBounds(group.getBounds(), {
+                        padding: [50, 50],
+                        duration: 1.5,
+                        maxZoom: 17,
+                    });
+                }
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const focusId = urlParams.get('focusMap');
+        if (focusId && mapInstance.current) {
+            const timer = setTimeout(() => {
+                const place = NEARBY_PLACES.find(p => p.id === focusId);
+                if (place) {
+                    handlePlaceClick(place);
+                }
+            }, 600); // Give the standard map zoom a chance to finish first
+            return () => clearTimeout(timer);
+        }
+    }, [handlePlaceClick]);
 
     return (
-        <section id="location" className="bg-white py-20 sm:py-28">
+        <section id="location" className="location-section">
             <div className="mx-auto max-w-7xl px-6">
-                {/* Header */}
-                <div className="mb-12 text-center">
-                    <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-[0.15em] text-ocean">
-                        {t('map.label')}
-                    </span>
-                    <h2 className="mb-4 font-heading text-3xl font-bold text-navy sm:text-4xl md:text-5xl">
-                        {t('map.title')}
-                    </h2>
-                    <p className="mx-auto max-w-2xl text-lg text-warm-gray">
-                        {t('map.subtitle')}
-                    </p>
+                {/* ── Editorial Header ─────────────────────────────────── */}
+                <div className="location-header">
+                    <span className="location-label">{t('map.label')}</span>
+                    <h2 className="location-title">{t('map.title')}</h2>
+                    <p className="location-subtitle">{t('map.subtitle')}</p>
                 </div>
 
-                {/* Map + sidebar */}
-                <div className="grid items-stretch gap-8 lg:grid-cols-[1fr_340px]">
-                    {/* Google Maps embed */}
-                    <div className="relative overflow-hidden rounded-2xl bg-sand shadow-lg" style={{ minHeight: '440px' }}>
-                        {/* Loading skeleton */}
-                        <div className="absolute inset-0 flex items-center justify-center bg-sand">
-                            <div className="text-center">
-                                <svg className="mx-auto h-8 w-8 text-ocean/30 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                                </svg>
-                                <p className="mt-2 text-xs text-warm-gray">{t('map.loading')}</p>
-                            </div>
-                        </div>
-                        <iframe
-                            title={t('map.title')}
-                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=Paraiso+del+Sur,Playa+Paraiso,Adeje,Tenerife&zoom=15"
-                            width="100%"
-                            height="100%"
-                            style={{ border: 0, position: 'absolute', inset: 0, zIndex: 1 }}
-                            allowFullScreen
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                        />
+                {/* ── Map + Sidebar Grid ───────────────────────────────── */}
+                <div className="location-grid">
+                    {/* Map Container */}
+                    <div className="location-map-wrap">
+                        <div ref={mapRef} className="location-map" />
+                        <div className="location-map-vignette" />
                     </div>
 
-                    {/* Nearby places sidebar */}
-                    <div className="flex flex-col gap-3">
-                        <h3 className="mb-2 font-heading text-lg font-bold text-navy">
-                            {t('map.nearby')}
-                        </h3>
+                    {/* Sidebar */}
+                    <div className="location-sidebar">
+                        <div className="location-sidebar-header">
+                            <h3 className="location-sidebar-title">
+                                {t('map.nearby')}
+                            </h3>
+                            <p className="location-sidebar-hint">
+                                {t('map.hint' as any)}
+                            </p>
+                        </div>
 
-                        {NEARBY.map((place) => (
-                            <div
-                                key={place.titleKey}
-                                className="flex items-center gap-4 rounded-xl bg-sand-light p-4 transition-all duration-200 hover:bg-ocean/5 hover:shadow-sm"
-                            >
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ocean/10 text-ocean">
-                                    {place.icon}
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-sm font-semibold text-navy">{t(place.titleKey)}</p>
-                                    <p className="text-xs text-warm-gray">{t(place.distKey)}</p>
-                                </div>
-                            </div>
-                        ))}
-
-                        {/* Directions link */}
-                        <a
-                            href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(FLAT_ADDRESS)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-2 flex items-center justify-center gap-2 rounded-full bg-ocean py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-ocean-dark hover:shadow-xl"
+                        {/* Home tile */}
+                        <button
+                            onClick={() => handlePlaceClick('flat')}
+                            className={`location-tile ${activeId === 'flat' ? 'location-tile--active' : ''}`}
                         >
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            {t('map.directions')}
-                        </a>
+                            <div className="location-tile__icon">
+                                <img
+                                    src="/logo.png"
+                                    alt="Verónica's Flat"
+                                    className="location-tile__logo"
+                                />
+                            </div>
+                            <div className="location-tile__body">
+                                <p className="location-tile__name">Verónica's Flat</p>
+                                <p className="location-tile__meta">{t('map.yourHome' as any)}</p>
+                            </div>
+                            <svg className="location-tile__chevron" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+
+                        {/* Category tiles */}
+                        {NEARBY_PLACES.map((cat) => (
+                            <button
+                                key={cat.id}
+                                data-cat={cat.id}
+                                onClick={() => handlePlaceClick(cat)}
+                                className={`location-tile ${activeId === cat.id ? 'location-tile--active' : ''}`}
+                            >
+                                <div className="location-tile__icon">
+                                    <span className="location-tile__emoji">{cat.emoji}</span>
+                                </div>
+                                <div className="location-tile__body">
+                                    <p className="location-tile__name">
+                                        {t(cat.titleKey as any) || cat.titleKey}
+                                    </p>
+                                    <p className="location-tile__meta">
+                                        {t(cat.walkTimeKey as any)}
+                                    </p>
+                                </div>
+                                <span className="location-tile__cta">
+                                    {activeId === cat.id ? '📍' : t('map.explore' as any)}
+                                </span>
+                            </button>
+                        ))}
                     </div>
                 </div>
             </div>

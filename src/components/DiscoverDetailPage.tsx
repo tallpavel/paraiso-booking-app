@@ -18,6 +18,7 @@ interface DiscoverTopic {
         titleKey: TranslationKey;
         bodyKey: TranslationKey;
         image?: string;
+        mapLocationId?: string;
     }[];
     tipsKey: TranslationKey;
     externalLink: string;
@@ -30,9 +31,11 @@ const TOPICS: DiscoverTopic[] = [
         titleKey: 'discoverPage.beaches.title',
         heroDescKey: 'discoverPage.beaches.heroDesc',
         sections: [
-            { titleKey: 'discoverPage.beaches.s1Title', bodyKey: 'discoverPage.beaches.s1Body' },
-            { titleKey: 'discoverPage.beaches.s2Title', bodyKey: 'discoverPage.beaches.s2Body' },
+            { titleKey: 'discoverPage.beaches.s1Title', bodyKey: 'discoverPage.beaches.s1Body', image: '/discover/playa-las-galgas.png', mapLocationId: 'beach-galgas' },
+            { titleKey: 'discoverPage.beaches.s2Title', bodyKey: 'discoverPage.beaches.s2Body', image: '/discover/playa-de-ajabo.png', mapLocationId: 'beach-ajabo' },
             { titleKey: 'discoverPage.beaches.s3Title', bodyKey: 'discoverPage.beaches.s3Body' },
+            { titleKey: 'discoverPage.beaches.s4Title', bodyKey: 'discoverPage.beaches.s4Body' },
+            { titleKey: 'discoverPage.beaches.s5Title', bodyKey: 'discoverPage.beaches.s5Body' },
         ],
         tipsKey: 'discoverPage.beaches.tips',
         externalLink: 'https://www.webtenerife.co.uk/what-to-do/beaches/',
@@ -106,10 +109,27 @@ export default function DiscoverDetailPage() {
     }, []);
 
     useEffect(() => {
-        window.scrollTo(0, 0);
         setPageReady(false);
+        
         // Small delay to let the browser settle, then fade in
-        const timer = setTimeout(() => setPageReady(true), 50);
+        const timer = setTimeout(() => {
+            setPageReady(true);
+            
+            // Handle hash scrolling if present
+            if (window.location.hash) {
+                setTimeout(() => {
+                    const el = document.querySelector(window.location.hash);
+                    if (el) {
+                        const yOffset = -120; // Offset for sticky header
+                        const y = el.getBoundingClientRect().top + window.scrollY + yOffset;
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                    }
+                }, 100);
+            } else {
+                window.scrollTo(0, 0);
+            }
+        }, 50);
+        
         return () => clearTimeout(timer);
     }, [slug]);
 
@@ -173,6 +193,7 @@ export default function DiscoverDetailPage() {
                         {topic.sections.map((section, i) => (
                             <div
                                 key={i}
+                                id={`section-${i}`}
                                 className={`group transition-all duration-700 ease-out ${pageReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
                                 style={{ transitionDelay: `${300 + i * 200}ms` }}
                             >
@@ -191,9 +212,30 @@ export default function DiscoverDetailPage() {
                                         <h2 className="mb-5 font-heading text-2xl font-bold text-navy sm:text-3xl lg:text-4xl">
                                             {t(section.titleKey)}
                                         </h2>
+                                        {section.image && (
+                                            <div className="relative mb-6 overflow-hidden rounded-2xl shadow-lg shadow-navy/10">
+                                                <img
+                                                    src={section.image}
+                                                    alt={t(section.titleKey)}
+                                                    className="h-56 w-full object-cover sm:h-72 lg:h-80"
+                                                    loading="lazy"
+                                                />
+                                                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-navy/5" />
+                                            </div>
+                                        )}
                                         <p className="text-base leading-[1.85] text-warm-gray sm:text-lg">
                                             {t(section.bodyKey)}
                                         </p>
+                                        {section.mapLocationId && (
+                                            <div className="mt-6">
+                                                <Link 
+                                                    to={`/?focusMap=${section.mapLocationId}#location`}
+                                                    className="inline-flex items-center gap-2 rounded-full border border-ocean/20 bg-ocean/5 px-5 py-2.5 text-sm font-semibold text-ocean transition-all hover:bg-ocean hover:text-white"
+                                                >
+                                                    {t('discoverPage.viewOnMap' as any)} &rarr;
+                                                </Link>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
