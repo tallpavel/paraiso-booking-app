@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useAdminData } from '../../hooks/useAdminData';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
+import AdminCard, { AdminCardDetail } from './AdminCard';
 import EditReservationModal from './EditReservationModal';
 import ConfirmDialog from './ConfirmDialog';
 import CheckInDetailsModal from './CheckInDetailsModal';
@@ -7,12 +9,20 @@ import { formatDateShort } from './adminUtils';
 import type { ConfirmedReservationFull } from '../../api';
 
 export default function FullyPaidPanel() {
-    const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed, handleSendCheckIn, handleSendAccessInfo } = useAdminData();
-    const [cancelState, setCancelState] = useState<Record<string, 'cancelling' | 'done' | 'error'>>({});
+    const { 
+        confirmed, 
+        isLoading: isDataLoading, 
+        error: dataError, 
+        refresh, 
+        handleCancelConfirmed, 
+        handleUpdateConfirmed, 
+        handleSendCheckIn, 
+        handleSendAccessInfo 
+    } = useAdminData();
+
+    const { execute, isLoading, getError, getStatus } = useAsyncAction();
     const [editing, setEditing] = useState<ConfirmedReservationFull | null>(null);
     const [cancelling, setCancelling] = useState<ConfirmedReservationFull | null>(null);
-    const [sendingCheckIn, setSendingCheckIn] = useState<Record<string, boolean>>({});
-    const [sendingAccessInfo, setSendingAccessInfo] = useState<Record<string, boolean>>({});
     const [viewingCheckIn, setViewingCheckIn] = useState<ConfirmedReservationFull | null>(null);
 
     // Only fully paid: deposit paid AND remaining paid
@@ -20,17 +30,13 @@ export default function FullyPaidPanel() {
         c => c.paymentStatus === 'paid' && c.remainingPaymentStatus === 'paid'
     );
 
-    async function onCancel(id: string, reason?: string) {
-        setCancelState(s => ({ ...s, [id]: 'cancelling' }));
-        try {
-            await handleCancelConfirmed(id, reason);
-            setCancelState(s => ({ ...s, [id]: 'done' }));
-            setCancelling(null);
-        } catch {
-            setCancelState(s => ({ ...s, [id]: 'error' }));
-            setCancelling(null);
-        }
-    }
+    const onCancel = async (id: string, reason?: string) => {
+        await execute(id, () => handleCancelConfirmed(id, reason));
+        setCancelling(null);
+    };
+
+    const onSendCheckIn = (id: string) => execute(id, () => handleSendCheckIn(id));
+    const onSendAccessInfo = (id: string) => execute(id, () => handleSendAccessInfo(id));
 
     return (
         <div className="admin-page">
@@ -41,19 +47,19 @@ export default function FullyPaidPanel() {
                         Reservations with all payments completed — manage check-in
                     </p>
                 </div>
-                <button onClick={refresh} className="admin-btn admin-btn--outline" disabled={isLoading}>
-                    {isLoading ? 'Refreshing…' : '↻ Refresh'}
+                <button onClick={refresh} className="admin-btn admin-btn--outline" disabled={isDataLoading}>
+                    {isDataLoading ? 'Refreshing…' : '↻ Refresh'}
                 </button>
             </header>
 
-            {error && (
+            {dataError && (
                 <div className="admin-error">
-                    <p>{error}</p>
+                    <p>{dataError}</p>
                     <button onClick={refresh} className="admin-btn admin-btn--outline">Retry</button>
                 </div>
             )}
 
-            {isLoading && confirmed.length === 0 ? (
+            {isDataLoading && confirmed.length === 0 ? (
                 <div className="admin-loading">
                     <div className="admin-loading__spinner" />
                     <p>Loading reservations…</p>
@@ -68,145 +74,129 @@ export default function FullyPaidPanel() {
             ) : (
                 <div className="admin-cards">
                     {fullyPaid.map(c => {
-                        const state = cancelState[c._id];
                         const ciStatus = c.checkInStatus || 'pending';
+                        const isFaded = getStatus(c._id) === 'success';
 
                         return (
-                            <div
+                            <AdminCard
                                 key={c._id}
-                                className={`admin-card ${state === 'done' ? 'admin-card--faded' : ''}`}
-                            >
-                                <div className="admin-card__header">
-                                    <div>
-                                        <h3 className="admin-card__name">{c.guestName}</h3>
-                                        <p className="admin-card__email">{c.guestEmail}</p>
-                                        {c.guestPhone && <p className="admin-card__email">📞 {c.guestPhone}</p>}
-                                    </div>
-                                    <div className="admin-card__badges">
-                                        <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
-                                        {ciStatus === 'sent' && (
-                                            <span className="admin-badge admin-badge--checkin-sent">
-                                                ✉ Check-in Sent
-                                            </span>
-                                        )}
-                                        {ciStatus === 'completed' && (
-                                            <span className="admin-badge admin-badge--checkedin">
-                                                ✓ Checked In
-                                            </span>
-                                        )}
-                                        {ciStatus === 'pending' && (
-                                            <span className="admin-badge admin-badge--remaining">
-                                                ◇ Check-in Pending
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="admin-card__details">
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Check-in</span>
-                                        <span className="admin-card__value">{formatDateShort(c.checkIn)}</span>
-                                    </div>
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Check-out</span>
-                                        <span className="admin-card__value">{formatDateShort(c.checkOut)}</span>
-                                    </div>
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Nights</span>
-                                        <span className="admin-card__value">{c.nights}</span>
-                                    </div>
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Total Paid</span>
-                                        <span className="admin-card__value admin-card__value--price">€{c.totalPrice}</span>
-                                    </div>
-                                </div>
-
-                                {c.comment && (
+                                id={c._id}
+                                faded={isFaded}
+                                loading={isLoading(c._id)}
+                                error={getError(c._id)}
+                                header={
+                                    <>
+                                        <div>
+                                            <h3 className="admin-card__name">{c.guestName}</h3>
+                                            <p className="admin-card__email">{c.guestEmail}</p>
+                                            {c.guestPhone && <p className="admin-card__email">📞 {c.guestPhone}</p>}
+                                        </div>
+                                        <div className="admin-card__badges">
+                                            <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
+                                            {ciStatus === 'sent' && (
+                                                <span className="admin-badge admin-badge--checkin-sent">
+                                                    ✉ Check-in Sent
+                                                </span>
+                                            )}
+                                            {ciStatus === 'completed' && (
+                                                <span className="admin-badge admin-badge--checkedin">
+                                                    ✓ Checked In
+                                                </span>
+                                            )}
+                                            {ciStatus === 'pending' && (
+                                                <span className="admin-badge admin-badge--remaining">
+                                                    ◇ Check-in Pending
+                                                </span>
+                                            )}
+                                        </div>
+                                    </>
+                                }
+                                details={
+                                    <>
+                                        <AdminCardDetail label="Check-in" value={formatDateShort(c.checkIn)} />
+                                        <AdminCardDetail label="Check-out" value={formatDateShort(c.checkOut)} />
+                                        <AdminCardDetail label="Nights" value={c.nights} />
+                                        <AdminCardDetail label="Total Paid" value={`€${c.totalPrice}`} className="admin-card__value--price" />
+                                    </>
+                                }
+                                comment={c.comment && (
                                     <p className="admin-card__comment">
                                         <span className="admin-card__label">Comment</span>
                                         {c.comment}
                                     </p>
                                 )}
-
-                                <p className="admin-card__meta">
-                                    Confirmed {new Date(c.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                </p>
-
-                                <div className="admin-card__actions">
-                                    {ciStatus === 'completed' ? (
-                                        <div className="admin-card__action-row admin-card__action-row--inline">
-                                            <button
-                                                onClick={() => setViewingCheckIn(c)}
-                                                className="admin-btn admin-btn--checkedin"
-                                            >
-                                                ☑ Checked In
-                                            </button>
-                                            <button
-                                                onClick={async () => {
-                                                    setSendingAccessInfo(prev => ({ ...prev, [c._id]: true }));
-                                                    try { await handleSendAccessInfo(c._id); } catch { }
-                                                    setSendingAccessInfo(prev => ({ ...prev, [c._id]: false }));
-                                                }}
-                                                disabled={sendingAccessInfo[c._id] || state === 'cancelling' || state === 'done'}
-                                                className={`admin-btn ${c.accessInfoSent ? 'admin-btn--checkin-sent' : 'admin-btn--checkin'}`}
-                                            >
-                                                {sendingAccessInfo[c._id]
-                                                    ? 'Sending…'
-                                                    : c.accessInfoSent
-                                                        ? '🔑 Resend Access'
-                                                        : '🔑 Send Access'}
-                                            </button>
-                                        </div>
-                                    ) : (
+                                meta={
+                                    <>Confirmed {new Date(c.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</>
+                                }
+                                actions={
+                                    <div className="admin-card__actions-standard">
                                         <div className="admin-card__action-row">
-                                            <button
-                                                onClick={async () => {
-                                                    setSendingCheckIn(prev => ({ ...prev, [c._id]: true }));
-                                                    try { await handleSendCheckIn(c._id); } catch { }
-                                                    setSendingCheckIn(prev => ({ ...prev, [c._id]: false }));
-                                                }}
-                                                disabled={sendingCheckIn[c._id] || state === 'cancelling' || state === 'done'}
-                                                className={`admin-btn ${ciStatus === 'sent' ? 'admin-btn--checkin-sent' : 'admin-btn--checkin'}`}
-                                            >
-                                                {sendingCheckIn[c._id]
-                                                    ? 'Sending…'
-                                                    : ciStatus === 'sent'
-                                                        ? '✉ Resend Check-in'
-                                                        : '✉ Send Check-in'}
-                                            </button>
-                                            {ciStatus === 'sent' && (
-                                                <button
-                                                    onClick={() => setViewingCheckIn(c)}
-                                                    className="admin-btn admin-btn--outline"
-                                                >
-                                                    📋 View Check-in
-                                                </button>
+                                            {ciStatus === 'completed' ? (
+                                                <div className="admin-btn-group">
+                                                    <button
+                                                        onClick={() => setViewingCheckIn(c)}
+                                                        className="admin-btn admin-btn--checkedin"
+                                                        disabled={isFaded}
+                                                    >
+                                                        ☑ Checked In
+                                                    </button>
+                                                    <button
+                                                        onClick={() => onSendAccessInfo(c._id)}
+                                                        disabled={isLoading(c._id) || isFaded}
+                                                        className={`admin-btn ${c.accessInfoSent ? 'admin-btn--checkin-sent' : 'admin-btn--checkin'}`}
+                                                    >
+                                                        {isLoading(c._id)
+                                                            ? '⌛ Sending…'
+                                                            : c.accessInfoSent
+                                                                ? '🔑 Resend Access'
+                                                                : '🔑 Send Access'}
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="admin-btn-group">
+                                                    <button
+                                                        onClick={() => onSendCheckIn(c._id)}
+                                                        disabled={isLoading(c._id) || isFaded}
+                                                        className={`admin-btn ${ciStatus === 'sent' ? 'admin-btn--checkin-sent' : 'admin-btn--checkin'}`}
+                                                    >
+                                                        {isLoading(c._id)
+                                                            ? '⌛ Sending…'
+                                                            : ciStatus === 'sent'
+                                                                ? '✉ Resend Check-in'
+                                                                : '✉ Send Check-in'}
+                                                    </button>
+                                                    {ciStatus === 'sent' && (
+                                                        <button
+                                                            onClick={() => setViewingCheckIn(c)}
+                                                            className="admin-btn admin-btn--outline"
+                                                            disabled={isFaded}
+                                                        >
+                                                            📋 View Check-in
+                                                        </button>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
-                                    )}
 
-                                    <div className="admin-card__action-row admin-card__action-row--secondary">
-                                        <button
-                                            onClick={() => setEditing(c)}
-                                            disabled={state === 'cancelling' || state === 'done'}
-                                            className="admin-btn admin-btn--outline admin-btn--sm"
-                                        >
-                                            ✎ Edit
-                                        </button>
-                                        <button
-                                            onClick={() => setCancelling(c)}
-                                            disabled={state === 'cancelling' || state === 'done'}
-                                            className="admin-btn admin-btn--reject admin-btn--sm"
-                                        >
-                                            {state === 'cancelling' ? 'Cancelling…' : '✕ Cancel'}
-                                        </button>
+                                        <div className="admin-card__action-row admin-card__action-row--secondary">
+                                            <button
+                                                onClick={() => setEditing(c)}
+                                                disabled={isLoading(c._id) || isFaded}
+                                                className="admin-btn admin-btn--outline admin-btn--sm"
+                                            >
+                                                ✎ Edit
+                                            </button>
+                                            <button
+                                                onClick={() => setCancelling(c)}
+                                                disabled={isLoading(c._id) || isFaded}
+                                                className="admin-btn admin-btn--reject admin-btn--sm"
+                                            >
+                                                ✕ Cancel
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-
-                                {state === 'error' && (
-                                    <p className="admin-card__error">Cancellation failed. Please try again.</p>
-                                )}
-                            </div>
+                                }
+                            />
                         );
                     })}
                 </div>
@@ -225,7 +215,7 @@ export default function FullyPaidPanel() {
                     ]}
                     confirmLabel="✕ Cancel Reservation"
                     confirmVariant="danger"
-                    isLoading={cancelState[cancelling._id] === 'cancelling'}
+                    isLoading={isLoading(cancelling._id)}
                     showReasonInput
                     reasonLabel="Why is this being cancelled?"
                     reasonPlaceholder="Enter a reason (optional, will be shown to the guest)…"
@@ -234,6 +224,7 @@ export default function FullyPaidPanel() {
                         'Guest requested cancellation',
                         'Property maintenance',
                         'Double booking',
+                        'Other...',
                     ]}
                     onConfirm={(reason) => onCancel(cancelling._id, reason)}
                     onCancel={() => setCancelling(null)}

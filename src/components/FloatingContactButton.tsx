@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { ContactFormData } from '../types';
 import { useI18n } from '../i18n';
-import type { TranslationKey } from '../i18n';
+
 import { sendContactMessage } from '../api';
+import { useSpamProtection } from '../hooks/useSpamProtection';
 
 const initialForm: ContactFormData = {
     name: '',
@@ -33,6 +34,7 @@ export default function FloatingContactButton({ forceOpen, onForceOpenHandled }:
     const [errors, setErrors] = useState<FieldError>({});
     const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
     const [gdprConsent, setGdprConsent] = useState(false);
+    const spam = useSpamProtection('contact-modal');
 
     // Show button after scrolling past hero
     useEffect(() => {
@@ -105,6 +107,15 @@ export default function FloatingContactButton({ forceOpen, onForceOpenHandled }:
             setErrors(errs);
             return;
         }
+
+        // Spam protection check
+        const spamCheck = spam.validate();
+        if (!spamCheck.ok) {
+            setStatus('error');
+            setTimeout(() => setStatus('idle'), 5000);
+            return;
+        }
+
         setStatus('sending');
         try {
             await sendContactMessage({
@@ -112,10 +123,12 @@ export default function FloatingContactButton({ forceOpen, onForceOpenHandled }:
                 email: form.email.trim(),
                 phone: form.phone.trim() || undefined,
                 message: form.message.trim(),
+                turnstileToken: spamCheck.turnstileToken,
             });
             setStatus('sent');
             setForm(initialForm);
             setGdprConsent(false);
+            spam.reset();
             setTimeout(() => {
                 setStatus('idle');
                 setOpen(false);
@@ -210,6 +223,7 @@ export default function FloatingContactButton({ forceOpen, onForceOpenHandled }:
                             ) : (
                                 /* FORM */
                                 <form onSubmit={handleSubmit} noValidate>
+                                    {spam.honeypotField}
                                     <div className="space-y-4">
                                         {/* Name */}
                                         <div>
@@ -294,7 +308,7 @@ export default function FloatingContactButton({ forceOpen, onForceOpenHandled }:
                                                 className="mt-0.5 h-4 w-4 shrink-0 accent-ocean"
                                             />
                                             <span className="text-[11px] leading-relaxed text-warm-gray">
-                                                {t('contact.gdprConsent' as TranslationKey)}
+                                                {t('contact.gdprConsent')}
                                             </span>
                                         </label>
                                     </div>

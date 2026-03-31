@@ -1,66 +1,14 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import PhoneInput, { guessCountry } from './PhoneInput';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import PhoneInput from './PhoneInput';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../i18n';
-import type { TranslationKey } from '../i18n';
-import { createReservation, fetchConfirmedReservations, fetchDailyRates, fetchBlockedDates, fetchSeasonalRates } from '../api';
-import type { ConfirmedReservation } from '../api';
-import { useSpamProtection } from '../hooks/useSpamProtection';
+import { useBookingData, toDateKey, getRateForDate } from '../hooks/useBookingData';
+import { useBookingPricing } from '../hooks/useBookingPricing';
+import { useBookingForm } from '../hooks/useBookingForm';
 import flatpickr from 'flatpickr';
 import type { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
 import 'flatpickr/dist/flatpickr.min.css';
 
-const MIN_NIGHTS = 3;
-
-// Fallback defaults if the seasonal-rates API is unreachable (must match backend DEFAULT_RATES)
-const FALLBACK_RATES = [150, 175, 165, 155, 145, 155, 180, 190, 160, 150, 145, 180] as const;
-
-function toDateKey(d: Date): string {
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
-function expandBookedDays(reservations: ConfirmedReservation[]): Set<string> {
-    const set = new Set<string>();
-    for (const r of reservations) {
-        const start = new Date(r.checkIn);
-        const end = new Date(r.checkOut);
-        const cursor = new Date(start);
-        while (cursor < end) {
-            set.add(toDateKey(cursor));
-            cursor.setDate(cursor.getDate() + 1);
-        }
-    }
-    return set;
-}
-
-function getRateForDate(d: Date, customRates: Map<string, number>, seasonalRates: readonly number[]): number {
-    const key = toDateKey(d);
-    if (customRates.has(key)) return customRates.get(key)!;
-    return seasonalRates[d.getMonth()] ?? FALLBACK_RATES[d.getMonth()];
-}
-
-function calculateStayPrice(checkIn: Date, checkOut: Date, customRates: Map<string, number>, seasonalRates: readonly number[]) {
-    let total = 0;
-    let nightCount = 0;
-    const cursor = new Date(checkIn);
-    while (cursor < checkOut) {
-        total += getRateForDate(cursor, customRates, seasonalRates);
-        nightCount++;
-        cursor.setDate(cursor.getDate() + 1);
-    }
-    return {
-        total,
-        avgPerNight: nightCount > 0 ? Math.round(total / nightCount) : 0,
-        nights: nightCount,
-    };
-}
-
-interface FormErrors {
-    name?: string;
-    email?: string;
-    phone?: string;
-    dates?: string;
-}
 
 // ── Step indicator ───────────────────────────────────────────────────
 function StepIndicator({ current, labels }: { current: number; labels: string[] }) {
@@ -107,65 +55,45 @@ function StepIndicator({ current, labels }: { current: number; labels: string[] 
 export default function BookingCalendar() {
     const { t, locale } = useI18n();
 
-    // ── Wizard step (1 = dates, 2 = details, 3 = summary) ───────────
-    const [step, setStep] = useState(1);
-    const [preferredPaymentMethod, setPreferredPaymentMethod] = useState<'stripe' | 'paypal'>('stripe');
+    // ── Data (availability, rates, blocked dates) ────────────────────
+    const { bookedDates, blockedDates, customRates, seasonalRates, dataReady, refreshBookedDates } = useBookingData();
 
-    // ── Date selection ───────────────────────────────────────────────
+    // ── Date selection (kept local — Flatpickr onChange writes here) ──
     const [checkIn, setCheckIn] = useState<Date | null>(null);
     const [checkOut, setCheckOut] = useState<Date | null>(null);
 
-    // ── Guest details ────────────────────────────────────────────────
-    const [guests, setGuests] = useState(2);
-    const [guestName, setGuestName] = useState('');
-    const [guestEmail, setGuestEmail] = useState('');
-    const [guestPhone, setGuestPhone] = useState('');
-    const [dialCode, setDialCode] = useState(() => guessCountry().dial);
-    const [comment, setComment] = useState('');
-    const [errors, setErrors] = useState<FormErrors>({});
-    const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
-    const [serverError, setServerError] = useState('');
-    const [gdprConsent, setGdprConsent] = useState(false);
-    const [termsConsent, setTermsConsent] = useState(false);
-    const spam = useSpamProtection('booking-form');
-
-    // ── API data ─────────────────────────────────────────────────────
-    const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
-    const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set());
-    const [customRates, setCustomRates] = useState<Map<string, number>>(new Map());
-    const [seasonalRates, setSeasonalRates] = useState<readonly number[]>([]);
-    const [dataReady, setDataReady] = useState(false);
-
-    useEffect(() => {
-        let cancelled = false;
-        Promise.all([
-            fetchConfirmedReservations().catch(() => []),
-            fetchDailyRates().catch(() => []),
-            fetchBlockedDates().catch(() => []),
-            fetchSeasonalRates().catch(() => ({ rates: [...FALLBACK_RATES] as number[], updatedAt: null })),
-        ]).then(([confirmed, rates, blocked, seasonal]) => {
-            if (cancelled) return;
-            setBookedDates(expandBookedDays(confirmed));
-            const blockedSet = new Set<string>();
-            for (const b of blocked) {
-                blockedSet.add(b.date.slice(0, 10));
-            }
-            setBlockedDates(blockedSet);
-            const map = new Map<string, number>();
-            for (const r of rates) {
-                map.set(r.date.slice(0, 10), r.price);
-            }
-            setCustomRates(map);
-            setSeasonalRates(seasonal.rates);
-            setDataReady(true);
-        });
-        return () => { cancelled = true; };
-    }, []);
+    // ── Pricing (derived from dates + rates) ─────────────────────────
+    const { pricing, nights, isBelowMinimum, datesValid, isLastMinute, formatDate } = useBookingPricing({
+        checkIn, checkOut, customRates, seasonalRates, locale,
+    });
 
     // ── Refs ──────────────────────────────────────────────────────────
     const calendarRef = useRef<HTMLDivElement>(null);
     const fpRef = useRef<FlatpickrInstance | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
+
+    // ── Form (guest state, wizard, validation, submit) ───────────────
+    const form = useBookingForm({
+        checkIn, checkOut, pricing, datesValid, locale, fpRef, refreshBookedDates,
+    });
+    const {
+        step, setStep, goNext, goBack,
+        guests, setGuests,
+        guestName, setGuestName,
+        guestEmail, setGuestEmail,
+        guestPhone, setGuestPhone,
+        dialCode, setDialCode,
+        comment, setComment,
+        gdprConsent, setGdprConsent,
+        termsConsent, setTermsConsent,
+        preferredPaymentMethod, setPreferredPaymentMethod,
+        errors, setErrors,
+        status, serverError,
+        spam,
+        handleFieldChange,
+        handleSubmit,
+        closeConfirmation,
+    } = form;
 
     const flatpickrLocale = useMemo(() => ({ firstDayOfWeek: 1 as const }), []);
 
@@ -177,6 +105,7 @@ export default function BookingCalendar() {
         }
     }, [step]);
 
+    // ── Flatpickr calendar initialization ────────────────────────────
     useEffect(() => {
         if (!calendarRef.current || !dataReady) return;
 
@@ -371,8 +300,6 @@ export default function BookingCalendar() {
         fpRef.current = fp;
 
         // ── Touch swipe to change month (mobile) ─────────────────────
-        // Attach to flatpickr's own calendarContainer so events are
-        // captured before flatpickr's internal handlers consume them.
         const container = fp.calendarContainer;
         let swipeStartX = 0;
         let swipeStartY = 0;
@@ -386,12 +313,11 @@ export default function BookingCalendar() {
             const dx = e.changedTouches[0].clientX - swipeStartX;
             const dy = e.changedTouches[0].clientY - swipeStartY;
 
-            // Only trigger when horizontal swipe is dominant and > 50px
             if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
                 if (dx < 0) {
-                    fp.changeMonth(1);   // swipe left → next month
+                    fp.changeMonth(1);
                 } else {
-                    fp.changeMonth(-1);  // swipe right → previous month
+                    fp.changeMonth(-1);
                 }
             }
         };
@@ -407,164 +333,6 @@ export default function BookingCalendar() {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [step, dataReady, bookedDates, blockedDates, customRates, seasonalRates, flatpickrLocale]);
-
-
-
-    // ── Pricing ──────────────────────────────────────────────────────
-    const pricing = useMemo(() => {
-        if (!checkIn || !checkOut) return null;
-        return calculateStayPrice(checkIn, checkOut, customRates, seasonalRates);
-    }, [checkIn, checkOut, customRates, seasonalRates]);
-
-    const nights = pricing?.nights ?? 0;
-    const isBelowMinimum = nights > 0 && nights < MIN_NIGHTS;
-    const datesValid = nights >= MIN_NIGHTS && pricing !== null;
-
-    // ── Last-minute flag (check-in < 14 days from today) ─────────────
-    const isLastMinute = useMemo(() => {
-        if (!checkIn) return false;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const diff = Math.ceil((checkIn.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        return diff < 14;
-    }, [checkIn]);
-
-    // ── Formatting ───────────────────────────────────────────────────
-    const formatDate = useCallback(
-        (date: Date): string => {
-            const loc = locale === 'es' ? 'es-ES' : locale === 'cs' ? 'cs-CZ' : 'en-GB';
-            return date.toLocaleDateString(loc, { day: 'numeric', month: 'short', year: 'numeric' });
-        },
-        [locale],
-    );
-
-    // ── Validation (step 2) ──────────────────────────────────────────
-    const validateDetails = (): FormErrors => {
-        const errs: FormErrors = {};
-        if (!guestName.trim()) {
-            errs.name = t('booking.errorName');
-        } else if (guestName.trim().length < 2) {
-            errs.name = t('booking.errorNameInvalid');
-        } else if (/\d/.test(guestName)) {
-            errs.name = t('booking.errorNameInvalid');
-        } else if (!/^[\p{L}\s'\-\.]+$/u.test(guestName.trim())) {
-            errs.name = t('booking.errorNameInvalid');
-        }
-        if (!guestEmail.trim()) {
-            errs.email = t('booking.errorEmail');
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
-            errs.email = t('booking.errorEmailInvalid');
-        }
-        const fullPhone = `${dialCode} ${guestPhone}`.trim();
-        if (!guestPhone.trim()) {
-            errs.phone = t('booking.errorPhone');
-        } else if (!/^[\d\s\-()]{4,18}$/.test(guestPhone.trim()) || guestPhone.replace(/\D/g, '').length < 4) {
-            errs.phone = t('booking.errorPhoneInvalid');
-        } else if (fullPhone.replace(/\D/g, '').length < 6) {
-            errs.phone = t('booking.errorPhoneInvalid');
-        }
-        return errs;
-    };
-
-    const handleFieldChange = (field: keyof FormErrors) => {
-        if (errors[field]) {
-            setErrors((prev) => ({ ...prev, [field]: undefined }));
-        }
-    };
-
-    // ── Step navigation ──────────────────────────────────────────────
-    const goNext = () => {
-        if (step === 1) {
-            if (!datesValid) return;
-            setStep(2);
-        } else if (step === 2) {
-            const errs = validateDetails();
-            if (Object.keys(errs).length > 0) {
-                setErrors(errs);
-                return;
-            }
-            setStep(3);
-        } else if (step === 3) {
-            setStep(4);
-        }
-    };
-
-    const goBack = () => {
-        if (step > 1) setStep(step - 1);
-    };
-
-    const closeConfirmation = useCallback(() => {
-        // Tell parent modals (BookingCTA / DiscoverDetailPage) to close
-        window.dispatchEvent(new CustomEvent('close-booking'));
-        window.scrollTo({ top: 0, behavior: 'instant' });
-        setGuestName('');
-        setGuestEmail('');
-        setGuestPhone('');
-        setDialCode(guessCountry().dial);
-        setComment('');
-        setPreferredPaymentMethod('stripe');
-        setCheckIn(null);
-        setCheckOut(null);
-        setGuests(2);
-        setStep(1);
-        setStatus('idle');
-        setGdprConsent(false);
-        setTermsConsent(false);
-        fpRef.current?.clear();
-        fetchConfirmedReservations()
-            .then((data) => setBookedDates(expandBookedDays(data)))
-            .catch(() => { });
-    }, []);
-
-    // ── Submit ───────────────────────────────────────────────────────
-    const handleSubmit = async () => {
-        // Spam protection check
-        const spamCheck = spam.validate();
-        if (!spamCheck.ok) {
-            // If Turnstile token is missing, reset the widget to trigger re-verification
-            if (!spam.isReady) {
-                spam.reset();
-            }
-            setStatus('error');
-            setServerError(spamCheck.reason || 'Security check failed.');
-            setTimeout(() => setStatus('idle'), 8000);
-            return;
-        }
-
-        setStatus('sending');
-        setServerError('');
-
-        try {
-            await createReservation({
-                guestName: guestName.trim(),
-                guestEmail: guestEmail.trim(),
-                guestPhone: `${dialCode} ${guestPhone.trim()}`,
-                checkIn: toDateKey(checkIn!),
-                checkOut: toDateKey(checkOut!),
-                nights: pricing!.nights,
-                totalPrice: pricing!.total,
-                comment: comment.trim() || undefined,
-                locale,
-                turnstileToken: spamCheck.turnstileToken,
-                preferredPaymentMethod,
-            });
-
-            setStatus('sent');
-            spam.reset();
-        } catch (err: unknown) {
-            setStatus('error');
-            const apiErr = err as { message?: string; errors?: string[] };
-            const errorMsg = apiErr?.errors?.join(', ') || apiErr?.message || t('booking.errorServer');
-
-            // If backend rejected the Turnstile token (403), reset the widget for retry
-            if (errorMsg.toLowerCase().includes('security') || errorMsg.toLowerCase().includes('verification')) {
-                spam.reset();
-            }
-
-            setServerError(errorMsg);
-            setTimeout(() => setStatus('idle'), 8000);
-        }
-    };
 
     const stepLabels = [
         t('booking.stepDates'),
@@ -708,7 +476,7 @@ export default function BookingCalendar() {
 
                                 {/* Pricing summary */}
                                 {nights > 0 && pricing && (
-                                    <div className={`rounded-xl border p-4 transition-colors ${isBelowMinimum ? 'border-coral/30 bg-coral/5' : 'border-ocean/20 bg-ocean/5'
+                                    <div aria-live="polite" className={`rounded-xl border p-4 transition-colors ${isBelowMinimum ? 'border-coral/30 bg-coral/5' : 'border-ocean/20 bg-ocean/5'
                                         }`}>
                                         <p className={`text-center text-2xl font-bold ${isBelowMinimum ? 'text-coral' : 'text-ocean'}`}>
                                             {nights} {nights > 1 ? t('booking.nights') : t('booking.night')}
@@ -899,9 +667,6 @@ export default function BookingCalendar() {
                     )}
 
                     {/* ═══════════════════════════════════════════════════ */}
-                    {/*  STEP 3: Summary & Submit                          */}
-                    {/* ═══════════════════════════════════════════════════ */}
-                    {/* ═══════════════════════════════════════════════════ */}
                     {/*  STEP 3: Payment Preference                        */}
                     {/* ═══════════════════════════════════════════════════ */}
                     {step === 3 && (
@@ -970,7 +735,7 @@ export default function BookingCalendar() {
                                     <h4 className="font-bold text-navy">{t('booking.paymentPaypalTitle')}</h4>
                                     <p className="mt-1 text-xs text-warm-gray leading-relaxed">{t('booking.paymentPaypalDesc')}</p>
                                     <div className="mt-3 flex flex-wrap gap-1.5">
-                                        {['Balance', 'Bank', 'Protection'].map((tag) => (
+                                        {[t('booking.paypalTagBalance'), t('booking.paypalTagBank'), t('booking.paypalTagProtection')].map((tag) => (
                                             <span key={tag} className="rounded-md bg-navy/5 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-navy/50">
                                                 {tag}
                                             </span>
@@ -1249,14 +1014,14 @@ export default function BookingCalendar() {
                                                 className="mt-0.5 h-5 w-5 shrink-0 accent-ocean"
                                             />
                                             <span className="text-[13px] leading-relaxed text-navy/70 sm:text-sm">
-                                                {t('booking.gdprConsent' as TranslationKey)}{' '}
+                                                {t('booking.gdprConsent')}{' '}
                                                 <Link to="/terms" target="_blank" className="text-ocean underline underline-offset-2 hover:text-ocean-dark">
-                                                    {t('booking.gdprPrivacyLink' as TranslationKey)}
+                                                    {t('booking.gdprPrivacyLink')}
                                                 </Link>
                                             </span>
                                         </label>
                                         <p className="mt-3 border-t border-navy/5 pt-3 text-[11px] leading-relaxed text-warm-gray/60 sm:text-xs">
-                                            {t('booking.gdprDetails' as TranslationKey)}
+                                            {t('booking.gdprDetails')}
                                         </p>
                                     </div>
 
@@ -1271,9 +1036,9 @@ export default function BookingCalendar() {
                                                 className="mt-0.5 h-5 w-5 shrink-0 accent-ocean"
                                             />
                                             <span className="text-[13px] leading-relaxed text-navy/70 sm:text-sm">
-                                                {t('booking.termsConsent' as TranslationKey)}{' '}
+                                                {t('booking.termsConsent')}{' '}
                                                 <Link to="/terms" target="_blank" className="text-ocean underline underline-offset-2 hover:text-ocean-dark">
-                                                    {t('booking.termsPolicyLink' as TranslationKey)}
+                                                    {t('booking.termsPolicyLink')}
                                                 </Link>
                                             </span>
                                         </label>

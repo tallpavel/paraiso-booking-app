@@ -16,9 +16,9 @@ const FALLBACK_REVIEWS: {
     rating: number;
     dateKey: TranslationKey;
 }[] = [
-    { nameKey: 'reviews.fallback1Name' as TranslationKey, textKey: 'reviews.fallback1Text' as TranslationKey, rating: 5, dateKey: 'reviews.fallback1Date' as TranslationKey },
-    { nameKey: 'reviews.fallback2Name' as TranslationKey, textKey: 'reviews.fallback2Text' as TranslationKey, rating: 5, dateKey: 'reviews.fallback2Date' as TranslationKey },
-    { nameKey: 'reviews.fallback3Name' as TranslationKey, textKey: 'reviews.fallback3Text' as TranslationKey, rating: 5, dateKey: 'reviews.fallback3Date' as TranslationKey },
+    { nameKey: 'reviews.fallback1Name', textKey: 'reviews.fallback1Text', rating: 5, dateKey: 'reviews.fallback1Date' },
+    { nameKey: 'reviews.fallback2Name', textKey: 'reviews.fallback2Text', rating: 5, dateKey: 'reviews.fallback2Date' },
+    { nameKey: 'reviews.fallback3Name', textKey: 'reviews.fallback3Text', rating: 5, dateKey: 'reviews.fallback3Date' },
 ];
 
 /* ── Trustpilot Star (official green) ──────────────────────────────── */

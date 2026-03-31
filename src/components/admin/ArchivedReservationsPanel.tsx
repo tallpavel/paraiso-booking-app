@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { fetchArchivedReservations, type ConfirmedReservationFull } from '../../api';
 import { formatDateShort, paymentLabel } from './adminUtils';
+import AdminCard, { AdminCardDetail } from './AdminCard';
 
 type FilterType = 'all' | 'completed' | 'cancelled';
 
@@ -94,81 +95,74 @@ export default function ArchivedReservationsPanel() {
             ) : (
                 <div className="admin-cards">
                     {filtered.map(r => (
-                        <div
+                        <AdminCard
                             key={r._id}
-                            className={`admin-card ${r.status === 'cancelled' ? 'admin-card--cancelled' : 'admin-card--completed'}`}
-                        >
-                            <div className="admin-card__header">
-                                <div>
-                                    <h3 className="admin-card__name">{r.guestName}</h3>
-                                    <p className="admin-card__email">{r.guestEmail}</p>
-                                </div>
-                                <span className={`admin-badge admin-badge--${r.status}`}>
-                                    {r.status === 'completed' ? '✓ Completed' : '✕ Cancelled'}
-                                </span>
-                            </div>
-
-                            <div className="admin-card__details">
-                                <div className="admin-card__detail">
-                                    <span className="admin-card__label">Check-in</span>
-                                    <span className="admin-card__value">{formatDateShort(r.checkIn)}</span>
-                                </div>
-                                <div className="admin-card__detail">
-                                    <span className="admin-card__label">Check-out</span>
-                                    <span className="admin-card__value">{formatDateShort(r.checkOut)}</span>
-                                </div>
-                                <div className="admin-card__detail">
-                                    <span className="admin-card__label">Nights</span>
-                                    <span className="admin-card__value">{r.nights}</span>
-                                </div>
-                                <div className="admin-card__detail">
-                                    <span className="admin-card__label">Total Price</span>
-                                    <span className="admin-card__value admin-card__value--price">€{r.totalPrice}</span>
-                                </div>
-                                <div className="admin-card__detail">
-                                    <span className="admin-card__label">Deposit</span>
-                                    <span className="admin-card__value">€{r.depositAmount}</span>
-                                </div>
-                                <div className="admin-card__detail">
-                                    <span className="admin-card__label">Payment</span>
-                                    {r.paymentStatus === 'paid' && r.remainingPaymentStatus === 'paid' ? (
-                                        <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
-                                    ) : (
-                                        <>
-                                            <span className={`admin-badge admin-badge--${r.paymentStatus}`}>
-                                                {paymentLabel(r.paymentStatus)}
-                                            </span>
-                                            {r.paymentStatus === 'paid' && (
-                                                r.remainingPaymentStatus === 'pending'
-                                                    ? <span className="admin-badge admin-badge--checkin-sent">⏳ Remaining €{r.totalPrice - r.depositAmount}</span>
-                                                    : <span className="admin-badge admin-badge--remaining">Remaining €{r.totalPrice - r.depositAmount}</span>
-                                            )}
-                                        </>
+                            id={r._id}
+                            className={r.status === 'cancelled' ? 'admin-card--cancelled' : 'admin-card--completed'}
+                            header={
+                                <>
+                                    <div>
+                                        <h3 className="admin-card__name">{r.guestName}</h3>
+                                        <p className="admin-card__email">{r.guestEmail}</p>
+                                    </div>
+                                    <span className={`admin-badge admin-badge--${r.status}`}>
+                                        {r.status === 'completed' ? '✓ Completed' : '✕ Cancelled'}
+                                    </span>
+                                </>
+                            }
+                            details={
+                                <>
+                                    <AdminCardDetail label="Check-in" value={formatDateShort(r.checkIn)} />
+                                    <AdminCardDetail label="Check-out" value={formatDateShort(r.checkOut)} />
+                                    <AdminCardDetail label="Nights" value={r.nights} />
+                                    <AdminCardDetail label="Total Price" value={`€${r.totalPrice}`} className="admin-card__value--price" />
+                                    <AdminCardDetail label="Deposit" value={`€${r.depositAmount}`} />
+                                    <AdminCardDetail 
+                                        label="Payment" 
+                                        value={
+                                            r.paymentStatus === 'paid' && r.remainingPaymentStatus === 'paid' ? (
+                                                <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
+                                            ) : (
+                                                <div className="admin-card__badge-stack">
+                                                    <span className={`admin-badge admin-badge--${r.paymentStatus}`}>
+                                                        {paymentLabel(r.paymentStatus)}
+                                                    </span>
+                                                    {r.paymentStatus === 'paid' && (
+                                                        <span className={`admin-badge ${r.remainingPaymentStatus === 'pending' ? 'admin-badge--checkin-sent' : 'admin-badge--remaining'}`}>
+                                                            {r.remainingPaymentStatus === 'pending' ? '⏳' : '◇'} Rem €{r.totalPrice - r.depositAmount}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )
+                                        } 
+                                    />
+                                </>
+                            }
+                            comment={
+                                <>
+                                    {r.comment && (
+                                        <p className="admin-card__comment">
+                                            <span className="admin-card__label">Comment</span>
+                                            {r.comment}
+                                        </p>
                                     )}
-                                </div>
-                            </div>
-
-                            {r.comment && (
-                                <p className="admin-card__comment">
-                                    <span className="admin-card__label">Comment</span>
-                                    {r.comment}
-                                </p>
-                            )}
-
-                            {r.status === 'cancelled' && r.cancellationReason && (
-                                <p className="admin-card__comment" style={{ color: '#e07c5a' }}>
-                                    <span className="admin-card__label">Reason</span>
-                                    {r.cancellationReason}
-                                </p>
-                            )}
-
-                            <p className="admin-card__meta">
-                                {r.status === 'cancelled' && r.cancelledAt
-                                    ? `Cancelled ${new Date(r.cancelledAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
-                                    : `Confirmed ${new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
-                                }
-                            </p>
-                        </div>
+                                    {r.status === 'cancelled' && r.cancellationReason && (
+                                        <p className="admin-card__comment" style={{ color: '#e07c5a' }}>
+                                            <span className="admin-card__label">Reason</span>
+                                            {r.cancellationReason}
+                                        </p>
+                                    )}
+                                </>
+                            }
+                            meta={
+                                <>
+                                    {r.status === 'cancelled' && r.cancelledAt
+                                        ? `Cancelled ${new Date(r.cancelledAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                                        : `Confirmed ${new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                                    }
+                                </>
+                            }
+                        />
                     ))}
                 </div>
             )}

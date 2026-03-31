@@ -5,6 +5,16 @@
  * to eliminate duplication.
  */
 
+/**
+ * Parse a booking date string (YYYY-MM-DD) into a Date object.
+ * Uses T12:00:00 to avoid timezone-related off-by-one errors
+ * (e.g., negative UTC offsets shifting the date back a day at midnight).
+ * ALL admin code should use this instead of inline `new Date(dateStr + 'T...')`.
+ */
+export function parseBookingDate(dateStr: string): Date {
+    return new Date(dateStr + 'T12:00:00');
+}
+
 /** Format a date string (YYYY-MM-DD) to a short human-readable label. */
 export function formatDateShort(dateStr: string): string {
     return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-GB', {

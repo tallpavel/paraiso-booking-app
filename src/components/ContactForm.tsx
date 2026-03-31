@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { ContactFormData } from '../types';
 import { useI18n } from '../i18n';
-import type { TranslationKey } from '../i18n';
+
 import { sendContactMessage } from '../api';
 import { useSpamProtection } from '../hooks/useSpamProtection';
 import PhoneInput, { guessCountry } from './PhoneInput';
@@ -258,7 +258,7 @@ export default function ContactForm() {
                                     className="mt-0.5 h-4 w-4 shrink-0 accent-ocean"
                                 />
                                 <span className="text-xs leading-relaxed text-warm-gray">
-                                    {t('contact.gdprConsent' as TranslationKey)}
+                                    {t('contact.gdprConsent')}
                                 </span>
                             </label>
                         </div>

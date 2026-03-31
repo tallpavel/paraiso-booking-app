@@ -1,5 +1,12 @@
 // ── API Service — connects to the flat-booking-system backend ────────
-const API_BASE = '/api';
+// In development, Vite proxies /api to localhost:3000.
+// In production, Nginx/reverse-proxy maps /api to the backend.
+// Set VITE_API_URL only if the backend lives on a different origin.
+const API_BASE = import.meta.env.VITE_API_URL ?? '/api';
+
+if (import.meta.env.PROD && !import.meta.env.VITE_API_URL) {
+    console.info('[api] Using relative /api path — ensure reverse proxy is configured');
+}
 
 export interface ReservationPayload {
     guestName: string;

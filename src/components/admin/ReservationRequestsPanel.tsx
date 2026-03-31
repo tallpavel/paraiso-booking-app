@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useAdminData } from '../../hooks/useAdminData';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
+import AdminCard, { AdminCardDetail } from './AdminCard';
 import EditReservationModal from './EditReservationModal';
 import ConfirmDialog from './ConfirmDialog';
 import ConfirmPopover from './ConfirmPopover';
@@ -8,32 +10,22 @@ import type { Reservation } from '../../api';
 
 export default function ReservationRequestsPanel() {
     const { requests, confirmed, isLoading, error, refresh, handleConfirm, handleRejectRequest, handleUpdateRequest } = useAdminData();
-    const [actionState, setActionState] = useState<Record<string, 'confirming' | 'rejecting' | 'done' | 'error'>>({});
+    const { execute, isLoading: isActionLoading, getError: getActionError, getStatus } = useAsyncAction();
+    
     const [confirmResult, setConfirmResult] = useState<{ id: string; paymentUrl: string; emailSent: boolean } | null>(null);
     const [editing, setEditing] = useState<Reservation | null>(null);
     const [rejecting, setRejecting] = useState<Reservation | null>(null);
 
     async function onConfirm(id: string, paymentMethod: 'stripe' | 'paypal') {
-        setActionState(s => ({ ...s, [id]: 'confirming' }));
-        try {
-            const result = await handleConfirm(id, paymentMethod);
-            setActionState(s => ({ ...s, [id]: 'done' }));
+        const result = await execute(id, () => handleConfirm(id, paymentMethod));
+        if (result) {
             setConfirmResult({ id, ...result });
-        } catch {
-            setActionState(s => ({ ...s, [id]: 'error' }));
         }
     }
 
     async function onReject(id: string, reason?: string) {
-        setActionState(s => ({ ...s, [id]: 'rejecting' }));
-        try {
-            await handleRejectRequest(id, reason);
-            setActionState(s => ({ ...s, [id]: 'done' }));
-            setRejecting(null);
-        } catch {
-            setActionState(s => ({ ...s, [id]: 'error' }));
-            setRejecting(null);
-        }
+        await execute(id, () => handleRejectRequest(id, reason));
+        setRejecting(null);
     }
 
     return (
@@ -79,130 +71,118 @@ export default function ReservationRequestsPanel() {
             ) : (
                 <div className="admin-cards">
                     {requests.map(req => {
-                        const state = actionState[req._id];
+                        const status = getStatus(req._id);
+                        const isFaded = status === 'success';
+                        
                         return (
-                            <div
+                            <AdminCard
                                 key={req._id}
-                                className={`admin-card ${state === 'done' ? 'admin-card--faded' : ''}`}
-                            >
-                                <div className="admin-card__header">
-                                    <div>
-                                        <h3 className="admin-card__name">{req.guestName}</h3>
-                                        <p className="admin-card__email">{req.guestEmail}</p>
-                                        {req.guestPhone && <p className="admin-card__email">📞 {req.guestPhone}</p>}
-                                    </div>
-                                    <div className="admin-card__badges">
-                                        <span className="admin-badge admin-badge--pending">Pending</span>
-                                        {req.preferredPaymentMethod && (
-                                            <span className={`admin-badge ${req.preferredPaymentMethod === 'paypal' ? 'admin-badge--paypal' : 'admin-badge--stripe'}`}>
-                                                Prefers {req.preferredPaymentMethod === 'paypal' ? 'PayPal' : 'Stripe'}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="admin-card__details">
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Check-in</span>
-                                        <span className="admin-card__value">{formatDateShort(req.checkIn)}</span>
-                                    </div>
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Check-out</span>
-                                        <span className="admin-card__value">{formatDateShort(req.checkOut)}</span>
-                                    </div>
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Nights</span>
-                                        <span className="admin-card__value">{req.nights}</span>
-                                    </div>
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Total Price</span>
-                                        <span className="admin-card__value admin-card__value--price">€{req.totalPrice}</span>
-                                    </div>
-                                </div>
-
-                                {req.comment && (
+                                id={req._id}
+                                faded={isFaded}
+                                loading={isActionLoading(req._id)}
+                                error={getActionError(req._id)}
+                                header={
+                                    <>
+                                        <div>
+                                            <h3 className="admin-card__name">{req.guestName}</h3>
+                                            <p className="admin-card__email">{req.guestEmail}</p>
+                                            {req.guestPhone && <p className="admin-card__email">📞 {req.guestPhone}</p>}
+                                        </div>
+                                        <div className="admin-card__badges">
+                                            <span className="admin-badge admin-badge--pending">Pending</span>
+                                            {req.preferredPaymentMethod && (
+                                                <span className={`admin-badge ${req.preferredPaymentMethod === 'paypal' ? 'admin-badge--paypal' : 'admin-badge--stripe'}`}>
+                                                    Prefers {req.preferredPaymentMethod === 'paypal' ? 'PayPal' : 'Stripe'}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </>
+                                }
+                                details={
+                                    <>
+                                        <AdminCardDetail label="Check-in" value={formatDateShort(req.checkIn)} />
+                                        <AdminCardDetail label="Check-out" value={formatDateShort(req.checkOut)} />
+                                        <AdminCardDetail label="Nights" value={req.nights} />
+                                        <AdminCardDetail label="Total Price" value={`€${req.totalPrice}`} className="admin-card__value--price" />
+                                    </>
+                                }
+                                comment={req.comment && (
                                     <p className="admin-card__comment">
                                         <span className="admin-card__label">Comment</span>
                                         {req.comment}
                                     </p>
                                 )}
+                                meta={
+                                    <>Submitted {new Date(req.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</>
+                                }
+                                actions={
+                                    <>
+                                        <div className="admin-card__action-row">
+                                            {(() => {
+                                                const checkInDate = new Date(req.checkIn + 'T12:00:00');
+                                                const now = new Date();
+                                                const daysUntilCheckIn = Math.ceil((checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                                                const isShortNotice = daysUntilCheckIn < 14;
+                                                const isPaypalPref = req.preferredPaymentMethod === 'paypal';
+                                                const depositAmount = Math.round(req.totalPrice * 0.3);
+                                                const amountLabel = isShortNotice ? `full €${req.totalPrice}` : `€${depositAmount} deposit`;
 
-                                <p className="admin-card__meta">
-                                    Submitted {new Date(req.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                </p>
-
-                                <div className="admin-card__actions">
-                                    <div className="admin-card__action-row">
-                                        {(() => {
-                                            const checkInDate = new Date(req.checkIn + 'T12:00:00');
-                                            const now = new Date();
-                                            const daysUntilCheckIn = Math.ceil((checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-                                            const isShortNotice = daysUntilCheckIn < 14;
-                                            const isPaypalPref = req.preferredPaymentMethod === 'paypal';
-                                            const depositAmount = Math.round(req.totalPrice * 0.3);
-                                            const amountLabel = isShortNotice ? `full €${req.totalPrice}` : `€${depositAmount} deposit`;
-
-                                            return (
-                                                <div className="admin-btn-group">
-                                                    <ConfirmPopover
-                                                        message={`Confirm & send ${amountLabel} via Card?`}
-                                                        confirmLabel="Yes, Send"
-                                                        confirmVariant="stripe"
-                                                        onConfirm={() => onConfirm(req._id, 'stripe')}
-                                                        isLoading={state === 'confirming'}
-                                                        disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                                    >
-                                                        <button
-                                                            disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                                            className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
-                                                            title={isShortNotice ? "Confirm & Send FULL card payment request" : "Confirm & Send card deposit request"}
+                                                return (
+                                                    <div className="admin-btn-group">
+                                                        <ConfirmPopover
+                                                            message={`Confirm & send ${amountLabel} via Card?`}
+                                                            confirmLabel="Yes, Send"
+                                                            confirmVariant="stripe"
+                                                            onConfirm={() => onConfirm(req._id, 'stripe')}
+                                                            disabled={isActionLoading(req._id) || isFaded}
                                                         >
-                                                            {state === 'confirming' ? '⌛ Card...' : `✉ Send Card (${isShortNotice ? 'Full' : 'Dep'})`}
-                                                        </button>
-                                                    </ConfirmPopover>
-                                                    <ConfirmPopover
-                                                        message={`Confirm & send ${amountLabel} via PayPal?`}
-                                                        confirmLabel="Yes, Send"
-                                                        confirmVariant="paypal"
-                                                        onConfirm={() => onConfirm(req._id, 'paypal')}
-                                                        isLoading={state === 'confirming'}
-                                                        disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                                    >
-                                                        <button
-                                                            disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                                            className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
-                                                            title={isShortNotice ? "Confirm & Send FULL PayPal request" : "Confirm & Send PayPal deposit request"}
+                                                            <button
+                                                                disabled={isActionLoading(req._id) || isFaded}
+                                                                className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                                title={isShortNotice ? "Confirm & Send FULL card payment request" : "Confirm & Send card deposit request"}
+                                                            >
+                                                                {isActionLoading(req._id) ? '⌛ Sending...' : `✉ Send Card (${isShortNotice ? 'Full' : 'Dep'})`}
+                                                            </button>
+                                                        </ConfirmPopover>
+                                                        <ConfirmPopover
+                                                            message={`Confirm & send ${amountLabel} via PayPal?`}
+                                                            confirmLabel="Yes, Send"
+                                                            confirmVariant="paypal"
+                                                            onConfirm={() => onConfirm(req._id, 'paypal')}
+                                                            disabled={isActionLoading(req._id) || isFaded}
                                                         >
-                                                            {state === 'confirming' ? '⌛ PayPal...' : `✉ Send PayPal (${isShortNotice ? 'Full' : 'Dep'})`}
-                                                        </button>
-                                                    </ConfirmPopover>
-                                                </div>
-                                            );
-                                        })()}
-                                    </div>
+                                                            <button
+                                                                disabled={isActionLoading(req._id) || isFaded}
+                                                                className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                                title={isShortNotice ? "Confirm & Send FULL PayPal request" : "Confirm & Send PayPal deposit request"}
+                                                            >
+                                                                {isActionLoading(req._id) ? '⌛ Sending...' : `✉ Send PayPal (${isShortNotice ? 'Full' : 'Dep'})`}
+                                                            </button>
+                                                        </ConfirmPopover>
+                                                    </div>
+                                                );
+                                            })()}
+                                        </div>
 
-                                    <div className="admin-card__action-row admin-card__action-row--secondary">
-                                        <button
-                                            onClick={() => setEditing(req)}
-                                            disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                            className="admin-btn admin-btn--outline admin-btn--sm"
-                                        >
-                                            ✎ Edit
-                                        </button>
-                                        <button
-                                            onClick={() => setRejecting(req)}
-                                            disabled={state === 'confirming' || state === 'rejecting' || state === 'done'}
-                                            className="admin-btn admin-btn--reject admin-btn--sm"
-                                        >
-                                            {state === 'rejecting' ? 'Rejecting…' : '✕ Reject'}
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {state === 'error' && (
-                                    <p className="admin-card__error">Action failed. Please try again.</p>
-                                )}
-                            </div>
+                                        <div className="admin-card__action-row admin-card__action-row--secondary">
+                                            <button
+                                                onClick={() => setEditing(req)}
+                                                disabled={isActionLoading(req._id) || isFaded}
+                                                className="admin-btn admin-btn--outline admin-btn--sm"
+                                            >
+                                                ✎ Edit
+                                            </button>
+                                            <button
+                                                onClick={() => setRejecting(req)}
+                                                disabled={isActionLoading(req._id) || isFaded}
+                                                className="admin-btn admin-btn--reject admin-btn--sm"
+                                            >
+                                                ✕ Reject
+                                            </button>
+                                        </div>
+                                    </>
+                                }
+                            />
                         );
                     })}
                 </div>
@@ -221,7 +201,7 @@ export default function ReservationRequestsPanel() {
                     ]}
                     confirmLabel="✕ Reject Request"
                     confirmVariant="danger"
-                    isLoading={actionState[rejecting._id] === 'rejecting'}
+                    isLoading={isActionLoading(rejecting._id)}
                     showReasonInput
                     reasonLabel="Why is this being rejected?"
                     reasonPlaceholder="Enter a reason (optional, will be shown to the guest)…"
@@ -249,3 +229,4 @@ export default function ReservationRequestsPanel() {
         </div>
     );
 }
+

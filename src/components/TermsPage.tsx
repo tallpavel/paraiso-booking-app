@@ -130,7 +130,7 @@ export default function TermsPage() {
                                     {/* Payment Methods Cards */}
                                     <div className="!mt-5">
                                         <h3 className="mb-3 text-sm font-bold uppercase tracking-wide text-navy/60">
-                                            {t('terms.s3.methodsTitle' as TranslationKey)}
+                                            {t('terms.s3.methodsTitle')}
                                         </h3>
                                         <div className="grid gap-3 sm:grid-cols-2">
                                             {/* Stripe / Card */}
@@ -142,11 +142,11 @@ export default function TermsPage() {
                                                         </svg>
                                                     </div>
                                                     <span className="text-sm font-bold text-navy">
-                                                        {t('terms.s3.stripeTitle' as TranslationKey)}
+                                                        {t('terms.s3.stripeTitle')}
                                                     </span>
                                                 </div>
                                                 <p className="text-xs leading-relaxed text-warm-gray">
-                                                    {t('terms.s3.stripeDesc' as TranslationKey)}
+                                                    {t('terms.s3.stripeDesc')}
                                                 </p>
                                                 <div className="mt-3 flex flex-wrap items-center gap-1.5">
                                                     {/* Visa mini */}
@@ -166,18 +166,18 @@ export default function TermsPage() {
                                                         </svg>
                                                     </div>
                                                     <span className="text-sm font-bold text-navy">
-                                                        {t('terms.s3.paypalTitle' as TranslationKey)}
+                                                        {t('terms.s3.paypalTitle')}
                                                     </span>
                                                 </div>
                                                 <p className="text-xs leading-relaxed text-warm-gray">
-                                                    {t('terms.s3.paypalDesc' as TranslationKey)}
+                                                    {t('terms.s3.paypalDesc')}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
 
                                     <p>{t('terms.s3.p3')}</p>
-                                    <p>{t('terms.s3.p4' as TranslationKey)}</p>
+                                    <p>{t('terms.s3.p4')}</p>
                                 </div>
                             </article>
 
@@ -211,15 +211,15 @@ export default function TermsPage() {
                                                     <td className="px-4 py-3 font-semibold text-coral">{t('terms.s4.row3refund')}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td className="px-4 py-3">{t('terms.s4.row4when' as TranslationKey)}</td>
-                                                    <td className="px-4 py-3 font-semibold text-coral">{t('terms.s4.row4refund' as TranslationKey)}</td>
+                                                    <td className="px-4 py-3">{t('terms.s4.row4when')}</td>
+                                                    <td className="px-4 py-3 font-semibold text-coral">{t('terms.s4.row4refund')}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                     <p>{t('terms.s4.p2')}</p>
                                     <p>{t('terms.s4.p3')}</p>
-                                    <p>{t('terms.s4.p4' as TranslationKey)}</p>
+                                    <p>{t('terms.s4.p4')}</p>
                                 </div>
                             </article>
 

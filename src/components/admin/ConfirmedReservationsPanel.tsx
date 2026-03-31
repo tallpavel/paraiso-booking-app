@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { useAdminData } from '../../hooks/useAdminData';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
+import AdminCard, { AdminCardDetail } from './AdminCard';
 import EditReservationModal from './EditReservationModal';
 import ConfirmDialog from './ConfirmDialog';
 import ConfirmPopover from './ConfirmPopover';
-import { formatDateShort, paymentLabel } from './adminUtils';
+import { formatDateShort, paymentLabel, parseBookingDate } from './adminUtils';
 import type { ConfirmedReservationFull } from '../../api';
 
 export default function ConfirmedReservationsPanel() {
     const { confirmed, isLoading, error, refresh, handleCancelConfirmed, handleUpdateConfirmed, handleSendDepositPayment, handleSendRemainingPayment, handleSendFullPayment } = useAdminData();
-    const [cancelState, setCancelState] = useState<Record<string, 'cancelling' | 'done' | 'error'>>({});
+    const { execute, isLoading: isActionLoading, getError: getActionError, getStatus } = useAsyncAction();
+    
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'paid'>('all');
     const [editing, setEditing] = useState<ConfirmedReservationFull | null>(null);
     const [cancelling, setCancelling] = useState<ConfirmedReservationFull | null>(null);
-    const [sendingDeposit, setSendingDeposit] = useState<Record<string, boolean>>({});
-    const [sendingRemaining, setSendingRemaining] = useState<Record<string, boolean>>({});
-    const [sendingFullPayment, setSendingFullPayment] = useState<Record<string, boolean>>({});
 
     // Exclude fully paid (they appear in the Fully Paid section)
     const notFullyPaid = confirmed.filter(
@@ -28,15 +28,8 @@ export default function ConfirmedReservationsPanel() {
             : notFullyPaid.filter(c => c.paymentStatus === 'paid');
 
     async function onCancel(id: string, reason?: string) {
-        setCancelState(s => ({ ...s, [id]: 'cancelling' }));
-        try {
-            await handleCancelConfirmed(id, reason);
-            setCancelState(s => ({ ...s, [id]: 'done' }));
-            setCancelling(null);
-        } catch {
-            setCancelState(s => ({ ...s, [id]: 'error' }));
-            setCancelling(null);
-        }
+        await execute(id, () => handleCancelConfirmed(id, reason));
+        setCancelling(null);
     }
 
     return (
@@ -96,81 +89,62 @@ export default function ConfirmedReservationsPanel() {
             ) : (
                 <div className="admin-cards">
                     {filtered.map(c => {
-                        const state = cancelState[c._id];
+                        const status = getStatus(c._id);
+                        const isFaded = status === 'success';
+                        
                         return (
-                            <div
+                            <AdminCard
                                 key={c._id}
-                                className={`admin-card ${state === 'done' ? 'admin-card--faded' : ''}`}
-                            >
-                                <div className="admin-card__header">
-                                    <div>
-                                        <h3 className="admin-card__name">{c.guestName}</h3>
-                                        <p className="admin-card__email">{c.guestEmail}</p>
-                                        {c.guestPhone && <p className="admin-card__email">📞 {c.guestPhone}</p>}
-                                    </div>
-                                    <div className="admin-card__badges">
-                                        {(c.checkInStatus === 'sent') && (
-                                            <span className="admin-badge admin-badge--checkin-sent">
-                                                ✉ Check-in Sent
-                                            </span>
-                                        )}
-                                        {(c.checkInStatus === 'completed') && (
-                                            <span className="admin-badge admin-badge--checkedin">
-                                                ✓ Checked In
-                                            </span>
-                                        )}
-                                        {c.paymentStatus === 'paid' && c.remainingPaymentStatus === 'paid' ? (
-                                            <span className="admin-badge admin-badge--paid">✓ Fully Paid</span>
-                                        ) : (
-                                            <>
-                                                <span className={`admin-badge admin-badge--${c.paymentStatus}`}>
-                                                    {paymentLabel(c.paymentStatus)}
+                                id={c._id}
+                                faded={isFaded}
+                                loading={isActionLoading(c._id)}
+                                error={getActionError(c._id)}
+                                header={
+                                    <>
+                                        <div>
+                                            <h3 className="admin-card__name">{c.guestName}</h3>
+                                            <p className="admin-card__email">{c.guestEmail}</p>
+                                            {c.guestPhone && <p className="admin-card__email">📞 {c.guestPhone}</p>}
+                                        </div>
+                                        <div className="admin-card__badges">
+                                            {(c.checkInStatus === 'sent') && (
+                                                <span className="admin-badge admin-badge--checkin-sent">
+                                                    ✉ Check-in Sent
                                                 </span>
-                                                {c.paymentStatus === 'paid' && (
-                                                    c.remainingPaymentStatus === 'pending'
-                                                        ? <span className="admin-badge admin-badge--checkin-sent">⏳ Remaining €{c.totalPrice - c.depositAmount}</span>
-                                                        : <span className="admin-badge admin-badge--remaining">Remaining €{c.totalPrice - c.depositAmount}</span>
-                                                )}
-                                                {c.preferredPaymentMethod && (
-                                                    <span className={`admin-badge ${c.preferredPaymentMethod === 'paypal' ? 'admin-badge--paypal' : 'admin-badge--stripe'}`}>
-                                                        Pref: {c.preferredPaymentMethod === 'paypal' ? 'PayPal' : 'Stripe'}
-                                                    </span>
-                                                )}
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="admin-card__details">
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Check-in</span>
-                                        <span className="admin-card__value">{formatDateShort(c.checkIn)}</span>
-                                    </div>
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Check-out</span>
-                                        <span className="admin-card__value">{formatDateShort(c.checkOut)}</span>
-                                    </div>
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Nights</span>
-                                        <span className="admin-card__value">{c.nights}</span>
-                                    </div>
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Total Price</span>
-                                        <span className="admin-card__value admin-card__value--price">€{c.totalPrice}</span>
-                                    </div>
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Deposit (30%)</span>
-                                        <span className="admin-card__value admin-card__value--deposit">€{c.depositAmount}</span>
-                                    </div>
-                                    <div className="admin-card__detail">
-                                        <span className="admin-card__label">Remaining</span>
-                                        <span className="admin-card__value">€{c.totalPrice - c.depositAmount}</span>
-                                    </div>
-                                </div>
-                                {(() => {
-                                    if (c.paymentStatus === 'paid' && c.remainingPaymentStatus === 'paid') return null;
-                                    
-                                    const checkInDate = new Date(c.checkIn + 'T12:00:00');
+                                            )}
+                                            {(c.checkInStatus === 'completed') && (
+                                                <span className="admin-badge admin-badge--checkedin">
+                                                    ✓ Checked In
+                                                </span>
+                                            )}
+                                            <span className={`admin-badge admin-badge--${c.paymentStatus}`}>
+                                                {paymentLabel(c.paymentStatus)}
+                                            </span>
+                                            {c.paymentStatus === 'paid' && (
+                                                c.remainingPaymentStatus === 'pending'
+                                                    ? <span className="admin-badge admin-badge--checkin-sent">⏳ Remaining €{c.totalPrice - c.depositAmount}</span>
+                                                    : <span className="admin-badge admin-badge--remaining">Remaining €{c.totalPrice - c.depositAmount}</span>
+                                            )}
+                                            {c.preferredPaymentMethod && (
+                                                <span className={`admin-badge ${c.preferredPaymentMethod === 'paypal' ? 'admin-badge--paypal' : 'admin-badge--stripe'}`}>
+                                                    Pref: {c.preferredPaymentMethod === 'paypal' ? 'PayPal' : 'Stripe'}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </>
+                                }
+                                details={
+                                    <>
+                                        <AdminCardDetail label="Check-in" value={formatDateShort(c.checkIn)} />
+                                        <AdminCardDetail label="Check-out" value={formatDateShort(c.checkOut)} />
+                                        <AdminCardDetail label="Nights" value={c.nights} />
+                                        <AdminCardDetail label="Total Price" value={`€${c.totalPrice}`} className="admin-card__value--price" />
+                                        <AdminCardDetail label="Deposit (30%)" value={`€${c.depositAmount}`} className="admin-card__value--deposit" />
+                                        <AdminCardDetail label="Remaining" value={`€${c.totalPrice - c.depositAmount}`} />
+                                    </>
+                                }
+                                timeline={(() => {
+                                    const checkInDate = parseBookingDate(c.checkIn);
                                     const now = new Date();
                                     const dueDate = new Date(checkInDate.getTime() - (14 * 24 * 60 * 60 * 1000));
                                     const daysUntilDue = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -193,195 +167,165 @@ export default function ConfirmedReservationsPanel() {
                                         </div>
                                     );
                                 })()}
-
-                                {c.comment && (
+                                comment={c.comment && (
                                     <p className="admin-card__comment">
                                         <span className="admin-card__label">Comment</span>
                                         {c.comment}
                                     </p>
                                 )}
+                                meta={
+                                    <>
+                                        Confirmed {new Date(c.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                        {c.stripePaymentUrl && c.paymentStatus !== 'paid' && (
+                                            <>
+                                                {' · '}
+                                                <a href={c.stripePaymentUrl} target="_blank" rel="noopener noreferrer" className="admin-card__payment-link inline">
+                                                    Stripe Link →
+                                                </a>
+                                            </>
+                                        )}
+                                    </>
+                                }
+                                actions={
+                                    <>
+                                        <div className="admin-card__action-row">
+                                            {(() => {
+                                                const checkInDate = parseBookingDate(c.checkIn);
+                                                const now = new Date();
+                                                const daysUntilCheckIn = Math.ceil((checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                                                const isShortNotice = daysUntilCheckIn < 14;
+                                                const isFullyPaid = c.paymentStatus === 'paid' && c.remainingPaymentStatus === 'paid';
+                                                const isPaypalPref = c.preferredPaymentMethod === 'paypal';
 
-                                {c.stripePaymentUrl && c.paymentStatus !== 'paid' && (
-                                    <a
-                                        href={c.stripePaymentUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="admin-card__payment-link"
-                                    >
-                                        Open Stripe Payment Link →
-                                    </a>
-                                )}
-
-                                <p className="admin-card__meta">
-                                    Confirmed {new Date(c.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                </p>
-
-                                <div className="admin-card__actions">
-                                    <div className="admin-card__action-row">
-                                        {(() => {
-                                            const checkInDate = new Date(c.checkIn + 'T00:00:00');
-                                            const now = new Date();
-                                            const daysUntilCheckIn = Math.ceil((checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-                                            const isShortNotice = daysUntilCheckIn < 14;
-                                            const isFullyPaid = c.paymentStatus === 'paid' && c.remainingPaymentStatus === 'paid';
-                                            const isPaypalPref = c.preferredPaymentMethod === 'paypal';
-
-                                            if (isShortNotice && !isFullyPaid) {
-                                                return (
-                                                    <div className="admin-btn-group">
-                                                        <ConfirmPopover
-                                                            message={`Send full €${c.totalPrice} payment request via Card?`}
-                                                            confirmLabel="Yes, Send"
-                                                            confirmVariant="stripe"
-                                                            onConfirm={async () => {
-                                                                setSendingFullPayment(prev => ({ ...prev, [c._id]: true }));
-                                                                try { await handleSendFullPayment(c._id, 'stripe'); } catch { }
-                                                                setSendingFullPayment(prev => ({ ...prev, [c._id]: false }));
-                                                            }}
-                                                            disabled={sendingFullPayment[c._id] || state === 'cancelling' || state === 'done'}
-                                                        >
-                                                            <button
-                                                                disabled={sendingFullPayment[c._id] || state === 'cancelling' || state === 'done'}
-                                                                className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                if (isShortNotice && !isFullyPaid) {
+                                                    return (
+                                                        <div className="admin-btn-group">
+                                                            <ConfirmPopover
+                                                                message={`Send full €${c.totalPrice} payment request via Card?`}
+                                                                confirmLabel="Yes, Send"
+                                                                confirmVariant="stripe"
+                                                                onConfirm={() => execute(c._id, () => handleSendFullPayment(c._id, 'stripe'))}
+                                                                disabled={isActionLoading(c._id) || isFaded}
                                                             >
-                                                                {sendingFullPayment[c._id] ? '⌛ Card...' : `✉ Send Card (€${c.totalPrice})`}
-                                                            </button>
-                                                        </ConfirmPopover>
-                                                        <ConfirmPopover
-                                                            message={`Send full €${c.totalPrice} payment request via PayPal?`}
-                                                            confirmLabel="Yes, Send"
-                                                            confirmVariant="paypal"
-                                                            onConfirm={async () => {
-                                                                setSendingFullPayment(prev => ({ ...prev, [c._id]: true }));
-                                                                try { await handleSendFullPayment(c._id, 'paypal'); } catch { }
-                                                                setSendingFullPayment(prev => ({ ...prev, [c._id]: false }));
-                                                            }}
-                                                            disabled={sendingFullPayment[c._id] || state === 'cancelling' || state === 'done'}
-                                                        >
-                                                            <button
-                                                                disabled={sendingFullPayment[c._id] || state === 'cancelling' || state === 'done'}
-                                                                className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                                <button
+                                                                    disabled={isActionLoading(c._id) || isFaded}
+                                                                    className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                                >
+                                                                    {isActionLoading(c._id) ? '⌛ Sending...' : `✉ Send Card (€${c.totalPrice})`}
+                                                                </button>
+                                                            </ConfirmPopover>
+                                                            <ConfirmPopover
+                                                                message={`Send full €${c.totalPrice} payment request via PayPal?`}
+                                                                confirmLabel="Yes, Send"
+                                                                confirmVariant="paypal"
+                                                                onConfirm={() => execute(c._id, () => handleSendFullPayment(c._id, 'paypal'))}
+                                                                disabled={isActionLoading(c._id) || isFaded}
                                                             >
-                                                                {sendingFullPayment[c._id] ? '⌛ PayPal...' : `✉ Send PayPal (€${c.totalPrice})`}
-                                                            </button>
-                                                        </ConfirmPopover>
-                                                    </div>
-                                                );
-                                            }
+                                                                <button
+                                                                    disabled={isActionLoading(c._id) || isFaded}
+                                                                    className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                                >
+                                                                    {isActionLoading(c._id) ? '⌛ Sending...' : `✉ Send PayPal (€${c.totalPrice})`}
+                                                                </button>
+                                                            </ConfirmPopover>
+                                                        </div>
+                                                    );
+                                                }
 
-                                            if (c.paymentStatus === 'pending') {
-                                                return (
-                                                    <div className="admin-btn-group">
-                                                        <ConfirmPopover
-                                                            message={`Resend €${c.depositAmount} deposit request via Card?`}
-                                                            confirmLabel="Yes, Send"
-                                                            confirmVariant="stripe"
-                                                            onConfirm={async () => {
-                                                                setSendingDeposit(prev => ({ ...prev, [c._id]: true }));
-                                                                try { await handleSendDepositPayment(c._id, 'stripe'); } catch { }
-                                                                setSendingDeposit(prev => ({ ...prev, [c._id]: false }));
-                                                            }}
-                                                            disabled={sendingDeposit[c._id] || state === 'cancelling' || state === 'done'}
-                                                        >
-                                                            <button
-                                                                disabled={sendingDeposit[c._id] || state === 'cancelling' || state === 'done'}
-                                                                className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                if (c.paymentStatus === 'pending') {
+                                                    return (
+                                                        <div className="admin-btn-group">
+                                                            <ConfirmPopover
+                                                                message={`Resend €${c.depositAmount} deposit request via Card?`}
+                                                                confirmLabel="Yes, Send"
+                                                                confirmVariant="stripe"
+                                                                onConfirm={() => execute(c._id, () => handleSendDepositPayment(c._id, 'stripe'))}
+                                                                disabled={isActionLoading(c._id) || isFaded}
                                                             >
-                                                                {sendingDeposit[c._id] ? '⌛ Card...' : `✉ Resend Card (€${c.depositAmount})`}
-                                                            </button>
-                                                        </ConfirmPopover>
-                                                        <ConfirmPopover
-                                                            message={`Resend €${c.depositAmount} deposit request via PayPal?`}
-                                                            confirmLabel="Yes, Send"
-                                                            confirmVariant="paypal"
-                                                            onConfirm={async () => {
-                                                                setSendingDeposit(prev => ({ ...prev, [c._id]: true }));
-                                                                try { await handleSendDepositPayment(c._id, 'paypal'); } catch { }
-                                                                setSendingDeposit(prev => ({ ...prev, [c._id]: false }));
-                                                            }}
-                                                            disabled={sendingDeposit[c._id] || state === 'cancelling' || state === 'done'}
-                                                        >
-                                                            <button
-                                                                disabled={sendingDeposit[c._id] || state === 'cancelling' || state === 'done'}
-                                                                className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                                <button
+                                                                    disabled={isActionLoading(c._id) || isFaded}
+                                                                    className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                                >
+                                                                    {isActionLoading(c._id) ? '⌛ Sending...' : `✉ Card (€${c.depositAmount})`}
+                                                                </button>
+                                                            </ConfirmPopover>
+                                                            <ConfirmPopover
+                                                                message={`Resend €${c.depositAmount} deposit request via PayPal?`}
+                                                                confirmLabel="Yes, Send"
+                                                                confirmVariant="paypal"
+                                                                onConfirm={() => execute(c._id, () => handleSendDepositPayment(c._id, 'paypal'))}
+                                                                disabled={isActionLoading(c._id) || isFaded}
                                                             >
-                                                                {sendingDeposit[c._id] ? '⌛ PayPal...' : `✉ Resend PayPal (€${c.depositAmount})`}
-                                                            </button>
-                                                        </ConfirmPopover>
-                                                    </div>
-                                                );
-                                            }
+                                                                <button
+                                                                    disabled={isActionLoading(c._id) || isFaded}
+                                                                    className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                                >
+                                                                    {isActionLoading(c._id) ? '⌛ Sending...' : `✉ PayPal (€${c.depositAmount})`}
+                                                                </button>
+                                                            </ConfirmPopover>
+                                                        </div>
+                                                    );
+                                                }
 
-                                            if (c.paymentStatus === 'paid' && c.remainingPaymentStatus !== 'paid') {
-                                                const remaining = c.totalPrice - c.depositAmount;
-                                                return (
-                                                    <div className="admin-btn-group">
-                                                        <ConfirmPopover
-                                                            message={`Send €${remaining} remaining payment request via Card?`}
-                                                            confirmLabel="Yes, Send"
-                                                            confirmVariant="stripe"
-                                                            onConfirm={async () => {
-                                                                setSendingRemaining(prev => ({ ...prev, [c._id]: true }));
-                                                                try { await handleSendRemainingPayment(c._id, 'stripe'); } catch { }
-                                                                setSendingRemaining(prev => ({ ...prev, [c._id]: false }));
-                                                            }}
-                                                            disabled={sendingRemaining[c._id] || state === 'cancelling' || state === 'done'}
-                                                        >
-                                                            <button
-                                                                disabled={sendingRemaining[c._id] || state === 'cancelling' || state === 'done'}
-                                                                className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                if (c.paymentStatus === 'paid' && c.remainingPaymentStatus !== 'paid') {
+                                                    const remaining = c.totalPrice - c.depositAmount;
+                                                    return (
+                                                        <div className="admin-btn-group">
+                                                            <ConfirmPopover
+                                                                message={`Send €${remaining} remaining payment request via Card?`}
+                                                                confirmLabel="Yes, Send"
+                                                                confirmVariant="stripe"
+                                                                onConfirm={() => execute(c._id, () => handleSendRemainingPayment(c._id, 'stripe'))}
+                                                                disabled={isActionLoading(c._id) || isFaded}
                                                             >
-                                                                {sendingRemaining[c._id] ? '⌛ Card...' : `✉ Send Card (€${remaining})`}
-                                                            </button>
-                                                        </ConfirmPopover>
-                                                        <ConfirmPopover
-                                                            message={`Send €${remaining} remaining payment request via PayPal?`}
-                                                            confirmLabel="Yes, Send"
-                                                            confirmVariant="paypal"
-                                                            onConfirm={async () => {
-                                                                setSendingRemaining(prev => ({ ...prev, [c._id]: true }));
-                                                                try { await handleSendRemainingPayment(c._id, 'paypal'); } catch { }
-                                                                setSendingRemaining(prev => ({ ...prev, [c._id]: false }));
-                                                            }}
-                                                            disabled={sendingRemaining[c._id] || state === 'cancelling' || state === 'done'}
-                                                        >
-                                                            <button
-                                                                disabled={sendingRemaining[c._id] || state === 'cancelling' || state === 'done'}
-                                                                className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                                <button
+                                                                    disabled={isActionLoading(c._id) || isFaded}
+                                                                    className={`admin-btn ${!isPaypalPref ? 'admin-btn--stripe' : 'admin-btn--outline'}`}
+                                                                >
+                                                                    {isActionLoading(c._id) ? '⌛ Sending...' : `✉ Card (€${remaining})`}
+                                                                </button>
+                                                            </ConfirmPopover>
+                                                            <ConfirmPopover
+                                                                message={`Send €${remaining} remaining payment request via PayPal?`}
+                                                                confirmLabel="Yes, Send"
+                                                                confirmVariant="paypal"
+                                                                onConfirm={() => execute(c._id, () => handleSendRemainingPayment(c._id, 'paypal'))}
+                                                                disabled={isActionLoading(c._id) || isFaded}
                                                             >
-                                                                {sendingRemaining[c._id] ? '⌛ PayPal...' : `✉ Send PayPal (€${remaining})`}
-                                                            </button>
-                                                        </ConfirmPopover>
-                                                    </div>
-                                                );
-                                            }
+                                                                <button
+                                                                    disabled={isActionLoading(c._id) || isFaded}
+                                                                    className={`admin-btn ${isPaypalPref ? 'admin-btn--paypal' : 'admin-btn--outline'}`}
+                                                                >
+                                                                    {isActionLoading(c._id) ? '⌛ Sending...' : `✉ PayPal (€${remaining})`}
+                                                                </button>
+                                                            </ConfirmPopover>
+                                                        </div>
+                                                    );
+                                                }
 
-                                            return null;
-                                        })()}
-                                    </div>
+                                                return null;
+                                            })()}
+                                        </div>
 
-                                    <div className="admin-card__action-row admin-card__action-row--secondary">
-                                        <button
-                                            onClick={() => setEditing(c)}
-                                            disabled={state === 'cancelling' || state === 'done'}
-                                            className="admin-btn admin-btn--outline admin-btn--sm"
-                                        >
-                                            ✎ Edit
-                                        </button>
-                                        <button
-                                            onClick={() => setCancelling(c)}
-                                            disabled={state === 'cancelling' || state === 'done'}
-                                            className="admin-btn admin-btn--reject admin-btn--sm"
-                                        >
-                                            {state === 'cancelling' ? 'Cancelling…' : '✕ Cancel'}
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {state === 'error' && (
-                                    <p className="admin-card__error">Cancellation failed. Please try again.</p>
-                                )}
-                            </div>
+                                        <div className="admin-card__action-row admin-card__action-row--secondary">
+                                            <button
+                                                onClick={() => setEditing(c)}
+                                                disabled={isActionLoading(c._id) || isFaded}
+                                                className="admin-btn admin-btn--outline admin-btn--sm"
+                                            >
+                                                ✎ Edit
+                                            </button>
+                                            <button
+                                                onClick={() => setCancelling(c)}
+                                                disabled={isActionLoading(c._id) || isFaded}
+                                                className="admin-btn admin-btn--reject admin-btn--sm"
+                                            >
+                                                ✕ Cancel
+                                            </button>
+                                        </div>
+                                    </>
+                                }
+                            />
                         );
                     })}
                 </div>
@@ -401,7 +345,7 @@ export default function ConfirmedReservationsPanel() {
                     ]}
                     confirmLabel="✕ Cancel Reservation"
                     confirmVariant="danger"
-                    isLoading={cancelState[cancelling._id] === 'cancelling'}
+                    isLoading={isActionLoading(cancelling._id)}
                     showReasonInput
                     reasonLabel="Why is this being cancelled?"
                     reasonPlaceholder="Enter a reason (optional, will be shown to the guest)…"
@@ -429,3 +373,4 @@ export default function ConfirmedReservationsPanel() {
         </div>
     );
 }
+
