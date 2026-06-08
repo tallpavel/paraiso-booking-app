@@ -139,10 +139,10 @@ export default function ContactForm() {
                                 <div>
                                     <h3 className="mb-1 font-semibold text-navy">{t('contact.email')}</h3>
                                     <a
-                                        href="mailto:info@veronicas-flat.com"
+                                        href="mailto:info@veronicasflat.com"
                                         className="text-sm text-ocean transition-colors hover:text-ocean-dark"
                                     >
-                                        info@veronicas-flat.com
+                                        info@veronicasflat.com
                                     </a>
                                 </div>
                             </div>

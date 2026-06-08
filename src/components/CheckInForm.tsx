@@ -356,7 +356,7 @@ export default function CheckInForm() {
                             </span>
                         </label>
                         <p className="checkin-gdpr__details">
-                            Data controller: Verónica's Flat, Playa Paraíso, Tenerife, Spain. Your data is processed under GDPR Art. 6(1)(c) (legal obligation) and shared with Spanish authorities as required. Data is retained for the legally mandated period. You may exercise your rights of access, rectification, or erasure by contacting info@veronicas-flat.com.
+                            Data controller: Verónica's Flat, Playa Paraíso, Tenerife, Spain. Your data is processed under GDPR Art. 6(1)(c) (legal obligation) and shared with Spanish authorities as required. Data is retained for the legally mandated period. You may exercise your rights of access, rectification, or erasure by contacting info@veronicasflat.com.
                         </p>
                     </div>
 

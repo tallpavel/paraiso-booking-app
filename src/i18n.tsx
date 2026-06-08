@@ -277,7 +277,7 @@ const translations = {
         'booking.termsPolicyLink': 'Payment Terms & Cancellation Policy',
         'booking.gdprConsent': 'I agree to the processing of my personal data (name, email, phone) for the purpose of managing my booking. For more details, see our',
         'booking.gdprPrivacyLink': 'Privacy & Data Protection Policy',
-        'booking.gdprDetails': 'Data controller: Verónica\'s Flat, Playa Paraíso, Tenerife, Spain. Your data is processed under GDPR Art. 6(1)(b) (contractual necessity) and will be retained only for the duration of your booking. You may request access, rectification, or erasure at any time by contacting info@veronicas-flat.com.',
+        'booking.gdprDetails': 'Data controller: Verónica\'s Flat, Playa Paraíso, Tenerife, Spain. Your data is processed under GDPR Art. 6(1)(b) (contractual necessity) and will be retained only for the duration of your booking. You may request access, rectification, or erasure at any time by contacting info@veronicasflat.com.',
         'booking.name': 'Your Name',
         'booking.namePlaceholder': 'Full name…',
         'booking.email': 'Your Email',
@@ -462,7 +462,7 @@ const translations = {
         'terms.s8.li1': 'Processing and managing your reservation',
         'terms.s8.li2': 'Fulfilling legal reporting requirements (Parte de Viajeros to Spanish National Police)',
         'terms.s8.li3': 'Sending booking confirmations and check-in instructions',
-        'terms.s8.p2': 'We do not sell, share, or use your data for marketing purposes. Your data is stored securely and retained only for the legally required period. You have the right to access, rectify, or request deletion of your data by contacting us at info@veronicas-flat.com.',
+        'terms.s8.p2': 'We do not sell, share, or use your data for marketing purposes. Your data is stored securely and retained only for the legally required period. You have the right to access, rectify, or request deletion of your data by contacting us at info@veronicasflat.com.',
 
         // S9 – Force Majeure
         'terms.s9.title': 'Force Majeure',
@@ -803,7 +803,7 @@ const translations = {
         'booking.termsPolicyLink': 'Términos de Pago y Política de Cancelación',
         'booking.gdprConsent': 'Acepto el tratamiento de mis datos personales (nombre, email, teléfono) para gestionar mi reserva. Para más detalles, consulte nuestra',
         'booking.gdprPrivacyLink': 'Política de Privacidad y Protección de Datos',
-        'booking.gdprDetails': 'Responsable del tratamiento: Verónica\'s Flat, Playa Paraíso, Tenerife, España. Sus datos se procesan conforme al Art. 6(1)(b) del RGPD (necesidad contractual) y se conservarán únicamente durante la duración de su reserva. Puede solicitar acceso, rectificación o supresión en cualquier momento contactando a info@veronicas-flat.com.',
+        'booking.gdprDetails': 'Responsable del tratamiento: Verónica\'s Flat, Playa Paraíso, Tenerife, España. Sus datos se procesan conforme al Art. 6(1)(b) del RGPD (necesidad contractual) y se conservarán únicamente durante la duración de su reserva. Puede solicitar acceso, rectificación o supresión en cualquier momento contactando a info@veronicasflat.com.',
         'booking.name': 'Tu Nombre',
         'booking.namePlaceholder': 'Nombre completo…',
         'booking.email': 'Tu Email',
@@ -980,7 +980,7 @@ const translations = {
         'terms.s8.li1': 'Procesar y gestionar su reserva',
         'terms.s8.li2': 'Cumplir requisitos legales de información (Parte de Viajeros a la Policía Nacional)',
         'terms.s8.li3': 'Enviar confirmaciones de reserva e instrucciones de check-in',
-        'terms.s8.p2': 'No vendemos, compartimos ni utilizamos sus datos con fines de marketing. Sus datos se almacenan de forma segura y se conservan solo durante el período legalmente requerido. Puede ejercer sus derechos de acceso, rectificación o supresión contactándonos en info@veronicas-flat.com.',
+        'terms.s8.p2': 'No vendemos, compartimos ni utilizamos sus datos con fines de marketing. Sus datos se almacenan de forma segura y se conservan solo durante el período legalmente requerido. Puede ejercer sus derechos de acceso, rectificación o supresión contactándonos en info@veronicasflat.com.',
 
         'terms.s9.title': 'Fuerza Mayor',
         'terms.s9.p1': 'Ninguna de las partes será responsable por el incumplimiento de obligaciones debido a circunstancias fuera de su control razonable, incluyendo: desastres naturales, clima extremo, pandemias, restricciones gubernamentales de viaje, cancelaciones de aerolíneas o disturbios civiles.',
@@ -1265,7 +1265,6 @@ const translations = {
         'reviews.fallback3Text': 'Naše rodina si tu užila naprosto nádhernou dovolenou. Děti milovaly bazén a my jsme si užívali neuvěřitelné západy slunce z terasy každý večer.',
         'reviews.fallback3Date': 'Listopad 2025',
 
-        // CTA Rezervace
         // FAQ
         'faq.label': 'FAQ',
         'faq.title': 'Často Kladené Dotazy',
@@ -1273,9 +1272,9 @@ const translations = {
         'faq.q1': 'Jaké jsou časy check-inu a check-outu?',
         'faq.a1': 'Check-in je od 15:00 a check-out do 11:00. Dřívější check-in nebo pozdější check-out může být k dispozici na vyžádání — stačí nás kontaktovat předem.',
         'faq.q2': 'Jak rezervuji a jaký je platební proces?',
-        'faq.a2': 'Jednoduše vyberte vaše termíny a odešlete žádost o rezervaci. Potvrdíme dostupnost do 24 hodin. Nevratná záloha 30% zajistí vaši rezervaci, zbývající částka je splatná 14 dní před check-inem.',
+        'faq.a2': 'Jednoduše vyberte vaše termíny a odešlete žádost o rezervaci. Potvrdíme dostupnost do 24 hodin. Po potvrzení je vyžadována záloha 30% do 48 hodin pro zajištění rezervace. Zbývajících 70% bude vyžádáno 14 dní před příjezdem přes bezpečný platební odkaz. Pro rezervace na poslední chvíli (méně než 14 dní předem) je vyžadována plná platba.',
         'faq.q3': 'Jaká je storno politika?',
-        'faq.a3': 'Zrušení více než 30 dní předem: plná náhrada (minus záloha). 15–30 dní: 50% náhrada. Méně než 15 dní: bez náhrady. Záloha 30% je nevratná ve všech případech.',
+        'faq.a3': 'Zrušení více než 14 dní předem: plná náhrada zálohy. Méně než 14 dní: bez náhrady. Nedostavení se (no-show) je účtováno v plné výši. Za předčasný odjezd se peníze nevrací.',
         'faq.q4': 'Jaké vybavení je zahrnuto?',
         'faq.a4': 'Apartmán zahrnuje bezplatné WiFi, klimatizaci, plně vybavenou kuchyni, Smart TV s Netflixem, soukromou terasu s výhledem na moře, bezplatné parkování, pračku, ložní prádlo, ručníky a přístup ke společnému bazénu.',
         'faq.q5': 'Jak daleko je nejbližší pláž?',
@@ -1283,12 +1282,13 @@ const translations = {
         'faq.q6': 'Jak se dostanu z letiště?',
         'faq.a6': 'Letiště Tenerife South (TFS) je přibližně 20 minut autem (25 km). Můžeme zajistit transfer z letiště nebo poskytnout podrobné pokyny pro cestu. Na letišti jsou k dispozici taxi a půjčovny aut.',
         'faq.q7': 'Jaký je minimální pobyt a ceny?',
-        'faq.a7': 'Minimální pobyt je 3 noci. Ceny se liší podle sezóny — aktuální ceny najdete v sekci rezervací. Přímá rezervace u nás vždy garantuje nejlepší cenu bez provizí.',
+        'faq.a7': 'Minimální pobyt jsou 3 noci. Ceny se liší podle sezóny — aktuální ceny najdete v sekci rezervací. Přímá rezervace u nás vždy garantuje nejlepší cenu bez provizí.',
         'faq.q8': 'Jsou povolena domácí zvířata?',
         'faq.a8': 'Bohužel domácí zvířata nejsou v apartmánu povolena kvůli předpisům komunity. Omlouváme se za případné nepříjemnosti.',
         'faq.moreQuestions': 'Máte další otázky?',
         'faq.contactUs': 'Kontaktujte nás',
 
+        // Booking CTA
         'bookingCta.title': 'Připraveni na Rajskou Dovolenou?',
         'bookingCta.subtitle': 'Zarezervujte si pobyt v apartmánu Veroniky a probouzejte se s úžasným výhledem na oceán, teplým kanárským sluncem a zvukem vln jen pár kroků daleko.',
         'bookingCta.button': 'Zkontrolovat Dostupnost',
@@ -1319,7 +1319,7 @@ const translations = {
         'booking.termsPolicyLink': 'Platební a storno podmínky',
         'booking.gdprConsent': 'Souhlasím se zpracováním osobních údajů (jméno, e-mail, telefon) za účelem správy mé rezervace. Více informací naleznete v našich',
         'booking.gdprPrivacyLink': 'Zásadách ochrany osobních údajů',
-        'booking.gdprDetails': 'Správce údajů: Verónica\'s Flat, Playa Paraíso, Tenerife, Španělsko. Vaše údaje jsou zpracovávány dle čl. 6 odst. 1 písm. b) GDPR (smluvní nezbytnost) a budou uchovány pouze po dobu trvání rezervace. Můžete požádat o přístup, opravu nebo výmaz kdykoli na info@veronicas-flat.com.',
+        'booking.gdprDetails': 'Správce údajů: Verónica\'s Flat, Playa Paraíso, Tenerife, Španělsko. Vaše údaje jsou zpracovávány dle čl. 6 odst. 1 písm. b) GDPR (smluvní nezbytnost) a budou uchovány pouze po dobu trvání rezervace. Můžete požádat o přístup, opravu nebo výmaz kdykoli na info@veronicasflat.com.',
         'booking.name': 'Vaše Jméno',
         'booking.namePlaceholder': 'Celé jméno…',
         'booking.email': 'Váš E-mail',
@@ -1496,7 +1496,7 @@ const translations = {
         'terms.s8.li1': 'Zpracování a správě vaší rezervace',
         'terms.s8.li2': 'Plnění zákonných oznamovacích povinností (Parte de Viajeros španělské policii)',
         'terms.s8.li3': 'Zasílání potvrzení rezervace a pokynů k check-inu',
-        'terms.s8.p2': 'Vaše údaje neprodáváme, nesdílíme ani nepoužíváme k marketingovým účelům. Údaje jsou bezpečně uloženy a uchovávány pouze po zákonem stanovenou dobu. Svá práva na přístup, opravu nebo výmaz údajů můžete uplatnit na info@veronicas-flat.com.',
+        'terms.s8.p2': 'Vaše údaje neprodáváme, nesdílíme ani nepoužíváme k marketingovým účelům. Údaje jsou bezpečně uloženy a uchovávány pouze po zákonem stanovenou dobu. Svá práva na přístup, opravu nebo výmaz údajů můžete uplatnit na info@veronicasflat.com.',
 
         'terms.s9.title': 'Vyšší moc',
         'terms.s9.p1': 'Žádná ze stran neodpovídá za nesplnění povinností v důsledku okolností mimo její přiměřenou kontrolu, včetně: přírodních katastrof, extrémního počasí, pandemií, vládních cestovních omezení, zrušení letů nebo občanských nepokojů.',

@@ -186,7 +186,7 @@ export default function PaymentResultPage() {
                                 {t('payment.contactSubtitle' as TranslationKey)}
                             </p>
                             <a
-                                href="mailto:info@veronicas-flat.com"
+                                href="mailto:info@veronicasflat.com"
                                 className="inline-block rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-ocean shadow-lg transition-all hover:bg-sand hover:shadow-xl"
                             >
                                 {t('payment.contactBtn' as TranslationKey)}
