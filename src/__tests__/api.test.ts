@@ -3,7 +3,7 @@ import * as api from '../api';
 
 // Mock the fetch function
 const mockFetch = vi.fn();
-global.fetch = mockFetch;
+globalThis.fetch = mockFetch as any;
 
 // Helper to mock successful fetch responses
 const mockSuccessfulFetch = (data: any, status: number = 200) => {
@@ -764,7 +764,7 @@ describe('API Service', () => {
     // Test submitCheckInData
     describe('submitCheckInData', () => {
         const checkInToken = 'checkin-token-456';
-        const guests = [{ fullName: 'Test Guest', dateOfBirth: '2000-01-01', nationality: 'Test', documentType: 'passport', documentNumber: '12345' }];
+        const guests = [{ fullName: 'Test Guest', dateOfBirth: '2000-01-01', nationality: 'Test', documentType: 'passport' as const, documentNumber: '12345' }];
         it('should submit check-in data', async () => {
             const expectedResponse = { message: 'Check-in data submitted', guests: guests, submittedAt: new Date().toISOString() };
             mockSuccessfulFetch(expectedResponse);
@@ -947,7 +947,7 @@ describe('API Service', () => {
     describe('updateConfirmedReservation', () => {
         const token = 'admin-token';
         const id = 'conf-id-2';
-        const updateData = { totalPrice: 150, paymentStatus: 'pending' };
+        const updateData = { totalPrice: 150, paymentStatus: 'pending' as const };
 
         it('should update a confirmed reservation', async () => {
             const expectedResponse = { _id: id, guestName: 'Test', guestEmail: 't@e.com', checkIn: '', checkOut: '', totalPrice: 150, paymentStatus: 'pending', createdAt: '', updatedAt: '' };
