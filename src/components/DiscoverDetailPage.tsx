@@ -18,6 +18,7 @@ interface DiscoverTopic {
         titleKey: TranslationKey;
         bodyKey: TranslationKey;
         image?: string;
+        imageRatio?: 'portrait' | 'landscape';
         mapLocationId?: string;
     }[];
     tipsKey: TranslationKey;
@@ -31,8 +32,8 @@ const TOPICS: DiscoverTopic[] = [
         titleKey: 'discoverPage.beaches.title',
         heroDescKey: 'discoverPage.beaches.heroDesc',
         sections: [
-            { titleKey: 'discoverPage.beaches.s1Title', bodyKey: 'discoverPage.beaches.s1Body', image: '/discover/playa-las-galgas.png', mapLocationId: 'beach-galgas' },
-            { titleKey: 'discoverPage.beaches.s2Title', bodyKey: 'discoverPage.beaches.s2Body', image: '/discover/playa-de-ajabo.png', mapLocationId: 'beach-ajabo' },
+            { titleKey: 'discoverPage.beaches.s1Title', bodyKey: 'discoverPage.beaches.s1Body', image: '/discover/PlayaLasGalgasReal.jpeg', imageRatio: 'portrait', mapLocationId: 'beach-galgas' },
+            { titleKey: 'discoverPage.beaches.s2Title', bodyKey: 'discoverPage.beaches.s2Body', image: '/discover/PlayaDeAjaboReal.jpeg', imageRatio: 'landscape', mapLocationId: 'beach-ajabo' },
             { titleKey: 'discoverPage.beaches.s3Title', bodyKey: 'discoverPage.beaches.s3Body' },
             { titleKey: 'discoverPage.beaches.s4Title', bodyKey: 'discoverPage.beaches.s4Body' },
             { titleKey: 'discoverPage.beaches.s5Title', bodyKey: 'discoverPage.beaches.s5Body' },
@@ -197,22 +198,64 @@ export default function DiscoverDetailPage() {
                                 className={`group transition-all duration-700 ease-out ${pageReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
                                 style={{ transitionDelay: `${300 + i * 200}ms` }}
                             >
-                                <div className={`relative grid items-center gap-8 lg:grid-cols-5 ${i > 0 ? 'mt-20 pt-20 border-t border-navy/6' : ''}`}>
-                                    {/* Number accent */}
-                                    <div className={`lg:col-span-1 ${i % 2 !== 0 ? 'lg:order-2' : ''}`}>
-                                        <div className="flex items-center gap-4 lg:flex-col lg:items-start">
-                                            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-ocean/15 to-ocean/5 text-xl font-bold text-ocean ring-1 ring-ocean/10">
-                                                {String(i + 1).padStart(2, '0')}
-                                            </span>
-                                            <div className="hidden h-px flex-1 bg-gradient-to-r from-ocean/20 to-transparent lg:block lg:h-16 lg:w-px lg:bg-gradient-to-b" />
+                                {section.image && section.imageRatio === 'portrait' ? (
+                                    /* ── Editorial side-by-side layout for PORTRAIT images ── */
+                                    <div className={`relative grid items-stretch gap-8 lg:grid-cols-2 ${i > 0 ? 'mt-20 pt-20 border-t border-navy/6' : ''}`}>
+                                        {/* Portrait image column */}
+                                        <div className={`relative ${i % 2 !== 0 ? 'lg:order-2' : ''}`}>
+                                            <div className="relative overflow-hidden rounded-3xl shadow-xl shadow-navy/10" style={{ aspectRatio: '3/4' }}>
+                                                <img
+                                                    src={section.image}
+                                                    alt={t(section.titleKey)}
+                                                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                                    loading="lazy"
+                                                />
+                                                {/* Subtle bottom gradient for depth */}
+                                                <div className="absolute inset-0 bg-gradient-to-t from-navy/20 via-transparent to-transparent" />
+                                                <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-navy/5" />
+                                                {/* Number badge on the image */}
+                                                <span className="absolute left-4 top-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/90 text-lg font-bold text-ocean shadow-lg backdrop-blur-sm">
+                                                    {String(i + 1).padStart(2, '0')}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {/* Text content column */}
+                                        <div className={`flex flex-col justify-center py-4 ${i % 2 !== 0 ? 'lg:order-1' : ''}`}>
+                                            <h2 className="mb-5 font-heading text-2xl font-bold text-navy sm:text-3xl lg:text-4xl">
+                                                {t(section.titleKey)}
+                                            </h2>
+                                            <p className="text-base leading-[1.85] text-warm-gray sm:text-lg">
+                                                {t(section.bodyKey)}
+                                            </p>
+                                            {section.mapLocationId && (
+                                                <div className="mt-6">
+                                                    <Link 
+                                                        to={`/?focusMap=${section.mapLocationId}#location`}
+                                                        className="inline-flex items-center gap-2 rounded-full border border-ocean/20 bg-ocean/5 px-5 py-2.5 text-sm font-semibold text-ocean transition-all hover:bg-ocean hover:text-white"
+                                                    >
+                                                        {t('discoverPage.viewOnMap' as any)} &rarr;
+                                                    </Link>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    {/* Text content */}
-                                    <div className={`lg:col-span-4 ${i % 2 !== 0 ? 'lg:order-1' : ''}`}>
-                                        <h2 className="mb-5 font-heading text-2xl font-bold text-navy sm:text-3xl lg:text-4xl">
-                                            {t(section.titleKey)}
-                                        </h2>
-                                        {section.image && (
+                                ) : section.image ? (
+                                    /* ── Landscape image layout (image above text) ── */
+                                    <div className={`relative grid items-center gap-8 lg:grid-cols-5 ${i > 0 ? 'mt-20 pt-20 border-t border-navy/6' : ''}`}>
+                                        {/* Number accent */}
+                                        <div className={`lg:col-span-1 ${i % 2 !== 0 ? 'lg:order-2' : ''}`}>
+                                            <div className="flex items-center gap-4 lg:flex-col lg:items-start">
+                                                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-ocean/15 to-ocean/5 text-xl font-bold text-ocean ring-1 ring-ocean/10">
+                                                    {String(i + 1).padStart(2, '0')}
+                                                </span>
+                                                <div className="hidden h-px flex-1 bg-gradient-to-r from-ocean/20 to-transparent lg:block lg:h-16 lg:w-px lg:bg-gradient-to-b" />
+                                            </div>
+                                        </div>
+                                        {/* Text content with landscape image */}
+                                        <div className={`lg:col-span-4 ${i % 2 !== 0 ? 'lg:order-1' : ''}`}>
+                                            <h2 className="mb-5 font-heading text-2xl font-bold text-navy sm:text-3xl lg:text-4xl">
+                                                {t(section.titleKey)}
+                                            </h2>
                                             <div className="relative mb-6 overflow-hidden rounded-2xl shadow-lg shadow-navy/10">
                                                 <img
                                                     src={section.image}
@@ -222,22 +265,54 @@ export default function DiscoverDetailPage() {
                                                 />
                                                 <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-navy/5" />
                                             </div>
-                                        )}
-                                        <p className="text-base leading-[1.85] text-warm-gray sm:text-lg">
-                                            {t(section.bodyKey)}
-                                        </p>
-                                        {section.mapLocationId && (
-                                            <div className="mt-6">
-                                                <Link 
-                                                    to={`/?focusMap=${section.mapLocationId}#location`}
-                                                    className="inline-flex items-center gap-2 rounded-full border border-ocean/20 bg-ocean/5 px-5 py-2.5 text-sm font-semibold text-ocean transition-all hover:bg-ocean hover:text-white"
-                                                >
-                                                    {t('discoverPage.viewOnMap' as any)} &rarr;
-                                                </Link>
-                                            </div>
-                                        )}
+                                            <p className="text-base leading-[1.85] text-warm-gray sm:text-lg">
+                                                {t(section.bodyKey)}
+                                            </p>
+                                            {section.mapLocationId && (
+                                                <div className="mt-6">
+                                                    <Link 
+                                                        to={`/?focusMap=${section.mapLocationId}#location`}
+                                                        className="inline-flex items-center gap-2 rounded-full border border-ocean/20 bg-ocean/5 px-5 py-2.5 text-sm font-semibold text-ocean transition-all hover:bg-ocean hover:text-white"
+                                                    >
+                                                        {t('discoverPage.viewOnMap' as any)} &rarr;
+                                                    </Link>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (
+                                    /* ── Original number-accent layout for sections WITHOUT images ── */
+                                    <div className={`relative grid items-center gap-8 lg:grid-cols-5 ${i > 0 ? 'mt-20 pt-20 border-t border-navy/6' : ''}`}>
+                                        {/* Number accent */}
+                                        <div className={`lg:col-span-1 ${i % 2 !== 0 ? 'lg:order-2' : ''}`}>
+                                            <div className="flex items-center gap-4 lg:flex-col lg:items-start">
+                                                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-ocean/15 to-ocean/5 text-xl font-bold text-ocean ring-1 ring-ocean/10">
+                                                    {String(i + 1).padStart(2, '0')}
+                                                </span>
+                                                <div className="hidden h-px flex-1 bg-gradient-to-r from-ocean/20 to-transparent lg:block lg:h-16 lg:w-px lg:bg-gradient-to-b" />
+                                            </div>
+                                        </div>
+                                        {/* Text content */}
+                                        <div className={`lg:col-span-4 ${i % 2 !== 0 ? 'lg:order-1' : ''}`}>
+                                            <h2 className="mb-5 font-heading text-2xl font-bold text-navy sm:text-3xl lg:text-4xl">
+                                                {t(section.titleKey)}
+                                            </h2>
+                                            <p className="text-base leading-[1.85] text-warm-gray sm:text-lg">
+                                                {t(section.bodyKey)}
+                                            </p>
+                                            {section.mapLocationId && (
+                                                <div className="mt-6">
+                                                    <Link 
+                                                        to={`/?focusMap=${section.mapLocationId}#location`}
+                                                        className="inline-flex items-center gap-2 rounded-full border border-ocean/20 bg-ocean/5 px-5 py-2.5 text-sm font-semibold text-ocean transition-all hover:bg-ocean hover:text-white"
+                                                    >
+                                                        {t('discoverPage.viewOnMap' as any)} &rarr;
+                                                    </Link>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
