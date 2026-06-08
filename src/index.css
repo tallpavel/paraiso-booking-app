@@ -629,6 +629,25 @@ a.btn {
   line-height: 1.4;
 }
 
+.location-logo-img {
+    width: 44px;
+    height: 44px;
+    background: #f6efdb;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.location-logo-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
 .location-popup-link {
   display: inline-block;
   font-size: 0.8125rem;
@@ -662,23 +681,6 @@ a.btn {
   border: 2px solid var(--color-ocean);
   opacity: 0;
   animation: logoPulse 3s ease-out infinite;
-}
-
-.location-logo-img {
-  position: relative;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid white;
-  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.25);
-  background: white;
-}
-
-.location-logo-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 @keyframes logoPulse {
@@ -921,7 +923,10 @@ a.btn {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: #f6efdb;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 /* Emoji in category tiles */

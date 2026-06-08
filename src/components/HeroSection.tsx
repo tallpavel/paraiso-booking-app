@@ -37,7 +37,7 @@ export default function HeroSection() {
                         alt="Verónica's Flat logo"
                         width={180}
                         height={180}
-                        className="h-28 w-28 rounded-full object-cover shadow-2xl ring-2 ring-white/20 sm:h-44 sm:w-44"
+                        className="h-28 w-28 rounded-full bg-[#f6efdb] object-contain p-3 shadow-2xl ring-2 ring-white/20 sm:h-44 sm:w-44 sm:p-5"
                     />
                 </div>
 
