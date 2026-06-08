@@ -6,8 +6,8 @@ import type { TranslationKey } from '../i18n';
    CONFIGURATION — Replace these with your real Trustpilot values
    once you register at https://business.trustpilot.com
    ───────────────────────────────────────────────────────────────────── */
-const TRUSTPILOT_URL = 'https://www.trustpilot.com/review/example.com';
-const BUSINESS_UNIT_ID = '46a7e93b0000ff00059f3827'; // placeholder — replace with your real ID
+const TRUSTPILOT_URL = 'https://www.trustpilot.com/review/veronicasflat.com';
+const BUSINESS_UNIT_ID = '6a267c0dd088a85967cd1b32';
 
 /* ── Fallback Reviews (shown when Trustpilot widget fails) ─────────── */
 const FALLBACK_REVIEWS: {

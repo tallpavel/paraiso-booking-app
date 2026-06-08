@@ -68,7 +68,7 @@ export default function HeroSection() {
 
                 {/* Trustpilot Trust Badge */}
                 <a
-                    href="https://www.trustpilot.com/review/example.com"
+                    href="https://www.trustpilot.com/review/veronicasflat.com"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group mx-auto mt-8 flex w-full max-w-xs flex-wrap items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-8 py-3 text-sm backdrop-blur-sm transition-all duration-200 hover:bg-white/10 hover:border-white/25 sm:mt-12 sm:inline-flex sm:w-auto sm:max-w-none sm:gap-3 sm:px-5 sm:py-2.5 sm:text-sm"
