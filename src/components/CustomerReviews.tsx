@@ -202,13 +202,12 @@ export default function CustomerReviews() {
                     ref={widgetRef}
                     className={`trustpilot-widget ${widgetLoaded ? '' : 'hidden'}`}
                     data-locale={tpLocale}
-                    data-template-id="53aa8912dec7e10d38f59f36"  /* Carousel */
+                    data-template-id="56278e9abfbbba0bdcd568bc"
                     data-businessunit-id={BUSINESS_UNIT_ID}
-                    data-style-height="140px"
+                    data-token="4e4d70d6-07d3-424a-8c8f-e6acd7c7d679"
+                    data-style-height="52px"
                     data-style-width="100%"
                     data-theme="light"
-                    data-stars="4,5"
-                    data-review-languages={locale}
                 >
                     {/* Fallback link shown while widget loads */}
                     <a
