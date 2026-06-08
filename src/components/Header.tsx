@@ -124,7 +124,7 @@ export default function Header() {
                         alt="Verónica's Flat logo"
                         width={48}
                         height={48}
-                        className="h-12 w-12 rounded-full bg-[#f6efdb] object-contain p-1.5"
+                        className="h-12 w-12 rounded-full bg-[#f6efdb] object-contain p-2"
                     />
                     <span className="font-heading text-lg font-bold tracking-wide text-navy">
                         Verónica's Flat

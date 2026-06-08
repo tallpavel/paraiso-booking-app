@@ -18,7 +18,7 @@ export default function Footer() {
                                 alt="Verónica's Flat logo"
                                 width={44}
                                 height={44}
-                                className="h-11 w-11 rounded-full bg-[#f6efdb] object-contain p-1.5"
+                                className="h-11 w-11 rounded-full bg-[#f6efdb] object-contain p-2"
                             />
                             <span className="font-heading text-lg font-bold text-white">
                                 Verónica's Flat
