@@ -119,13 +119,15 @@ export default function Header() {
                         }`}
                     aria-label="Verónica's Flat — Home"
                 >
-                    <img
-                        src="/logo.png"
-                        alt="Verónica's Flat logo"
-                        width={48}
-                        height={48}
-                        className="h-12 w-12 rounded-full bg-[#f6efdb] object-contain p-2"
-                    />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f6efdb]">
+                        <img
+                            src="/logo.png"
+                            alt="Verónica's Flat logo"
+                            width={48}
+                            height={48}
+                            className="h-[70%] w-[70%] object-contain"
+                        />
+                    </div>
                     <span className="font-heading text-lg font-bold tracking-wide text-navy">
                         Verónica's Flat
                     </span>

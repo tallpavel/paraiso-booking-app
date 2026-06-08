@@ -30,15 +30,17 @@ export default function HeroSection() {
             </div>
 
             {/* Content */}
-            <div className="relative z-10 mx-auto max-w-4xl px-6 pb-28 text-center">
+            <div className="relative z-10 mx-auto max-w-4xl px-6 pb-28 pt-16 text-center sm:pt-20">
                 <div className="mb-10 flex justify-center sm:mb-12">
-                    <img
-                        src="/logo.png"
-                        alt="Verónica's Flat logo"
-                        width={180}
-                        height={180}
-                        className="h-28 w-28 rounded-full bg-[#f6efdb] object-contain p-6 shadow-2xl ring-2 ring-white/20 sm:h-44 sm:w-44 sm:p-8"
-                    />
+                    <div className="h-40 w-40 shrink-0 overflow-hidden rounded-full bg-[#f6efdb] shadow-2xl ring-2 ring-white/20 sm:h-56 sm:w-56">
+                        <img
+                            src="/logo.png"
+                            alt="Verónica's Flat logo"
+                            width={180}
+                            height={180}
+                            className="h-full w-full object-contain p-4 sm:p-6"
+                        />
+                    </div>
                 </div>
 
                 <h1 className="mb-5 font-heading text-3xl font-bold leading-tight text-white sm:mb-6 sm:text-5xl md:text-6xl lg:text-7xl" style={{ textShadow: '0 4px 6px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2), 0 0 20px rgba(0,0,0,0.2)' }}>

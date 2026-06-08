@@ -13,13 +13,15 @@ export default function Footer() {
                     {/* Brand */}
                     <div className="sm:col-span-2 lg:col-span-1">
                         <div className="mb-4 flex items-center gap-3">
-                            <img
-                                src="/logo.png"
-                                alt="Verónica's Flat logo"
-                                width={44}
-                                height={44}
-                                className="h-11 w-11 rounded-full bg-[#f6efdb] object-contain p-2"
-                            />
+                            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f6efdb]">
+                                <img
+                                    src="/logo.png"
+                                    alt="Verónica's Flat logo"
+                                    width={44}
+                                    height={44}
+                                    className="h-[70%] w-[70%] object-contain"
+                                />
+                            </div>
                             <span className="font-heading text-lg font-bold text-white">
                                 Verónica's Flat
                             </span>
