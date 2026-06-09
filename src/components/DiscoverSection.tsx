@@ -4,11 +4,11 @@ import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n';
 
 const ACTIVITIES: { image: string; titleKey: TranslationKey; descKey: TranslationKey; href: string }[] = [
-    { image: '/discover/beach.png', titleKey: 'discover.beachTitle', descKey: 'discover.beachDesc', href: '/discover/beaches' },
-    { image: '/discover/snorkel.png', titleKey: 'discover.snorkelTitle', descKey: 'discover.snorkelDesc', href: '/discover/snorkeling' },
-    { image: '/discover/whale.png', titleKey: 'discover.whaleTitle', descKey: 'discover.whaleDesc', href: '/discover/whales' },
+    { image: '/discover/beachReal.jpeg', titleKey: 'discover.beachTitle', descKey: 'discover.beachDesc', href: '/discover/beaches' },
+    { image: '/discover/FoodReal.jpeg', titleKey: 'discover.foodTitle', descKey: 'discover.foodDesc', href: '/discover/food' },
     { image: '/discover/hiking.png', titleKey: 'discover.hikingTitle', descKey: 'discover.hikingDesc', href: '/discover/hiking' },
-    { image: '/discover/food.png', titleKey: 'discover.foodTitle', descKey: 'discover.foodDesc', href: '/discover/food' },
+    { image: '/discover/DivingReal.JPG', titleKey: 'discover.snorkelTitle', descKey: 'discover.snorkelDesc', href: '/discover/snorkeling' },
+    { image: '/discover/whale.png', titleKey: 'discover.whaleTitle', descKey: 'discover.whaleDesc', href: '/discover/whales' },
 ];
 
 export default function DiscoverSection() {

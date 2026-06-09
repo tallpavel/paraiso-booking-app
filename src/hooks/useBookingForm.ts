@@ -12,6 +12,7 @@ export interface FormErrors {
     email?: string;
     phone?: string;
     dates?: string;
+    childrenAges?: string;
 }
 
 export type BookingStatus = 'idle' | 'sending' | 'sent' | 'error';
@@ -28,8 +29,13 @@ interface UseBookingFormParams {
 
 export interface BookingFormResult {
     // ── Guest state ─────────────────────────────────────────────────
+    adults: number;
+    setAdults: (n: number) => void;
+    children: number;
+    setChildrenCount: (n: number) => void;
+    childrenAges: (number | undefined)[];
+    setChildAge: (index: number, age: number | undefined) => void;
     guests: number;
-    setGuests: (n: number) => void;
     guestName: string;
     setGuestName: (v: string) => void;
     guestEmail: string;
@@ -87,7 +93,10 @@ export function useBookingForm({
     const [preferredPaymentMethod, setPreferredPaymentMethod] = useState<'stripe' | 'paypal'>('stripe');
 
     // ── Guest details ────────────────────────────────────────────────
-    const [guests, setGuests] = useState(2);
+    const [adults, setAdults] = useState(1);
+    const [childrenCount, setChildrenCountRaw] = useState(0);
+    const [childrenAges, setChildrenAges] = useState<(number | undefined)[]>([]);
+    const guests = adults + childrenCount;
     const [guestName, setGuestName] = useState('');
     const [guestEmail, setGuestEmail] = useState('');
     const [guestPhone, setGuestPhone] = useState('');
@@ -99,6 +108,32 @@ export function useBookingForm({
     const [gdprConsent, setGdprConsent] = useState(false);
     const [termsConsent, setTermsConsent] = useState(false);
     const spam = useSpamProtection('booking-form');
+
+    // ── Children helpers ──────────────────────────────────────────────
+    const setChildrenCount = (n: number) => {
+        const clamped = Math.max(0, Math.min(3 - adults, n));
+        setChildrenCountRaw(clamped);
+        setChildrenAges((prev) => {
+            if (clamped > prev.length) {
+                // grow: add undefined slots
+                return [...prev, ...Array(clamped - prev.length).fill(undefined)];
+            }
+            // shrink: trim from end
+            return prev.slice(0, clamped);
+        });
+    };
+
+    const setChildAge = (index: number, age: number | undefined) => {
+        setChildrenAges((prev) => {
+            const next = [...prev];
+            next[index] = age;
+            return next;
+        });
+        // Clear inline error when user fills an age
+        if (errors.childrenAges) {
+            setErrors((prev) => ({ ...prev, childrenAges: undefined }));
+        }
+    };
 
     // ── Validation (step 2) ──────────────────────────────────────────
     const validateDetails = (): FormErrors => {
@@ -124,6 +159,15 @@ export function useBookingForm({
             errs.phone = t('booking.errorPhoneInvalid');
         } else if (fullPhone.replace(/\D/g, '').length < 6) {
             errs.phone = t('booking.errorPhoneInvalid');
+        }
+        // ── Children age validation ──────────────────────────────────
+        if (childrenCount > 0) {
+            const hasInvalid = childrenAges.some(
+                (age) => age === undefined || age < 6 || age > 17,
+            );
+            if (hasInvalid) {
+                errs.childrenAges = t('booking.errorChildAge');
+            }
         }
         return errs;
     };
@@ -164,7 +208,9 @@ export function useBookingForm({
         setDialCode(guessCountry().dial);
         setComment('');
         setPreferredPaymentMethod('stripe');
-        setGuests(2);
+        setAdults(1);
+        setChildrenCountRaw(0);
+        setChildrenAges([]);
         setStep(1);
         setStatus('idle');
         setGdprConsent(false);
@@ -199,6 +245,9 @@ export function useBookingForm({
                 checkOut: toDateKey(checkOut!),
                 nights: pricing!.nights,
                 totalPrice: pricing!.total,
+                adults,
+                children: childrenCount,
+                childrenAges: childrenAges.filter((a): a is number => a !== undefined),
                 comment: comment.trim() || undefined,
                 locale,
                 turnstileToken: spamCheck.turnstileToken,
@@ -222,7 +271,10 @@ export function useBookingForm({
     };
 
     return {
-        guests, setGuests,
+        adults, setAdults: (n: number) => setAdults(Math.max(1, Math.min(3 - childrenCount, n))),
+        children: childrenCount, setChildrenCount,
+        childrenAges, setChildAge,
+        guests,
         guestName, setGuestName,
         guestEmail, setGuestEmail,
         guestPhone, setGuestPhone,

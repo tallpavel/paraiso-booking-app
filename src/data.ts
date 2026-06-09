@@ -38,8 +38,8 @@ export const amenities: readonly Amenity[] = [
     },
     {
         icon: '🅿️',
-        title: 'Free Parking',
-        description: 'Secure on-site parking space included with your stay.',
+        title: 'Public Parking',
+        description: 'Free public street parking is available near the building.',
     },
 ] as const;
 
@@ -106,7 +106,7 @@ export const galleryItems: readonly GalleryItem[] = [
     { id: 3, src: '/gallery/kitchen.jpg', alt: 'Fully equipped modern kitchen', category: 'interior' },
     { id: 4, src: '/gallery/terrace.jpg', alt: 'Private terrace with panoramic ocean view', category: 'terrace' },
     { id: 5, src: '/gallery/pool.jpg', alt: 'Communal swimming pool with tropical gardens', category: 'pool' },
-    { id: 6, src: '/gallery/beach.jpg', alt: 'Playa Paraíso beach at sunset', category: 'beach' },
+    { id: 6, src: '/discover/beachReal.jpeg', alt: 'Playa Paraíso beach at sunset', category: 'beach' },
     { id: 7, src: '/gallery/bathroom.jpg', alt: 'Modern bathroom with walk-in shower', category: 'interior' },
     { id: 8, src: '/gallery/sunset.jpg', alt: 'Spectacular sunset from the terrace', category: 'exterior' },
 ] as const;

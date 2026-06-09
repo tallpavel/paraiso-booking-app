@@ -78,7 +78,10 @@ export default function BookingCalendar() {
     });
     const {
         step, setStep, goNext, goBack,
-        guests, setGuests,
+        adults, setAdults,
+        children: childrenCount, setChildrenCount,
+        childrenAges, setChildAge,
+        guests,
         guestName, setGuestName,
         guestEmail, setGuestEmail,
         guestPhone, setGuestPhone,
@@ -94,6 +97,22 @@ export default function BookingCalendar() {
         handleSubmit,
         closeConfirmation,
     } = form;
+
+    /** Format guest summary for display (e.g. "2 Adults, 1 Child (8 yrs)") */
+    const guestSummary = useMemo(() => {
+        const adultLabel = adults === 1 ? t('booking.adult') : t('booking.adults');
+        let summary = `${adults} ${adultLabel}`;
+        if (childrenCount > 0) {
+            const childLabel = childrenCount === 1 ? t('booking.child') : t('booking.children');
+            const ages = childrenAges.filter((a): a is number => a !== undefined);
+            summary += `, ${childrenCount} ${childLabel}`;
+            if (ages.length > 0) {
+                const unit = t('booking.ageUnit');
+                summary += ` (${ages.map(a => `${a} ${unit}`).join(', ')})`;
+            }
+        }
+        return summary;
+    }, [adults, childrenCount, childrenAges, t]);
 
     const flatpickrLocale = useMemo(() => ({ firstDayOfWeek: 1 as const }), []);
 
@@ -610,23 +629,99 @@ export default function BookingCalendar() {
                                     {errors.phone && <p className="mt-1 text-xs text-coral" role="alert">{errors.phone}</p>}
                                 </div>
 
-                                {/* Guests */}
+                                {/* Guests — Adults & Children steppers */}
                                 <div>
-                                    <label htmlFor="guest-count" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
+                                    <p className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-warm-gray">
                                         {t('booking.guests')}
-                                    </label>
-                                    <select
-                                        id="guest-count"
-                                        value={guests}
-                                        onChange={(e) => setGuests(Number(e.target.value))}
-                                        className="w-full rounded-xl border border-sand bg-sand-light px-4 py-3 font-medium text-navy focus:outline-none focus:ring-2 focus:ring-ocean"
-                                    >
-                                        {[1, 2, 3].map((n) => (
-                                            <option key={n} value={n}>
-                                                {n} {n > 1 ? t('booking.guests_plural') : t('booking.guest')}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    </p>
+
+                                    {/* Adults row */}
+                                    <div className="flex items-center justify-between rounded-xl border border-sand bg-sand-light px-4 py-3 mb-2">
+                                        <span className="text-sm font-medium text-navy">{t('booking.adults')}</span>
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => setAdults(adults - 1)}
+                                                disabled={adults <= 1}
+                                                className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-ocean/20 text-ocean transition-all hover:bg-ocean/10 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                aria-label="Decrease adults"
+                                            >
+                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" d="M5 12h14" /></svg>
+                                            </button>
+                                            <span className="w-6 text-center text-base font-bold text-navy">{adults}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setAdults(adults + 1)}
+                                                disabled={adults >= 3 - childrenCount}
+                                                className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-ocean/20 text-ocean transition-all hover:bg-ocean/10 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                aria-label="Increase adults"
+                                            >
+                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" d="M12 5v14m-7-7h14" /></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Children row */}
+                                    <div className="flex items-center justify-between rounded-xl border border-sand bg-sand-light px-4 py-3 mb-2">
+                                        <div>
+                                            <span className="text-sm font-medium text-navy">{t('booking.children')}</span>
+                                            <p className="text-[11px] text-warm-gray">{t('booking.childMinAge')}</p>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => setChildrenCount(childrenCount - 1)}
+                                                disabled={childrenCount <= 0}
+                                                className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-ocean/20 text-ocean transition-all hover:bg-ocean/10 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                aria-label="Decrease children"
+                                            >
+                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" d="M5 12h14" /></svg>
+                                            </button>
+                                            <span className="w-6 text-center text-base font-bold text-navy">{childrenCount}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setChildrenCount(childrenCount + 1)}
+                                                disabled={childrenCount >= 3 - adults}
+                                                className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-ocean/20 text-ocean transition-all hover:bg-ocean/10 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                aria-label="Increase children"
+                                            >
+                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" d="M12 5v14m-7-7h14" /></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Children age inputs */}
+                                    {childrenCount > 0 && (
+                                        <div className="mt-2 space-y-2">
+                                            {childrenAges.map((age, i) => (
+                                                <div key={i} className="grid grid-cols-[1fr_7rem] items-center rounded-xl border border-sand bg-sand-light px-4 py-3">
+                                                    <label htmlFor={`child-age-${i}`} className="text-sm font-medium text-navy whitespace-nowrap">
+                                                        {t('booking.child')} {i + 1} — {t('booking.childAge')}
+                                                    </label>
+                                                    <select
+                                                        id={`child-age-${i}`}
+                                                        value={age ?? ''}
+                                                        onChange={(e) => setChildAge(i, e.target.value ? Number(e.target.value) : undefined)}
+                                                        className={`w-full rounded-xl border px-3 py-2 text-sm font-medium text-navy text-center focus:outline-none focus:ring-2 focus:ring-ocean ${
+                                                            errors.childrenAges && (age === undefined || age < 6)
+                                                                ? 'border-coral bg-coral/5'
+                                                                : 'border-sand bg-white'
+                                                        }`}
+                                                    >
+                                                        <option value="">{t('booking.childAgePlaceholder')}</option>
+                                                        {Array.from({ length: 12 }, (_, j) => j + 6).map((a) => (
+                                                            <option key={a} value={a}>{a} {t('booking.ageUnit')}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            ))}
+                                            {errors.childrenAges && (
+                                                <p className="text-xs text-coral" role="alert">{errors.childrenAges}</p>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    <p className="mt-2 text-[11px] text-warm-gray">{t('booking.maxGuests')}</p>
                                 </div>
 
                                 {/* Comment */}
@@ -832,7 +927,7 @@ export default function BookingCalendar() {
                                             </div>
                                             <div>
                                                 <p className="text-[11px] font-semibold uppercase tracking-wide text-warm-gray">{t('booking.guests')}</p>
-                                                <p className="font-medium text-navy">{guests} {guests > 1 ? t('booking.guests_plural') : t('booking.guest')}</p>
+                                                <p className="font-medium text-navy">{guestSummary}</p>
                                             </div>
                                             {pricing && (
                                                 <div className="text-right">
@@ -949,7 +1044,7 @@ export default function BookingCalendar() {
                                                     <div className="min-w-0">
                                                         <p className="text-[10px] font-semibold uppercase tracking-widest text-warm-gray">{t('booking.guests')}</p>
                                                         <p className="text-sm font-medium text-navy">
-                                                            {guests} {guests > 1 ? t('booking.guests_plural') : t('booking.guest')}
+                                                            {guestSummary}
                                                         </p>
                                                     </div>
                                                 </div>

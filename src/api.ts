@@ -16,6 +16,9 @@ export interface ReservationPayload {
     checkOut: string;   // ISO date string
     nights: number;
     totalPrice: number;
+    adults?: number;
+    children?: number;
+    childrenAges?: number[];
     comment?: string;
     locale?: string;    // guest's chosen language ('en' | 'es' | 'cs')
     turnstileToken?: string;

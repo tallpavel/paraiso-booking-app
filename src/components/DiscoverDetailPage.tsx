@@ -28,13 +28,13 @@ interface DiscoverTopic {
 const TOPICS: DiscoverTopic[] = [
     {
         slug: 'beaches',
-        image: '/discover/beach.png',
+        image: '/discover/beachReal.jpeg',
         titleKey: 'discoverPage.beaches.title',
         heroDescKey: 'discoverPage.beaches.heroDesc',
         sections: [
             { titleKey: 'discoverPage.beaches.s1Title', bodyKey: 'discoverPage.beaches.s1Body', image: '/discover/PlayaLasGalgasReal.jpeg', imageRatio: 'portrait', mapLocationId: 'beach-galgas' },
             { titleKey: 'discoverPage.beaches.s2Title', bodyKey: 'discoverPage.beaches.s2Body', image: '/discover/PlayaDeAjaboReal.jpeg', imageRatio: 'landscape', mapLocationId: 'beach-ajabo' },
-            { titleKey: 'discoverPage.beaches.s3Title', bodyKey: 'discoverPage.beaches.s3Body' },
+            { titleKey: 'discoverPage.beaches.s3Title', bodyKey: 'discoverPage.beaches.s3Body', image: '/discover/PlayaNudista.PNG', imageRatio: 'portrait' },
             { titleKey: 'discoverPage.beaches.s4Title', bodyKey: 'discoverPage.beaches.s4Body' },
             { titleKey: 'discoverPage.beaches.s5Title', bodyKey: 'discoverPage.beaches.s5Body' },
         ],
@@ -43,7 +43,7 @@ const TOPICS: DiscoverTopic[] = [
     },
     {
         slug: 'snorkeling',
-        image: '/discover/snorkel.png',
+        image: '/discover/DivingReal.JPG',
         titleKey: 'discoverPage.snorkeling.title',
         heroDescKey: 'discoverPage.snorkeling.heroDesc',
         sections: [
@@ -82,7 +82,7 @@ const TOPICS: DiscoverTopic[] = [
     },
     {
         slug: 'food',
-        image: '/discover/food.png',
+        image: '/discover/FoodReal.jpeg',
         titleKey: 'discoverPage.food.title',
         heroDescKey: 'discoverPage.food.heroDesc',
         sections: [

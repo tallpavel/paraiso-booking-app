@@ -260,6 +260,7 @@ export default function TermsPage() {
                                         <li>{t('terms.s6.li4')}</li>
                                         <li>{t('terms.s6.li5')}</li>
                                         <li>{t('terms.s6.li6')}</li>
+                                        <li>{t('terms.s6.li7')}</li>
                                     </ul>
                                 </div>
                             </article>
