@@ -81,7 +81,6 @@ export default function BookingCalendar() {
         adults, setAdults,
         children: childrenCount, setChildrenCount,
         childrenAges, setChildAge,
-        guests,
         guestName, setGuestName,
         guestEmail, setGuestEmail,
         guestPhone, setGuestPhone,
