@@ -18,7 +18,7 @@ export default function HeroSection() {
                     poster="/hero-bg.jpg"
                     className="h-full w-full object-cover"
                 >
-                    <source src="/hero-video.mp4" type="video/mp4" />
+                    <source src="/hero-videofinal.mp4" type="video/mp4" />
                     {/* Fallback image if video is not supported */}
                     <img
                         src="/hero-bg.jpg"

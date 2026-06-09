@@ -101,14 +101,29 @@ export const reviews: readonly Review[] = [
 ] as const;
 
 export const galleryItems: readonly GalleryItem[] = [
-    { id: 1, src: '/gallery/living-room.jpg', alt: 'Bright modern living room with ocean view', category: 'interior' },
-    { id: 2, src: '/gallery/bedroom.jpg', alt: 'Spacious bedroom with king-size bed', category: 'interior' },
-    { id: 3, src: '/gallery/kitchen.jpg', alt: 'Fully equipped modern kitchen', category: 'interior' },
-    { id: 4, src: '/gallery/terrace.jpg', alt: 'Private terrace with panoramic ocean view', category: 'terrace' },
-    { id: 5, src: '/gallery/pool.jpg', alt: 'Communal swimming pool with tropical gardens', category: 'pool' },
-    { id: 6, src: '/discover/beachReal.jpeg', alt: 'Playa Paraíso beach at sunset', category: 'beach' },
-    { id: 7, src: '/gallery/bathroom.jpg', alt: 'Modern bathroom with walk-in shower', category: 'interior' },
-    { id: 8, src: '/gallery/sunset.jpg', alt: 'Spectacular sunset from the terrace', category: 'exterior' },
+    { id: 1, src: '/gallery/Interior1-livingroom.jpg', alt: 'Bright modern living room with ocean view', category: 'interior' },
+    { id: 2, src: '/gallery/Interior2-livingroom.jpg', alt: 'Cozy living room seating area', category: 'interior' },
+    { id: 3, src: '/gallery/Interior3-livingroom.jpg', alt: 'Living room interior details', category: 'interior' },
+    { id: 14, src: '/gallery/Interior4-kitchen.jpg', alt: 'Fully equipped modern kitchen', category: 'interior' },
+    { id: 15, src: '/gallery/Interior5-bathroom.jpg', alt: 'Modern bathroom with walk-in shower', category: 'interior' },
+    { id: 16, src: '/gallery/Interior6-bathroom.jpg', alt: 'Bathroom sink and mirror', category: 'interior' },
+    { id: 17, src: '/gallery/Interior7-bedroom.jpg', alt: 'Spacious bedroom with king-size bed', category: 'interior' },
+    { id: 18, src: '/gallery/Interior8-bedroom.jpg', alt: 'Bedroom interior details', category: 'interior' },
+    { id: 19, src: '/gallery/Interior9-gift.jpg', alt: 'Welcome gift for guests', category: 'interior' },
+    { id: 20, src: '/gallery/Interior10-bathroomdeco.jpg', alt: 'Bathroom decor details', category: 'interior' },
+    { id: 21, src: '/gallery/Interior11-waterfree.jpg', alt: 'Complimentary water', category: 'interior' },
+    { id: 22, src: '/gallery/Interior12-towels.jpg', alt: 'Fresh towels provided', category: 'interior' },
+    { id: 4, src: '/gallery/Terace1.jpg', alt: 'Private terrace with panoramic ocean view', category: 'terrace' },
+    { id: 9, src: '/gallery/Terace2.jpg', alt: 'Private terrace seating area', category: 'terrace' },
+    { id: 10, src: '/gallery/Terace3.jpg', alt: 'Private terrace dining area', category: 'terrace' },
+    { id: 11, src: '/gallery/Terace4.jpg', alt: 'Private terrace view', category: 'terrace' },
+    { id: 5, src: '/gallery/Pool1.jpg', alt: 'Communal swimming pool area', category: 'pool' },
+    { id: 12, src: '/gallery/Pool2.jpg', alt: 'Communal swimming pool with tropical gardens', category: 'pool' },
+    { id: 13, src: '/gallery/Pool3.jpg', alt: 'Communal swimming pool overview', category: 'pool' },
+    { id: 6, src: '/discover/PlayaLasGalgasReal.jpeg', alt: 'Playa Paraíso beach at sunset', category: 'beach' },
+
+    { id: 8, src: '/gallery/Surroundings1.jpg', alt: 'Beautiful surroundings of Playa Paraíso', category: 'exterior' },
+    { id: 23, src: '/gallery/Surroundings2.jpg', alt: 'Spectacular local scenery', category: 'exterior' },
 ] as const;
 
 export const PROPERTY_ADDRESS = 'Avenida Adeje 300, č. 16, 38678 Playa Paraíso, Tenerife, Spain';

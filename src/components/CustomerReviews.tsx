@@ -15,10 +15,9 @@ const FALLBACK_REVIEWS: {
     textKey: TranslationKey;
     rating: number;
     dateKey: TranslationKey;
+    avatar?: string;
 }[] = [
-    { nameKey: 'reviews.fallback1Name', textKey: 'reviews.fallback1Text', rating: 5, dateKey: 'reviews.fallback1Date' },
-    { nameKey: 'reviews.fallback2Name', textKey: 'reviews.fallback2Text', rating: 5, dateKey: 'reviews.fallback2Date' },
-    { nameKey: 'reviews.fallback3Name', textKey: 'reviews.fallback3Text', rating: 5, dateKey: 'reviews.fallback3Date' },
+    { nameKey: 'reviews.fallback1Name', textKey: 'reviews.fallback1Text', rating: 5, dateKey: 'reviews.fallback1Date', avatar: '/reviews/eleanorah.png' },
 ];
 
 /* ── Trustpilot Star (official green) ──────────────────────────────── */
@@ -75,9 +74,14 @@ function ReviewCard({ review }: { review: typeof FALLBACK_REVIEWS[number] }) {
             <p className="mt-4 flex-1 text-sm leading-relaxed text-navy/80">
                 "{t(review.textKey)}"
             </p>
-            <div className="mt-4 flex items-center justify-between pt-3 border-t border-[#e0ddd5]/50">
-                <span className="text-sm font-semibold text-navy">{t(review.nameKey)}</span>
-                <span className="text-xs text-warm-gray">{t(review.dateKey)}</span>
+            <div className="mt-4 flex items-center gap-3 pt-3 border-t border-[#e0ddd5]/50">
+                {review.avatar && (
+                    <img src={review.avatar} alt={t(review.nameKey)} className="h-10 w-10 rounded-full object-cover" />
+                )}
+                <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-navy">{t(review.nameKey)}</span>
+                    <span className="text-xs text-warm-gray">{t(review.dateKey)}</span>
+                </div>
             </div>
         </div>
     );
@@ -222,7 +226,7 @@ export default function CustomerReviews() {
 
                 {/* ── Fallback Reviews (shown when widget fails to load) ────── */}
                 {!widgetLoaded && (
-                    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="mx-auto max-w-2xl">
                         {FALLBACK_REVIEWS.map((review, i) => (
                             <ReviewCard key={i} review={review} />
                         ))}
