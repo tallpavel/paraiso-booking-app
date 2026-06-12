@@ -58,11 +58,8 @@ export const handler = async (event) => {
             Key: imagePath
         }));
         
-        // Convert the stream to a byte array (AWS SDK v3 format)
-        const originalImageBuffer = await Body.transformToByteArray();
-        
-        // Initialize sharp pipeline
-        let sharpPipeline = sharp(originalImageBuffer);
+        // Initialize sharp pipeline (will receive stream)
+        let sharpPipeline = sharp();
         
         // Apply resizing if requested
         if (width || height) {
@@ -77,6 +74,9 @@ export const handler = async (event) => {
         // Output format configuration
         sharpPipeline = sharpPipeline.toFormat(targetFormat, { quality });
         
+        // Pipe the S3 readable stream directly into the sharp transform stream
+        // This avoids buffering the entire original image in memory sequentially
+        Body.pipe(sharpPipeline);
         const optimizedImageBuffer = await sharpPipeline.toBuffer();
         
         // Map target formats to proper Content-Type headers
