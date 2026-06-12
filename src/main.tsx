@@ -5,6 +5,16 @@ import { AuthProvider } from './context/AuthContext'
 import { I18nProvider } from './i18n'
 import App from './App'
 
+// Unregister any stale service workers (e.g., from previous PWA setups or localhost testing)
+// that might intercept and block cross-origin CloudFront requests with "no-response" errors.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      registration.unregister();
+    }
+  }).catch(() => {});
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
