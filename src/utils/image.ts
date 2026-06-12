@@ -15,8 +15,10 @@ export function getOptimizedImageUrl(path: string, width?: number, quality = 80)
     }
     
     const baseUrl = cdnUrl.endsWith('/') ? cdnUrl.slice(0, -1) : cdnUrl;
-    // Ensure path starts with a slash for consistent URL construction
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    
+    // If files were uploaded flat to the S3 root, we just need the filename
+    const fileName = path.split('/').pop() || '';
+    const cleanPath = `/${fileName}`;
     
     const url = new URL(`${baseUrl}${cleanPath}`);
     
