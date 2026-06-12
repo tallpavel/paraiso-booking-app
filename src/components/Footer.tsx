@@ -1,6 +1,7 @@
 import { PROPERTY_ADDRESS } from '../data';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../i18n';
+import { getOptimizedImageUrl } from '../utils/image';
 
 export default function Footer() {
     const { t } = useI18n();
@@ -15,7 +16,7 @@ export default function Footer() {
                         <div className="mb-4 flex items-center gap-3">
                             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f6efdb]">
                                 <img
-                                    src="/logo.png"
+                                    src={getOptimizedImageUrl('/logo.png', 100)}
                                     alt="Verónica's Flat logo"
                                     width={44}
                                     height={44}

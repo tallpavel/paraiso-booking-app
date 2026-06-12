@@ -6,6 +6,7 @@ import Header from './Header';
 import Footer from './Footer';
 import BookingCalendar from './BookingCalendar';
 import FloatingContactButton from './FloatingContactButton';
+import { getOptimizedImageUrl } from '../utils/image';
 
 type DiscoverSlug = 'beaches' | 'snorkeling' | 'whales' | 'hiking' | 'food';
 
@@ -162,7 +163,7 @@ export default function DiscoverDetailPage() {
                 {/* Hero */}
                 <section className="relative h-[50vh] min-h-[400px] overflow-hidden sm:h-[60vh]">
                     <img
-                        src={topic.image}
+                        src={getOptimizedImageUrl(topic.image, 1200)}
                         alt={t(topic.titleKey)}
                         className="absolute inset-0 h-full w-full object-cover"
                     />
@@ -205,7 +206,7 @@ export default function DiscoverDetailPage() {
                                         <div className={`relative ${i % 2 !== 0 ? 'lg:order-2' : ''}`}>
                                             <div className="relative overflow-hidden rounded-3xl shadow-xl shadow-navy/10" style={{ aspectRatio: '3/4' }}>
                                                 <img
-                                                    src={section.image}
+                                                    src={getOptimizedImageUrl(section.image, 600)}
                                                     alt={t(section.titleKey)}
                                                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                                     loading="lazy"
@@ -258,7 +259,7 @@ export default function DiscoverDetailPage() {
                                             </h2>
                                             <div className="relative mb-6 overflow-hidden rounded-2xl shadow-lg shadow-navy/10">
                                                 <img
-                                                    src={section.image}
+                                                    src={getOptimizedImageUrl(section.image, 800)}
                                                     alt={t(section.titleKey)}
                                                     className="h-56 w-full object-cover sm:h-72 lg:h-80"
                                                     loading="lazy"

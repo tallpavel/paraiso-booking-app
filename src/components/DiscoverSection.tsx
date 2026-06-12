@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n';
+import { getOptimizedImageUrl } from '../utils/image';
 
 const ACTIVITIES: { image: string; titleKey: TranslationKey; descKey: TranslationKey; href: string }[] = [
     { image: '/discover/beachReal.jpeg', titleKey: 'discover.beachTitle', descKey: 'discover.beachDesc', href: '/discover/beaches' },
@@ -109,7 +110,7 @@ export default function DiscoverSection() {
                             className="group relative h-[380px] w-[85vw] max-w-[340px] shrink-0 snap-center overflow-hidden rounded-2xl sm:h-[440px] sm:w-[420px] sm:max-w-none sm:snap-start"
                         >
                             <img
-                                src={activity.image}
+                                src={getOptimizedImageUrl(activity.image, 600)}
                                 alt={t(activity.titleKey)}
                                 loading="lazy"
                                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"

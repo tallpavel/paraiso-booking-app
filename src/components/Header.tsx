@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import type { Locale } from '../i18n';
 import ShareButton from './ShareButton';
+import { getOptimizedImageUrl } from '../utils/image';
 
 const NAV_KEYS = [
     { key: 'nav.amenities' as const, href: '#amenities' },
@@ -121,7 +122,7 @@ export default function Header() {
                 >
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f6efdb]">
                         <img
-                            src="/logo.png"
+                            src={getOptimizedImageUrl('/logo.png', 100)}
                             alt="Verónica's Flat logo"
                             width={48}
                             height={48}

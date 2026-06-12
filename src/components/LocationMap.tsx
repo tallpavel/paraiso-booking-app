@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useI18n } from '../i18n';
+import { getOptimizedImageUrl } from '../utils/image';
 
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -149,7 +150,7 @@ export default function LocationMap() {
                 <div class="location-logo-pin">
                     <div class="location-logo-pulse"></div>
                     <div class="location-logo-img">
-                        <img src="/logo.png" alt="Verónica's Flat" />
+                        <img src="${getOptimizedImageUrl('/logo.png', 100)}" alt="Verónica's Flat" />
                     </div>
                 </div>`,
             iconSize: [56, 56],
@@ -283,7 +284,7 @@ export default function LocationMap() {
                         >
                             <div className="location-tile__icon">
                                 <img
-                                    src="/logo.png"
+                                    src={getOptimizedImageUrl('/logo.png', 100)}
                                     alt="Verónica's Flat"
                                     className="location-tile__logo"
                                 />

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n';
+import { getOptimizedImageUrl } from '../utils/image';
 
 /* ─────────────────────────────────────────────────────────────────────
    CONFIGURATION — Replace these with your real Trustpilot values
@@ -76,7 +77,7 @@ function ReviewCard({ review }: { review: typeof FALLBACK_REVIEWS[number] }) {
             </p>
             <div className="mt-4 flex items-center gap-3 pt-3 border-t border-[#e0ddd5]/50">
                 {review.avatar && (
-                    <img src={review.avatar} alt={t(review.nameKey)} className="h-10 w-10 rounded-full object-cover" />
+                    <img src={getOptimizedImageUrl(review.avatar, 100)} alt={t(review.nameKey)} className="h-10 w-10 rounded-full object-cover" />
                 )}
                 <div className="flex flex-col">
                     <span className="text-sm font-semibold text-navy">{t(review.nameKey)}</span>

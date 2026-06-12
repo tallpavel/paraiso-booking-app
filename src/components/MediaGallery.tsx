@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { galleryItems } from '../data';
 import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n';
+import { getOptimizedImageUrl } from '../utils/image';
 
 type Category = 'all' | 'interior' | 'exterior' | 'pool' | 'beach' | 'terrace';
 
@@ -229,7 +230,7 @@ export default function MediaGallery() {
                             aria-label={`View: ${t(getAltKey(item.id))}`}
                         >
                             <img
-                                src={item.src}
+                                src={getOptimizedImageUrl(item.src, 600)}
                                 alt={t(getAltKey(item.id))}
                                 width={600}
                                 height={450}
@@ -340,7 +341,7 @@ export default function MediaGallery() {
 
                     {/* Main image */}
                     <img
-                        src={filtered[lightboxIndex].src}
+                        src={getOptimizedImageUrl(filtered[lightboxIndex].src, 1920)}
                         alt={t(getAltKey(filtered[lightboxIndex].id))}
                         className="max-h-[82vh] max-w-[90vw] rounded-xl object-contain shadow-2xl ring-1 ring-white/10"
                         onClick={(e) => e.stopPropagation()}
@@ -360,7 +361,7 @@ export default function MediaGallery() {
                                             : 'opacity-40 hover:opacity-70 ring-1 ring-white/10'
                                     }`}
                                 >
-                                    <img src={item.src} alt="" className="h-full w-full object-cover" />
+                                    <img src={getOptimizedImageUrl(item.src, 160)} alt="" className="h-full w-full object-cover" />
                                 </button>
                             ))}
                         </div>

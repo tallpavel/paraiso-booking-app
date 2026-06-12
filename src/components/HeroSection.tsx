@@ -1,4 +1,5 @@
 import { useI18n } from '../i18n';
+import { getOptimizedImageUrl } from '../utils/image';
 
 export default function HeroSection() {
     const { t } = useI18n();
@@ -15,13 +16,13 @@ export default function HeroSection() {
                     muted
                     loop
                     playsInline
-                    poster="/hero-bg.jpg"
+                    poster={getOptimizedImageUrl('/hero-bg.jpg', 1920)}
                     className="h-full w-full object-cover"
                 >
                     <source src="/hero-videofinal.mp4" type="video/mp4" />
                     {/* Fallback image if video is not supported */}
                     <img
-                        src="/hero-bg.jpg"
+                        src={getOptimizedImageUrl('/hero-bg.jpg', 1920)}
                         alt="Aerial view of Playa Paraíso coastline in Tenerife"
                         className="h-full w-full object-cover"
                     />
@@ -34,7 +35,7 @@ export default function HeroSection() {
                 <div className="mb-10 flex justify-center sm:mb-12">
                     <div className="h-40 w-40 shrink-0 overflow-hidden rounded-full bg-[#f6efdb] shadow-2xl ring-2 ring-white/20 sm:h-56 sm:w-56">
                         <img
-                            src="/logo.png"
+                            src={getOptimizedImageUrl('/logo.png', 400)}
                             alt="Verónica's Flat logo"
                             width={180}
                             height={180}
