@@ -375,7 +375,7 @@ const translations = {
         'footer.terms': 'Terms & Conditions',
         'footer.privacy': 'Privacy Policy',
         'footer.vvLicence': 'Holiday Rental Licence',
-        'footer.vvNumber': 'VV-38-3-0012345',
+        'footer.vvNumber': 'VV-38-4-0110988',
 
         // Terms & Conditions page
         'terms.backHome': 'Back to Home',
@@ -906,7 +906,7 @@ const translations = {
         'footer.terms': 'Términos y Condiciones',
         'footer.privacy': 'Política de Privacidad',
         'footer.vvLicence': 'Licencia Vivienda Vacacional',
-        'footer.vvNumber': 'VV-38-3-0012345',
+        'footer.vvNumber': 'VV-38-4-0110988',
 
         // Terms & Conditions page
         'terms.backHome': 'Volver al Inicio',
@@ -1427,7 +1427,7 @@ const translations = {
         'footer.terms': 'Obchodní podmínky',
         'footer.privacy': 'Ochrana soukromí',
         'footer.vvLicence': 'Licence rekreačního ubytování',
-        'footer.vvNumber': 'VV-38-3-0012345',
+        'footer.vvNumber': 'VV-38-4-0110988',
 
         // Terms & Conditions page
         'terms.backHome': 'Zpět na úvod',
