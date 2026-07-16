@@ -4373,7 +4373,60 @@ a.btn {
   white-space: nowrap;
 }
 
+/* ── Blocked Date Range Rows ─────────────────────────────────────── */
+
+.admin-blocked-range {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.admin-blocked-range:hover {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.admin-blocked-range__info {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.admin-blocked-range__dates {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(245, 240, 232, 0.88);
+  white-space: nowrap;
+}
+
+.admin-blocked-range__days {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(26, 140, 170, 0.9);
+  background: rgba(26, 140, 170, 0.12);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.admin-blocked-range__actions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 /* ── Pricing Panel ────────────────────────────────────────────────── */
+
 
 .admin-input[type="number"] {
   color-scheme: dark;
