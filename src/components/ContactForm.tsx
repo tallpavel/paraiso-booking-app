@@ -58,6 +58,8 @@ export default function ContactForm() {
         }
     };
 
+    const [spamError, setSpamError] = useState<string | null>(null);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const errs = validate(form);
@@ -69,12 +71,13 @@ export default function ContactForm() {
         // Spam protection check
         const spamCheck = spam.validate();
         if (!spamCheck.ok) {
-            setStatus('error');
-            setTimeout(() => setStatus('idle'), 5000);
+            setSpamError(spamCheck.reason || t('contact.errorServer'));
+            setTimeout(() => setSpamError(null), 5000);
             return;
         }
 
         setStatus('sending');
+        setSpamError(null);
 
         try {
             await sendContactMessage({
@@ -287,6 +290,11 @@ export default function ContactForm() {
                         {status === 'error' && (
                             <p className="mt-3 text-center text-sm text-coral" role="alert" aria-live="polite">
                                 {t('contact.errorServer')}
+                            </p>
+                        )}
+                        {spamError && (
+                            <p className="mt-3 text-center text-sm text-coral" role="alert" aria-live="polite">
+                                {spamError}
                             </p>
                         )}
                     </form>

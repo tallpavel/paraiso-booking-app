@@ -115,6 +115,12 @@ export function useSpamProtection(formId: string): SpamProtection {
             if (!window.turnstile || !containerRef.current) {
                 if (++attempts < maxAttempts) {
                     setTimeout(tryRender, 250);
+                } else {
+                    // Turnstile script never loaded — degrade gracefully
+                    // Honeypot + timing checks still protect against bots
+                    console.warn('[Turnstile] Script failed to load after timeout — degrading gracefully. Honeypot + timing checks still active.');
+                    degradedRef.current = true;
+                    setIsReady(true);
                 }
                 return;
             }
