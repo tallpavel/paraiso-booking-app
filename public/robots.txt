@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /centralni-mozek-stranky/
+Disallow: /checkin/
+Disallow: /payment
+
+Sitemap: https://veronicasflat.com/sitemap.xml
