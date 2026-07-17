@@ -276,6 +276,7 @@ export default function TermsPage() {
                                     <p>{t('terms.s7.p1')}</p>
                                     <p>{t('terms.s7.p2')}</p>
                                     <p>{t('terms.s7.p3')}</p>
+                                    <p>{t('terms.s7.p4')}</p>
                                 </div>
                             </article>
 

@@ -463,6 +463,7 @@ const translations = {
         'terms.s7.p1': 'The Guest is responsible for any damage caused to the property, furniture, appliances, or common areas during their stay, beyond normal wear and tear. The cost of repair or replacement will be charged to the Guest.',
         'terms.s7.p2': 'The owner is not liable for any loss, theft, or damage to the Guest\'s personal belongings during the stay. We recommend guests secure their valuables.',
         'terms.s7.p3': 'The owner is not responsible for injuries or accidents occurring on the property, including in the pool area. Guests use all facilities at their own risk.',
+        'terms.s7.p4': 'A damage deposit of 300 euros will be held via card, Bizum, or cash upon check-in. The deposit will be fully refunded 24 hours after check-out, provided no damages have occurred.',
 
         // S8 – Privacy
         'terms.s8.title': 'Privacy & Data Protection',
@@ -990,6 +991,7 @@ const translations = {
         'terms.s7.p1': 'El Huésped es responsable de cualquier daño causado a la propiedad, muebles, electrodomésticos o áreas comunes durante su estancia, más allá del desgaste normal.',
         'terms.s7.p2': 'El propietario no es responsable de la pérdida, robo o daño de las pertenencias personales del Huésped durante la estancia. Recomendamos asegurar los objetos de valor.',
         'terms.s7.p3': 'El propietario no es responsable de lesiones o accidentes ocurridos en la propiedad, incluyendo la zona de piscina. Los huéspedes utilizan todas las instalaciones bajo su propia responsabilidad.',
+        'terms.s7.p4': 'Se retendrá un depósito por daños de 300 euros mediante tarjeta, Bizum o en efectivo al hacer el check-in. El depósito será devuelto íntegramente 24 horas después del check-out, siempre que no se hayan producido daños.',
 
         'terms.s8.title': 'Privacidad y Protección de Datos',
         'terms.s8.p1': 'Recopilamos datos personales únicamente para gestionar su reserva, cumplir obligaciones legales (registro de viajeros español) y comunicarnos sobre su estancia. Procesamos los datos conforme al RGPD y la LOPDGDD. Sus datos se utilizan para:',
@@ -1514,6 +1516,7 @@ const translations = {
         'terms.s7.p1': 'Host je odpovědný za jakékoliv škody způsobené na nemovitosti, nábytku, spotřebičích nebo společných prostorách během pobytu, nad rámec běžného opotřebení.',
         'terms.s7.p2': 'Vlastník neodpovídá za ztrátu, krádež nebo poškození osobních věcí Hosta během pobytu. Doporučujeme zabezpečit cennosti.',
         'terms.s7.p3': 'Vlastník neodpovídá za zranění nebo nehody na nemovitosti, včetně prostoru bazénu. Hosté využívají všechna zařízení na vlastní riziko.',
+        'terms.s7.p4': 'Při check-inu bude zadržena kauce za případné škody ve výši 300 eur (kartou, přes Bizum nebo v hotovosti). Kauce bude plně vrácena 24 hodin po check-outu za předpokladu, že nevznikly žádné škody.',
 
         'terms.s8.title': 'Ochrana osobních údajů',
         'terms.s8.p1': 'Osobní údaje shromažďujeme výhradně za účelem správy vaší rezervace, plnění zákonných povinností (registrace hostů dle španělského práva) a komunikace o vašem pobytu. Údaje zpracováváme v souladu s GDPR a španělským zákonem o ochraně údajů. Vaše údaje slouží k:',
