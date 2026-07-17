@@ -208,11 +208,6 @@
     </div>
   </div>
 
-  <!-- Floating "Cookies" button (persistent, allows re-opening settings) -->
-  <button id="cc-float" class="cc-float" type="button" aria-label="Cookie settings" style="display:none">
-    <span class="cc-float-icon">🍪</span>
-  </button>
-
   <style>
     /* ── Cookie Consent: Banner ───────────────────────── */
     #cc-banner {
@@ -386,29 +381,6 @@
       border-color: rgba(26,39,68,.35);
     }
 
-    /* ── Floating Cookies button ─────────────────────── */
-    .cc-float {
-      position: fixed; bottom: 76px; left: 20px;
-      z-index: 9998;
-      width: 40px; height: 40px;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(26,39,68,.85);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1.5px solid rgba(255,255,255,.1);
-      border-radius: 50%;
-      box-shadow: 0 4px 14px rgba(0,0,0,.2);
-      cursor: pointer;
-      transition: all .25s;
-      animation: ccFadeIn .4s ease-out;
-    }
-    .cc-float:hover {
-      background: rgba(26,39,68,.95);
-      transform: scale(1.1);
-      box-shadow: 0 6px 20px rgba(0,0,0,.3);
-    }
-    .cc-float-icon { font-size: 18px; line-height: 1; }
-
     /* Mobile tweaks */
     @media (max-width: 480px) {
       .cc-inner { padding: 20px; border-radius: 14px; }
@@ -550,13 +522,20 @@
       // ── UI Elements ──────────────────────────────────
       var banner   = document.getElementById('cc-banner');
       var settings = document.getElementById('cc-settings');
-      var floatBtn = document.getElementById('cc-float');
       var toggle   = document.getElementById('cc-analytics-toggle');
 
-      function showBanner()    { banner.style.display = 'block'; floatBtn.style.display = 'none'; }
-      function hideBanner()    { banner.style.display = 'none';  floatBtn.style.display = 'flex'; }
+      function showBanner()    { banner.style.display = 'block'; }
+      function hideBanner()    { banner.style.display = 'none'; }
       function showSettings()  { settings.style.display = 'flex'; }
       function hideSettings()  { settings.style.display = 'none'; }
+
+      // Expose to window for the React Footer link
+      window.vfOpenCookieSettings = function () {
+        var c = getConsent();
+        toggle.checked = c ? !!c.analytics : false;
+        hideBanner();
+        showSettings();
+      };
 
       // ── Accept All ───────────────────────────────────
       document.getElementById('cc-accept').addEventListener('click', function () {
@@ -573,12 +552,7 @@
       });
 
       // ── Configure ────────────────────────────────────
-      document.getElementById('cc-configure-open').addEventListener('click', function () {
-        var c = getConsent();
-        toggle.checked = c ? !!c.analytics : false;
-        hideBanner();
-        showSettings();
-      });
+      document.getElementById('cc-configure-open').addEventListener('click', window.vfOpenCookieSettings);
 
       // ── Save Granular ────────────────────────────────
       document.getElementById('cc-save').addEventListener('click', function () {
@@ -586,26 +560,17 @@
         setConsent({ analytics: analytics });
         hideSettings();
         if (analytics) { loadGA4(); } else { removeGA4(); }
-        floatBtn.style.display = 'flex';
       });
 
       // ── Close / Backdrop ─────────────────────────────
       document.getElementById('cc-settings-close').addEventListener('click', function () {
         hideSettings();
         // If no choice made yet, re-show banner
-        if (!getConsent()) showBanner(); else floatBtn.style.display = 'flex';
+        if (!getConsent()) showBanner();
       });
       document.getElementById('cc-settings-backdrop').addEventListener('click', function () {
         hideSettings();
-        if (!getConsent()) showBanner(); else floatBtn.style.display = 'flex';
-      });
-
-      // ── Floating Button → reopen settings ────────────
-      floatBtn.addEventListener('click', function () {
-        var c = getConsent();
-        toggle.checked = c ? !!c.analytics : false;
-        floatBtn.style.display = 'none';
-        showSettings();
+        if (!getConsent()) showBanner();
       });
 
       // ── Init ─────────────────────────────────────────
@@ -622,7 +587,6 @@
       if (!existing) {
         showBanner();
       } else {
-        floatBtn.style.display = 'flex';
         if (existing.analytics) loadGA4();
       }
     })();

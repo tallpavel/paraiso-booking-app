@@ -121,9 +121,19 @@ export default function Footer() {
                         <p className="text-xs text-white/40">
                             © {year} {t('footer.copyright')}
                         </p>
-                        <div className="flex items-center gap-6 text-xs text-white/40">
+                        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/40 sm:justify-end">
                             <Link to="/terms" className="transition-colors hover:text-white/60">{t('footer.privacy')}</Link>
                             <Link to="/terms" className="transition-colors hover:text-white/60">{t('footer.terms')}</Link>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    // @ts-ignore
+                                    if (window.vfOpenCookieSettings) window.vfOpenCookieSettings();
+                                }}
+                                className="transition-colors hover:text-white/60"
+                            >
+                                {t('footer.cookies')}
+                            </button>
                         </div>
                     </div>
                 </div>

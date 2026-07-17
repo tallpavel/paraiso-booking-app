@@ -376,6 +376,7 @@ const translations = {
         'footer.copyright': 'Verónica\'s Flat — Playa Paraíso, Tenerife. All rights reserved.',
         'footer.terms': 'Terms & Conditions',
         'footer.privacy': 'Privacy Policy',
+        'footer.cookies': 'Cookies',
         'footer.vvLicence': 'Holiday Rental Licence',
         'footer.vvNumber': 'VV-38-4-0110988',
 
@@ -911,6 +912,7 @@ const translations = {
         'footer.copyright': 'Verónica\'s Flat — Playa Paraíso, Tenerife. Todos los derechos reservados.',
         'footer.terms': 'Términos y Condiciones',
         'footer.privacy': 'Política de Privacidad',
+        'footer.cookies': 'Cookies',
         'footer.vvLicence': 'Licencia Vivienda Vacacional',
         'footer.vvNumber': 'VV-38-4-0110988',
 
@@ -1436,6 +1438,7 @@ const translations = {
         'footer.copyright': 'Verónica\'s Flat — Playa Paraíso, Tenerife. Všechna práva vyhrazena.',
         'footer.terms': 'Obchodní podmínky',
         'footer.privacy': 'Ochrana soukromí',
+        'footer.cookies': 'Cookies',
         'footer.vvLicence': 'Licence rekreačního ubytování',
         'footer.vvNumber': 'VV-38-4-0110988',
 
