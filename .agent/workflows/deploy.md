@@ -29,7 +29,7 @@ pm2 restart booking-api
 ## 2. Deploy Frontend (paraiso-booking-app)
 
 ```bash
-cd ~/apps/paraiso-booking-app && git pull && npm run build
+cd ~/apps/paraiso-booking-app && git pull && npm install && npm run build
 ```
 
 The frontend is served as static files by Nginx from the `dist/` folder.

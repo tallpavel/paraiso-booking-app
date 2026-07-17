@@ -145,6 +145,406 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       GDPR / AEPD Cookie Consent Banner
+       Pure HTML + CSS + vanilla JS — no frameworks
+       GA4 is NEVER loaded until explicit consent
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Cookie Banner -->
+  <div id="cc-banner" role="dialog" aria-label="Cookie consent" aria-modal="false" style="display:none">
+    <div class="cc-inner">
+      <div class="cc-text">
+        <p class="cc-title">🍪 Utilizamos cookies</p>
+        <p class="cc-desc">
+          Usamos cookies propias (esenciales) y de terceros (Google Analytics) para mejorar tu experiencia.
+          Puedes aceptar, rechazar o configurar tus preferencias.
+          <a href="/terms" class="cc-link" target="_blank" rel="noopener">Política de cookies</a>
+        </p>
+      </div>
+      <div class="cc-actions">
+        <button id="cc-reject" class="cc-btn" type="button">Rechazar todo</button>
+        <button id="cc-accept" class="cc-btn" type="button">Aceptar todo</button>
+      </div>
+      <button id="cc-configure-open" class="cc-configure" type="button">Configurar preferencias</button>
+    </div>
+  </div>
+
+  <!-- Granular Settings Panel -->
+  <div id="cc-settings" role="dialog" aria-label="Cookie settings" aria-modal="true" style="display:none">
+    <div class="cc-settings-backdrop" id="cc-settings-backdrop"></div>
+    <div class="cc-settings-panel">
+      <div class="cc-settings-header">
+        <p class="cc-title">⚙️ Preferencias de cookies</p>
+        <button id="cc-settings-close" class="cc-settings-x" type="button" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="cc-category">
+        <div class="cc-cat-row">
+          <div>
+            <strong>Esenciales</strong>
+            <p class="cc-cat-desc">Necesarias para el funcionamiento del sitio. No se pueden desactivar.</p>
+          </div>
+          <span class="cc-always-on">Siempre activas</span>
+        </div>
+      </div>
+
+      <div class="cc-category">
+        <div class="cc-cat-row">
+          <div>
+            <strong>Analíticas (Google Analytics)</strong>
+            <p class="cc-cat-desc">Nos ayudan a entender cómo se usa el sitio para mejorarlo. No identifican al usuario.</p>
+          </div>
+          <label class="cc-toggle" for="cc-analytics-toggle">
+            <input type="checkbox" id="cc-analytics-toggle" />
+            <span class="cc-toggle-track"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="cc-settings-footer">
+        <button id="cc-save" class="cc-btn" type="button">Guardar preferencias</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating "Cookies" button (persistent, allows re-opening settings) -->
+  <button id="cc-float" class="cc-float" type="button" aria-label="Configuración de cookies" style="display:none">
+    <span class="cc-float-icon">🍪</span>
+  </button>
+
+  <style>
+    /* ── Cookie Consent: Banner ───────────────────────── */
+    #cc-banner {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 9999;
+      padding: 0 16px 16px;
+      animation: ccSlideUp .4s ease-out;
+    }
+    @keyframes ccSlideUp {
+      from { transform: translateY(100%); opacity: 0 }
+      to   { transform: translateY(0);    opacity: 1 }
+    }
+    .cc-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      background: rgba(26,39,68,.97);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 18px;
+      padding: 24px 28px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.06);
+      color: #fff;
+      font-family: 'DM Sans', system-ui, sans-serif;
+    }
+    .cc-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px; font-weight: 700; margin: 0 0 8px;
+    }
+    .cc-desc {
+      font-size: 13.5px; line-height: 1.55; color: rgba(255,255,255,.72);
+      margin: 0 0 18px;
+    }
+    .cc-link {
+      color: #5bc0de; text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .cc-link:hover { color: #fff; }
+
+    .cc-actions {
+      display: flex; gap: 10px;
+    }
+    .cc-btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: 1.5px solid rgba(255,255,255,.25);
+      border-radius: 10px;
+      background: transparent;
+      color: #fff;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      letter-spacing: .01em;
+    }
+    .cc-btn:hover {
+      background: rgba(255,255,255,.12);
+      border-color: rgba(255,255,255,.45);
+    }
+    .cc-btn:active { transform: scale(.97); }
+
+    .cc-configure {
+      display: block; width: 100%;
+      margin-top: 12px; padding: 0;
+      background: none; border: none;
+      color: rgba(255,255,255,.5);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 12.5px; font-weight: 500;
+      cursor: pointer; text-align: center;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .cc-configure:hover { color: rgba(255,255,255,.8); }
+
+    /* ── Cookie Consent: Settings Panel ───────────────── */
+    #cc-settings {
+      position: fixed; inset: 0;
+      z-index: 10000;
+      display: flex; align-items: flex-end; justify-content: center;
+      padding: 16px;
+      animation: ccFadeIn .25s ease-out;
+    }
+    @keyframes ccFadeIn {
+      from { opacity: 0 } to { opacity: 1 }
+    }
+    .cc-settings-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .cc-settings-panel {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 500px;
+      background: #fff;
+      border-radius: 18px;
+      padding: 24px 28px 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      color: #1a2744;
+      animation: ccSlideUp .35s ease-out;
+    }
+    .cc-settings-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .cc-settings-header .cc-title {
+      color: #1a2744; margin: 0; font-size: 17px;
+    }
+    .cc-settings-x {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border: none; background: #f0ede6; border-radius: 50%;
+      font-size: 16px; color: #1a2744; cursor: pointer;
+      transition: all .2s;
+    }
+    .cc-settings-x:hover { background: #e2ddd2; }
+
+    .cc-category {
+      border-top: 1px solid rgba(26,39,68,.08);
+      padding: 16px 0;
+    }
+    .cc-cat-row {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+    }
+    .cc-cat-row strong { font-size: 14px; font-weight: 600; }
+    .cc-cat-desc {
+      font-size: 12.5px; line-height: 1.5; color: rgba(26,39,68,.55);
+      margin: 4px 0 0;
+    }
+    .cc-always-on {
+      flex-shrink: 0;
+      font-size: 11px; font-weight: 600;
+      color: #2d8da6; background: rgba(45,141,166,.1);
+      padding: 4px 10px; border-radius: 6px;
+      white-space: nowrap; margin-top: 2px;
+    }
+
+    /* Toggle switch */
+    .cc-toggle { flex-shrink: 0; margin-top: 2px; cursor: pointer; }
+    .cc-toggle input { display: none; }
+    .cc-toggle-track {
+      display: block; width: 44px; height: 24px;
+      background: #d1cdc4; border-radius: 12px;
+      position: relative; transition: background .25s;
+    }
+    .cc-toggle-track::after {
+      content: '';
+      position: absolute; left: 3px; top: 3px;
+      width: 18px; height: 18px;
+      background: #fff; border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,.15);
+      transition: transform .25s;
+    }
+    .cc-toggle input:checked + .cc-toggle-track {
+      background: #2d8da6;
+    }
+    .cc-toggle input:checked + .cc-toggle-track::after {
+      transform: translateX(20px);
+    }
+
+    .cc-settings-footer {
+      margin-top: 8px; padding-top: 16px;
+      border-top: 1px solid rgba(26,39,68,.08);
+    }
+    .cc-settings-footer .cc-btn {
+      width: 100%; color: #1a2744;
+      border-color: rgba(26,39,68,.2);
+    }
+    .cc-settings-footer .cc-btn:hover {
+      background: rgba(26,39,68,.06);
+      border-color: rgba(26,39,68,.35);
+    }
+
+    /* ── Floating Cookies button ─────────────────────── */
+    .cc-float {
+      position: fixed; bottom: 76px; left: 20px;
+      z-index: 9998;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(26,39,68,.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255,255,255,.1);
+      border-radius: 50%;
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      cursor: pointer;
+      transition: all .25s;
+      animation: ccFadeIn .4s ease-out;
+    }
+    .cc-float:hover {
+      background: rgba(26,39,68,.95);
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(0,0,0,.3);
+    }
+    .cc-float-icon { font-size: 18px; line-height: 1; }
+
+    /* Mobile tweaks */
+    @media (max-width: 480px) {
+      .cc-inner { padding: 20px; border-radius: 14px; }
+      .cc-title { font-size: 16px; }
+      .cc-desc  { font-size: 12.5px; }
+      .cc-actions { flex-direction: column; gap: 8px; }
+      .cc-btn { padding: 13px 16px; font-size: 14px; }
+      .cc-settings-panel { padding: 20px; border-radius: 14px; }
+    }
+  </style>
+
+  <script>
+    /* ═══════════════════════════════════════════════════
+       Cookie Consent – vanilla JS
+       GA4 Measurement ID: G-7CJ8W68XGB
+       ═══════════════════════════════════════════════════ */
+    (function () {
+      'use strict';
+
+      var STORAGE_KEY = 'vf_cookie_consent';
+      var GA_ID = 'G-7CJ8W68XGB';
+
+      // ── Helpers ──────────────────────────────────────
+      function getConsent() {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) { return null; }
+      }
+      function setConsent(obj) {
+        obj.timestamp = new Date().toISOString();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+      }
+
+      // ── GA4 Loader (only runs once) ──────────────────
+      var ga4Loaded = false;
+      function loadGA4() {
+        if (ga4Loaded) return;
+        ga4Loaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { window.dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', GA_ID, { anonymize_ip: true });
+      }
+
+      // ── GA4 Cleanup (remove cookies on rejection) ────
+      function removeGA4() {
+        // Remove GA cookies
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+          var name = cookies[i].split('=')[0].trim();
+          if (name === '_ga' || name === '_gid' || name.indexOf('_ga_') === 0) {
+            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.' + location.hostname;
+            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
+          }
+        }
+        // Remove injected GA scripts
+        var scripts = document.querySelectorAll('script[src*="googletagmanager.com/gtag"]');
+        for (var j = 0; j < scripts.length; j++) scripts[j].remove();
+        // Disable gtag
+        window['ga-disable-' + GA_ID] = true;
+      }
+
+      // ── UI Elements ──────────────────────────────────
+      var banner   = document.getElementById('cc-banner');
+      var settings = document.getElementById('cc-settings');
+      var floatBtn = document.getElementById('cc-float');
+      var toggle   = document.getElementById('cc-analytics-toggle');
+
+      function showBanner()    { banner.style.display = 'block'; floatBtn.style.display = 'none'; }
+      function hideBanner()    { banner.style.display = 'none';  floatBtn.style.display = 'flex'; }
+      function showSettings()  { settings.style.display = 'flex'; }
+      function hideSettings()  { settings.style.display = 'none'; }
+
+      // ── Accept All ───────────────────────────────────
+      document.getElementById('cc-accept').addEventListener('click', function () {
+        setConsent({ analytics: true });
+        hideBanner(); hideSettings();
+        loadGA4();
+      });
+
+      // ── Reject All ───────────────────────────────────
+      document.getElementById('cc-reject').addEventListener('click', function () {
+        setConsent({ analytics: false });
+        hideBanner(); hideSettings();
+        removeGA4();
+      });
+
+      // ── Configure ────────────────────────────────────
+      document.getElementById('cc-configure-open').addEventListener('click', function () {
+        var c = getConsent();
+        toggle.checked = c ? !!c.analytics : false;
+        hideBanner();
+        showSettings();
+      });
+
+      // ── Save Granular ────────────────────────────────
+      document.getElementById('cc-save').addEventListener('click', function () {
+        var analytics = toggle.checked;
+        setConsent({ analytics: analytics });
+        hideSettings();
+        if (analytics) { loadGA4(); } else { removeGA4(); }
+        floatBtn.style.display = 'flex';
+      });
+
+      // ── Close / Backdrop ─────────────────────────────
+      document.getElementById('cc-settings-close').addEventListener('click', function () {
+        hideSettings();
+        // If no choice made yet, re-show banner
+        if (!getConsent()) showBanner(); else floatBtn.style.display = 'flex';
+      });
+      document.getElementById('cc-settings-backdrop').addEventListener('click', function () {
+        hideSettings();
+        if (!getConsent()) showBanner(); else floatBtn.style.display = 'flex';
+      });
+
+      // ── Floating Button → reopen settings ────────────
+      floatBtn.addEventListener('click', function () {
+        var c = getConsent();
+        toggle.checked = c ? !!c.analytics : false;
+        floatBtn.style.display = 'none';
+        showSettings();
+      });
+
+      // ── Init: check existing consent ─────────────────
+      var existing = getConsent();
+      if (!existing) {
+        showBanner();
+      } else {
+        floatBtn.style.display = 'flex';
+        if (existing.analytics) loadGA4();
+      }
+    })();
+  </script>
 </body>
 
 </html>
