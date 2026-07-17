@@ -156,18 +156,17 @@
   <div id="cc-banner" role="dialog" aria-label="Cookie consent" aria-modal="false" style="display:none">
     <div class="cc-inner">
       <div class="cc-text">
-        <p class="cc-title">🍪 Utilizamos cookies</p>
+        <p class="cc-title" data-i18n="title"></p>
         <p class="cc-desc">
-          Usamos cookies propias (esenciales) y de terceros (Google Analytics) para mejorar tu experiencia.
-          Puedes aceptar, rechazar o configurar tus preferencias.
-          <a href="/terms" class="cc-link" target="_blank" rel="noopener">Política de cookies</a>
+          <span data-i18n="desc"></span>
+          <a href="/terms" class="cc-link" target="_blank" rel="noopener" data-i18n="policy"></a>
         </p>
       </div>
       <div class="cc-actions">
-        <button id="cc-reject" class="cc-btn" type="button">Rechazar todo</button>
-        <button id="cc-accept" class="cc-btn" type="button">Aceptar todo</button>
+        <button id="cc-reject" class="cc-btn" type="button" data-i18n="reject"></button>
+        <button id="cc-accept" class="cc-btn" type="button" data-i18n="accept"></button>
       </div>
-      <button id="cc-configure-open" class="cc-configure" type="button">Configurar preferencias</button>
+      <button id="cc-configure-open" class="cc-configure" type="button" data-i18n="configure"></button>
     </div>
   </div>
 
@@ -176,25 +175,25 @@
     <div class="cc-settings-backdrop" id="cc-settings-backdrop"></div>
     <div class="cc-settings-panel">
       <div class="cc-settings-header">
-        <p class="cc-title">⚙️ Preferencias de cookies</p>
-        <button id="cc-settings-close" class="cc-settings-x" type="button" aria-label="Cerrar">✕</button>
+        <p class="cc-title" data-i18n="settingsTitle"></p>
+        <button id="cc-settings-close" class="cc-settings-x" type="button" aria-label="Close">✕</button>
       </div>
 
       <div class="cc-category">
         <div class="cc-cat-row">
           <div>
-            <strong>Esenciales</strong>
-            <p class="cc-cat-desc">Necesarias para el funcionamiento del sitio. No se pueden desactivar.</p>
+            <strong data-i18n="essential"></strong>
+            <p class="cc-cat-desc" data-i18n="essentialDesc"></p>
           </div>
-          <span class="cc-always-on">Siempre activas</span>
+          <span class="cc-always-on" data-i18n="alwaysOn"></span>
         </div>
       </div>
 
       <div class="cc-category">
         <div class="cc-cat-row">
           <div>
-            <strong>Analíticas (Google Analytics)</strong>
-            <p class="cc-cat-desc">Nos ayudan a entender cómo se usa el sitio para mejorarlo. No identifican al usuario.</p>
+            <strong data-i18n="analytics"></strong>
+            <p class="cc-cat-desc" data-i18n="analyticsDesc"></p>
           </div>
           <label class="cc-toggle" for="cc-analytics-toggle">
             <input type="checkbox" id="cc-analytics-toggle" />
@@ -204,13 +203,13 @@
       </div>
 
       <div class="cc-settings-footer">
-        <button id="cc-save" class="cc-btn" type="button">Guardar preferencias</button>
+        <button id="cc-save" class="cc-btn" type="button" data-i18n="save"></button>
       </div>
     </div>
   </div>
 
   <!-- Floating "Cookies" button (persistent, allows re-opening settings) -->
-  <button id="cc-float" class="cc-float" type="button" aria-label="Configuración de cookies" style="display:none">
+  <button id="cc-float" class="cc-float" type="button" aria-label="Cookie settings" style="display:none">
     <span class="cc-float-icon">🍪</span>
   </button>
 
@@ -423,14 +422,88 @@
 
   <script>
     /* ═══════════════════════════════════════════════════
-       Cookie Consent – vanilla JS
+       Cookie Consent – vanilla JS (multilingual)
        GA4 Measurement ID: G-7CJ8W68XGB
+       Reads locale from the same localStorage key as React i18n
        ═══════════════════════════════════════════════════ */
     (function () {
       'use strict';
 
       var STORAGE_KEY = 'vf_cookie_consent';
       var GA_ID = 'G-7CJ8W68XGB';
+
+      // ── Translations ─────────────────────────────────
+      var T = {
+        en: {
+          title:         '🍪 We use cookies',
+          desc:          'We use essential cookies and third-party cookies (Google Analytics) to improve your experience. You can accept, reject or configure your preferences. ',
+          policy:        'Cookie policy',
+          reject:        'Reject all',
+          accept:        'Accept all',
+          configure:     'Configure preferences',
+          settingsTitle: '⚙️ Cookie preferences',
+          essential:     'Essential',
+          essentialDesc: 'Required for the site to function. Cannot be disabled.',
+          alwaysOn:      'Always active',
+          analytics:     'Analytics (Google Analytics)',
+          analyticsDesc: 'Help us understand how the site is used so we can improve it. They do not identify users.',
+          save:          'Save preferences'
+        },
+        es: {
+          title:         '🍪 Utilizamos cookies',
+          desc:          'Usamos cookies propias (esenciales) y de terceros (Google Analytics) para mejorar tu experiencia. Puedes aceptar, rechazar o configurar tus preferencias. ',
+          policy:        'Política de cookies',
+          reject:        'Rechazar todo',
+          accept:        'Aceptar todo',
+          configure:     'Configurar preferencias',
+          settingsTitle: '⚙️ Preferencias de cookies',
+          essential:     'Esenciales',
+          essentialDesc: 'Necesarias para el funcionamiento del sitio. No se pueden desactivar.',
+          alwaysOn:      'Siempre activas',
+          analytics:     'Analíticas (Google Analytics)',
+          analyticsDesc: 'Nos ayudan a entender cómo se usa el sitio para mejorarlo. No identifican al usuario.',
+          save:          'Guardar preferencias'
+        },
+        cs: {
+          title:         '🍪 Používáme cookies',
+          desc:          'Používáme nezbytné cookies a cookies třetích stran (Google Analytics) ke zlepšení vašeho zážitku. Můžete je přijmout, odmítnout nebo nastavit dle svých preferencí. ',
+          policy:        'Zásady cookies',
+          reject:        'Odmítnout vše',
+          accept:        'Přijmout vše',
+          configure:     'Nastavit předvolby',
+          settingsTitle: '⚙️ Předvolby cookies',
+          essential:     'Nezbytné',
+          essentialDesc: 'Nutné pro fungování webu. Nelze je deaktivovat.',
+          alwaysOn:      'Vždy aktivní',
+          analytics:     'Analytické (Google Analytics)',
+          analyticsDesc: 'Pomáhají nám pochopit, jak se web používá, abychom ho mohli vylepšit. Neidentifikují uživatele.',
+          save:          'Uložit předvolby'
+        }
+      };
+
+      // ── Detect language (mirrors React i18n logic) ───
+      function detectLang() {
+        var saved = localStorage.getItem('locale');
+        if (saved === 'en' || saved === 'es' || saved === 'cs') return saved;
+        var langs = navigator.languages || [navigator.language || ''];
+        for (var i = 0; i < langs.length; i++) {
+          var code = langs[i].toLowerCase();
+          if (code.indexOf('cs') === 0) return 'cs';
+          if (code.indexOf('es') === 0) return 'es';
+        }
+        return 'en';
+      }
+
+      // ── Apply translations to data-i18n elements ─────
+      function applyLang() {
+        var lang = detectLang();
+        var strings = T[lang] || T.en;
+        var els = document.querySelectorAll('[data-i18n]');
+        for (var i = 0; i < els.length; i++) {
+          var key = els[i].getAttribute('data-i18n');
+          if (strings[key]) els[i].textContent = strings[key];
+        }
+      }
 
       // ── Helpers ──────────────────────────────────────
       function getConsent() {
@@ -535,7 +608,16 @@
         showSettings();
       });
 
-      // ── Init: check existing consent ─────────────────
+      // ── Init ─────────────────────────────────────────
+      applyLang();
+
+      // Re-apply when React changes locale (it sets localStorage + document.lang)
+      var _origSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (key, value) {
+        _origSetItem.call(this, key, value);
+        if (key === 'locale') applyLang();
+      };
+
       var existing = getConsent();
       if (!existing) {
         showBanner();
