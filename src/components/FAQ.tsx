@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useI18n, type TranslationKey } from '../i18n';
 
 const FAQ_ITEMS: { q: TranslationKey; a: TranslationKey }[] = [
@@ -85,6 +86,59 @@ export default function FAQ() {
             ref={sectionRef}
             className="relative overflow-hidden bg-white py-20 sm:py-28"
         >
+            <Helmet>
+                <script type="application/ld+json">{JSON.stringify({
+                    '@context': 'https://schema.org',
+                    '@type': 'FAQPage',
+                    mainEntity: [
+                        {
+                            '@type': 'Question',
+                            name: 'What are the check-in and check-out times?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Check-in is from 15:00 (3 PM) and check-out is by 11:00 (11 AM). Early check-in or late check-out may be available upon request — just ask us in advance.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'How do I book and what is the payment process?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Simply select your dates and submit a booking request. We\u2019ll confirm availability within 24 hours. Once confirmed, a 30% deposit is required within 48 hours to secure your reservation. The remaining 70% balance will be requested 14 days before your arrival via a secure payment link.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'What is the cancellation policy?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Cancellations made 14 or more days before check-in receive a full refund of the deposit. Cancellations less than 14 days before check-in are non-refundable. No-shows are charged the full reservation amount.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'What amenities are included?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'The flat includes free WiFi, air conditioning, a fully equipped kitchen, Smart TV with Netflix, private terrace with ocean views, public street parking, washing machine, linens, towels, and access to the communal pool.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'How far is the nearest beach?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Playa de la Enramada is just a 3-minute walk (250 m) from the flat. Playa del Duque, one of Tenerife\u2019s finest beaches, is a 10-minute drive or a pleasant coastal walk.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'How do I get from the airport to the flat?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Tenerife South Airport (TFS) is approximately 20 minutes by car (25 km). We can arrange airport transfers or provide detailed driving directions. Taxis and rental cars are readily available at the airport.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'What is the minimum stay and pricing?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'The minimum stay is 3 nights. Prices vary by season — check the booking section for current rates. Booking directly always guarantees the best price with no agency fees.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'Are pets allowed?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Unfortunately, pets are not allowed in the apartment due to community regulations.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'Is there a damage deposit?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Yes, a damage deposit of 300 euros will be held via card, Bizum, or cash upon check-in. The deposit will be fully refunded 24 hours after check-out, subject to a property inspection.' },
+                        },
+                    ],
+                })}</script>
+            </Helmet>
             {/* Subtle texture */}
             <div className="pointer-events-none absolute inset-0 opacity-[0.012]" style={{
                 backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)',

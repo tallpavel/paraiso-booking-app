@@ -16,6 +16,10 @@
   <!-- Discover: Beaches -->
   <url>
     <loc>https://veronicasflat.com/discover/beaches</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://veronicasflat.com/discover/beaches?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://veronicasflat.com/discover/beaches?lang=es" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://veronicasflat.com/discover/beaches?lang=cs" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://veronicasflat.com/discover/beaches" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -23,6 +27,10 @@
   <!-- Discover: Snorkeling & Diving -->
   <url>
     <loc>https://veronicasflat.com/discover/snorkeling</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://veronicasflat.com/discover/snorkeling?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://veronicasflat.com/discover/snorkeling?lang=es" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://veronicasflat.com/discover/snorkeling?lang=cs" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://veronicasflat.com/discover/snorkeling" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -30,6 +38,10 @@
   <!-- Discover: Whale & Dolphin Watching -->
   <url>
     <loc>https://veronicasflat.com/discover/whales</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://veronicasflat.com/discover/whales?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://veronicasflat.com/discover/whales?lang=es" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://veronicasflat.com/discover/whales?lang=cs" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://veronicasflat.com/discover/whales" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -37,6 +49,10 @@
   <!-- Discover: Hiking & Nature -->
   <url>
     <loc>https://veronicasflat.com/discover/hiking</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://veronicasflat.com/discover/hiking?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://veronicasflat.com/discover/hiking?lang=es" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://veronicasflat.com/discover/hiking?lang=cs" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://veronicasflat.com/discover/hiking" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -44,6 +60,10 @@
   <!-- Discover: Local Gastronomy -->
   <url>
     <loc>https://veronicasflat.com/discover/food</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://veronicasflat.com/discover/food?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://veronicasflat.com/discover/food?lang=es" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://veronicasflat.com/discover/food?lang=cs" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://veronicasflat.com/discover/food" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -56,3 +76,4 @@
   </url>
 
 </urlset>
+

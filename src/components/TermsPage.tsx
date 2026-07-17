@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n';
 import Header from './Header';
@@ -25,6 +26,12 @@ export default function TermsPage() {
 
     return (
         <>
+            <Helmet>
+                <title>Terms &amp; Conditions · Verónica's Flat Playa Paraíso</title>
+                <meta name="description" content="Booking terms, cancellation policy, house rules and guest conditions for Verónica's Flat holiday apartment in Playa Paraíso, Tenerife." />
+                <link rel="canonical" href="https://veronicasflat.com/terms" />
+                <meta name="robots" content="noindex" />
+            </Helmet>
             <Header />
             <main className="bg-sand-light">
                 {/* Hero */}

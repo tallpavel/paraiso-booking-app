@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n';
 import Header from './Header';
@@ -15,6 +16,10 @@ interface DiscoverTopic {
     image: string;
     titleKey: TranslationKey;
     heroDescKey: TranslationKey;
+    seo: {
+        title: string;
+        description: string;
+    };
     sections: {
         titleKey: TranslationKey;
         bodyKey: TranslationKey;
@@ -32,6 +37,10 @@ const TOPICS: DiscoverTopic[] = [
         image: '/discover/beachReal.jpeg',
         titleKey: 'discoverPage.beaches.title',
         heroDescKey: 'discoverPage.beaches.heroDesc',
+        seo: {
+            title: 'Best Beaches Near Playa Paraíso, Tenerife · Verónica\'s Flat',
+            description: 'Discover Playa Las Galgas, Playa de Ajabo and hidden coves — all within walking distance of our sea-view apartment in Playa Paraíso, Adeje.',
+        },
         sections: [
             { titleKey: 'discoverPage.beaches.s1Title', bodyKey: 'discoverPage.beaches.s1Body', image: '/discover/PlayaLasGalgasReal.jpeg', imageRatio: 'portrait', mapLocationId: 'beach-galgas' },
             { titleKey: 'discoverPage.beaches.s2Title', bodyKey: 'discoverPage.beaches.s2Body', image: '/discover/PlayaDeAjaboReal.jpeg', imageRatio: 'landscape', mapLocationId: 'beach-ajabo' },
@@ -47,6 +56,10 @@ const TOPICS: DiscoverTopic[] = [
         image: '/discover/DivingReal.JPG',
         titleKey: 'discoverPage.snorkeling.title',
         heroDescKey: 'discoverPage.snorkeling.heroDesc',
+        seo: {
+            title: 'Snorkeling & Diving in Playa Paraíso, Tenerife · Verónica\'s Flat',
+            description: 'Explore Tenerife\'s underwater world from our doorstep. Best dive sites, local operators and tips for guests staying in Playa Paraíso, Adeje.',
+        },
         sections: [
             { titleKey: 'discoverPage.snorkeling.s1Title', bodyKey: 'discoverPage.snorkeling.s1Body' },
             { titleKey: 'discoverPage.snorkeling.s2Title', bodyKey: 'discoverPage.snorkeling.s2Body' },
@@ -60,6 +73,10 @@ const TOPICS: DiscoverTopic[] = [
         image: '/discover/whale.png',
         titleKey: 'discoverPage.whales.title',
         heroDescKey: 'discoverPage.whales.heroDesc',
+        seo: {
+            title: 'Whale & Dolphin Watching in Tenerife · Verónica\'s Flat',
+            description: 'Year-round pilot whales and bottlenose dolphins near Playa Paraíso. Best tours departing from Los Cristianos, minutes from our holiday apartment.',
+        },
         sections: [
             { titleKey: 'discoverPage.whales.s1Title', bodyKey: 'discoverPage.whales.s1Body' },
             { titleKey: 'discoverPage.whales.s2Title', bodyKey: 'discoverPage.whales.s2Body' },
@@ -73,6 +90,10 @@ const TOPICS: DiscoverTopic[] = [
         image: '/discover/hiking.png',
         titleKey: 'discoverPage.hiking.title',
         heroDescKey: 'discoverPage.hiking.heroDesc',
+        seo: {
+            title: 'Hiking & Nature Trails Near Playa Paraíso · Verónica\'s Flat',
+            description: 'From coastal walks to Teide National Park — the best hiking routes accessible from our sea-view apartment in Playa Paraíso, Tenerife.',
+        },
         sections: [
             { titleKey: 'discoverPage.hiking.s1Title', bodyKey: 'discoverPage.hiking.s1Body' },
             { titleKey: 'discoverPage.hiking.s2Title', bodyKey: 'discoverPage.hiking.s2Body' },
@@ -86,6 +107,10 @@ const TOPICS: DiscoverTopic[] = [
         image: '/discover/FoodReal.jpeg',
         titleKey: 'discoverPage.food.title',
         heroDescKey: 'discoverPage.food.heroDesc',
+        seo: {
+            title: 'Local Food & Restaurants Near Playa Paraíso · Verónica\'s Flat',
+            description: 'Canarian cuisine, fresh fish and tapas bars near our apartment in Adeje, Tenerife. Best restaurants and foodie tips for guests in Playa Paraíso.',
+        },
         sections: [
             { titleKey: 'discoverPage.food.s1Title', bodyKey: 'discoverPage.food.s1Body' },
             { titleKey: 'discoverPage.food.s2Title', bodyKey: 'discoverPage.food.s2Body' },
@@ -158,6 +183,11 @@ export default function DiscoverDetailPage() {
 
     return (
         <>
+            <Helmet>
+                <title>{topic.seo.title}</title>
+                <meta name="description" content={topic.seo.description} />
+                <link rel="canonical" href={`https://veronicasflat.com/discover/${topic.slug}`} />
+            </Helmet>
             <Header />
             <main className={`transition-all duration-600 ease-out ${pageReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                 {/* Hero */}

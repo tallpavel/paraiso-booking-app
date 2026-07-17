@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import './index.css';
 import { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
@@ -35,14 +36,19 @@ function PublicSite() {
   }, [hash]);
   return (
     <>
+      <Helmet>
+        <title>Sea View Holiday Apartment in Playa Paraíso, Tenerife | Book Direct</title>
+        <meta name="description" content="Holiday apartment with sea views in Playa Paraíso, Adeje. Pool, terrace, free WiFi &amp; 300 days of sunshine. Book direct — save up to 15%. ★ 5.0 rated." />
+        <link rel="canonical" href="https://veronicasflat.com" />
+      </Helmet>
       <a
-        href="#amenities"
+        href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-ocean focus:px-4 focus:py-2 focus:text-white"
       >
         Skip to main content
       </a>
       <Header />
-      <main>
+      <main id="main-content">
         <HeroSection />
         <AmenitiesGrid />
         <MediaGallery />
