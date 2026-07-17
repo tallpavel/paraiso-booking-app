@@ -10,6 +10,7 @@ const FAQ_ITEMS: { q: TranslationKey; a: TranslationKey }[] = [
     { q: 'faq.q6', a: 'faq.a6' },
     { q: 'faq.q7', a: 'faq.a7' },
     { q: 'faq.q8', a: 'faq.a8' },
+    { q: 'faq.q9', a: 'faq.a9' },
 ];
 
 function AccordionItem({ question, answer, isOpen, onToggle, index }: {

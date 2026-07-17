@@ -237,6 +237,8 @@ const translations = {
         'faq.a7': 'The minimum stay is 3 nights. Prices vary by season — check the booking section for current rates. Booking directly with us always guarantees the best price with no agency fees.',
         'faq.q8': 'Are pets allowed?',
         'faq.a8': 'Unfortunately, pets are not allowed in the apartment due to community regulations. We apologize for any inconvenience.',
+        'faq.q9': 'Is there a damage deposit?',
+        'faq.a9': 'Yes, a damage deposit of 300 euros will be held via card, Bizum, or cash upon check-in. The deposit will be fully refunded 24 hours after check-out, subject to a property inspection.',
         'faq.moreQuestions': 'Still have questions?',
         'faq.contactUs': 'Get in touch with us',
 
@@ -417,6 +419,7 @@ const translations = {
         'terms.s3.paypalDesc': 'Pay using your PayPal account balance, linked bank account, or card on file. You will receive a PayPal.me payment link via email. PayPal Buyer Protection applies to eligible transactions.',
         'terms.s3.p3': 'All bank or payment processing fees are the responsibility of the Guest. The owner reserves the right to offer or restrict specific payment methods at any time.',
         'terms.s3.p4': 'A cleaning fee may apply and will be communicated before confirmation. Tourist tax (Impuesto sobre estancias turísticas), if applicable, is included in the nightly rate.',
+        'terms.s3.p5': 'A damage deposit of 300 euros is required upon arrival. This amount will be held via credit card, Bizum, or cash. The deposit will be fully refunded within 24 hours after check-out, provided no damages have occurred to the property.',
 
         // S4 – Cancellation & Refunds
         'terms.s4.title': 'Cancellation & Refund Policy',
@@ -768,6 +771,8 @@ const translations = {
         'faq.a7': 'La estancia mínima es de 3 noches. Los precios varían según la temporada — consulta la sección de reservas para tarifas actuales. Reservar directamente siempre garantiza el mejor precio sin comisiones.',
         'faq.q8': '¿Se admiten mascotas?',
         'faq.a8': 'Lamentablemente, no se admiten mascotas en el apartamento debido a las normas de la comunidad. Disculpe las molestias.',
+        'faq.q9': '¿Hay un depósito por daños?',
+        'faq.a9': 'Sí, al hacer el check-in se retendrá un depósito por daños de 300 euros (tarjeta, Bizum o efectivo). El depósito se reembolsará íntegramente 24 horas después del check-out, tras una inspección de la propiedad.',
         'faq.moreQuestions': '¿Tienes más preguntas?',
         'faq.contactUs': 'Contáctanos',
 
@@ -945,6 +950,7 @@ const translations = {
         'terms.s3.paypalDesc': 'Paga usando tu saldo de PayPal, cuenta bancaria vinculada o tarjeta asociada. Recibirás un enlace de pago PayPal.me por email. La Protección al Comprador de PayPal se aplica a las transacciones elegibles.',
         'terms.s3.p3': 'Todos los gastos bancarios o de procesamiento de pago corren a cargo del Huésped. El propietario se reserva el derecho de ofrecer o restringir métodos de pago específicos en cualquier momento.',
         'terms.s3.p4': 'Puede aplicarse una tarifa de limpieza, que se comunicará antes de la confirmación. El impuesto turístico (Impuesto sobre estancias turísticas), si corresponde, está incluido en la tarifa por noche.',
+        'terms.s3.p5': 'A la llegada se requiere un depósito por daños de 300 euros. Esta cantidad se retendrá mediante tarjeta, Bizum o en efectivo. El depósito será devuelto en su totalidad dentro de las 24 horas posteriores a la salida, siempre que no se hayan producido daños en la propiedad.',
 
         'terms.s4.title': 'Política de Cancelación y Reembolso',
         'terms.s4.p1': 'Nuestra política de cancelación está diseñada para ser justa con nuestros huéspedes y al mismo tiempo proteger nuestro calendario de vacantes de último momento. Todas las cancelaciones deben comunicarse por escrito (email).',
@@ -1289,6 +1295,8 @@ const translations = {
         'faq.a7': 'Minimální pobyt jsou 3 noci. Ceny se liší podle sezóny — aktuální ceny najdete v sekci rezervací. Přímá rezervace u nás vždy garantuje nejlepší cenu bez provizí.',
         'faq.q8': 'Jsou povolena domácí zvířata?',
         'faq.a8': 'Bohužel domácí zvířata nejsou v apartmánu povolena kvůli předpisům komunity. Omlouváme se za případné nepříjemnosti.',
+        'faq.q9': 'Vybírá se kauce za případné škody?',
+        'faq.a9': 'Ano, při check-inu bude zadržena kauce za případné škody ve výši 300 eur (kartou, přes Bizum nebo v hotovosti). Kauce bude plně vrácena 24 hodin po check-outu po kontrole apartmánu.',
         'faq.moreQuestions': 'Máte další otázky?',
         'faq.contactUs': 'Kontaktujte nás',
 
@@ -1466,6 +1474,7 @@ const translations = {
         'terms.s3.paypalDesc': 'Plaťte pomocí zůstatku na PayPal účtu, propojeného bankovního účtu nebo uložené karty. Obdržíte platební odkaz PayPal.me emailem. Na způsobilé transakce se vztahuje Ochrana kupujícího PayPal.',
         'terms.s3.p3': 'Veškeré bankovní poplatky a poplatky za zpracování platby hradí Host. Vlastník si vyhrazuje právo kdykoli nabídnout nebo omezit konkrétní platební metody.',
         'terms.s3.p4': 'Může být účtován poplatek za úklid, který bude sdělen před potvrzením. Turistická daň, pokud se uplatňuje, je zahrnuta v ceně za noc.',
+        'terms.s3.p5': 'Při příjezdu je vyžadována kauce za případné škody ve výši 300 eur. Tato částka bude zadržena pomocí platební karty, přes Bizum nebo v hotovosti. Kauce bude plně vrácena do 24 hodin po odjezdu za předpokladu, že na nemovitosti nevznikly žádné škody.',
 
         'terms.s4.title': 'Storno a refundační politika',
         'terms.s4.p1': 'Naše storno politika je navržena tak, aby byla spravedlivá k hostům a zároveň chránila náš kalendář před zrušeními na poslední chvíli. Veškerá storna musí být oznámena písemně (emailem).',
