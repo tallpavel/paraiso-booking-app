@@ -25,7 +25,8 @@ function toDateStr(d: Date): string {
 }
 
 function formatDate(dateStr: string): string {
-    const [y, m, d] = dateStr.split('-').map(Number);
+    const dateOnly = dateStr.split('T')[0];
+    const [y, m, d] = dateOnly.split('-').map(Number);
     return new Date(y, m - 1, d, 12, 0, 0).toLocaleDateString('en-GB', {
         weekday: 'short',
         day: 'numeric',
