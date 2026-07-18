@@ -20,7 +20,7 @@ const translations = {
         'hero.subtitle': 'Wake up to ocean views, year-round sunshine, and the serenity of southern Tenerife. Book directly\u00a0— no agency fees.',
         'hero.cta': 'Check Availability',
         'hero.explore': 'Explore the Flat',
-        'hero.trust': 'Loved by 120+ guests',
+        'hero.trust': 'Top rated by guests',
 
         // Amenities
         'amenities.label': 'What We Offer',
@@ -556,7 +556,7 @@ const translations = {
         'hero.subtitle': 'Despierta con vistas al océano, sol todo el año y la tranquilidad del sur de Tenerife. Reserva directamente\u00a0— sin comisiones.',
         'hero.cta': 'Ver Disponibilidad',
         'hero.explore': 'Explorar el Apartamento',
-        'hero.trust': 'Valorado por más de 120 huéspedes',
+        'hero.trust': 'Mejor valorado por los huéspedes',
 
         // Amenities
         'amenities.label': 'Qué Ofrecemos',
@@ -1082,7 +1082,7 @@ const translations = {
         'hero.subtitle': 'Probuďte se s výhledem na oceán, celoročním sluncem a klidem jižního Tenerife. Rezervujte přímo\u00a0— bez provizí.',
         'hero.cta': 'Zkontrolovat Dostupnost',
         'hero.explore': 'Prohlédnout Apartmán',
-        'hero.trust': 'Oblíbený u více než 120 hostů',
+        'hero.trust': 'Skvěle hodnoceno hosty',
 
         // Amenities
         'amenities.label': 'Co Nabízíme',
