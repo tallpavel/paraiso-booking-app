@@ -207,22 +207,13 @@ describe('API Service', () => {
             // Mocking multiple calls to fetch for each month
             mockSuccessfulFetch(expectedDailyRates[0]); // Mock for Jan 2024
             mockSuccessfulFetch(expectedDailyRates[1]); // Mock for Feb 2024
-            mockSuccessfulFetch([]); // Mock for Mar 2024
-            mockSuccessfulFetch([]); // Mock for Apr 2024
-            mockSuccessfulFetch([]);
-            mockSuccessfulFetch([]);
-            mockSuccessfulFetch([]);
-            mockSuccessfulFetch([]);
-            mockSuccessfulFetch([]);
-            mockSuccessfulFetch([]);
-            mockSuccessfulFetch([]);
-            mockSuccessfulFetch([]); // Mock for Dec 2024
+            for (let i = 2; i < 36; i++) mockSuccessfulFetch([]);
 
             const result = await api.fetchDailyRates();
             expect(result).toEqual(expectedDailyRates);
 
             // Check that fetch was called 12 times with correct parameters
-            expect(mockFetch).toHaveBeenCalledTimes(12);
+            expect(mockFetch).toHaveBeenCalledTimes(36);
             expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/api/daily-rates?year=2024&month=1&_t='));
             expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/api/daily-rates?year=2024&month=2&_t='));
             expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/api/daily-rates?year=2024&month=12&_t='));
@@ -234,14 +225,14 @@ describe('API Service', () => {
             const mockDate = new Date('2024-01-15T10:00:00Z');
             vi.useFakeTimers().setSystemTime(mockDate);
 
-            // Mocking all 12 calls to return an error or empty
-            for (let i = 0; i < 12; i++) {
+            // Mocking all 36 calls to return an error or empty
+            for (let i = 0; i < 36; i++) {
                 mockFetch.mockResolvedValueOnce({ ok: false, status: 500, json: async () => ({ message: 'Error' }) });
             }
 
             const result = await api.fetchDailyRates();
             expect(result).toEqual([]);
-            expect(mockFetch).toHaveBeenCalledTimes(12);
+            expect(mockFetch).toHaveBeenCalledTimes(36);
 
             vi.useRealTimers();
         });

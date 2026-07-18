@@ -153,13 +153,13 @@ export async function fetchDailyRates(): Promise<DailyRate[]> {
     const year = now.getFullYear();
     const month = now.getMonth() + 1; // 1-indexed
 
-    // Fetch current month + next 11 months in parallel
+    // Fetch current month + next 35 months in parallel (3 years total)
     const fetches: Promise<DailyRate[]>[] = [];
     const cacheBust = Date.now(); // prevent browser caching
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 36; i++) {
         let m = month + i;
         let y = year;
-        if (m > 12) { m -= 12; y++; }
+        while (m > 12) { m -= 12; y++; }
 
         fetches.push(
             fetch(`${API_BASE}/daily-rates?year=${y}&month=${m}&_t=${cacheBust}`)
