@@ -89,7 +89,20 @@ export default function PricingPanel() {
 
     // ── Add / update rate ────────────────────────────────────────────
     const handleAdd = useCallback(async () => {
-        if (!token || !newDate || !newPrice) return;
+        if (!token) return;
+        if (!newDate) {
+            setAddError('Please select a start date');
+            return;
+        }
+        if (useRange && (!rangeEnd || rangeEnd < newDate)) {
+            setAddError('Please select a valid end date (must be after start date)');
+            return;
+        }
+        if (!newPrice) {
+            setAddError('Please enter a price per night');
+            return;
+        }
+
         const price = parseFloat(newPrice);
         if (isNaN(price) || price < 0) {
             setAddError('Please enter a valid price');
@@ -100,7 +113,7 @@ export default function PricingPanel() {
         setAddError('');
 
         try {
-            if (useRange && rangeEnd && rangeEnd > newDate) {
+            if (useRange) {
                 const cursor = new Date(newDate + 'T12:00:00');
                 const end = new Date(rangeEnd + 'T12:00:00');
                 while (cursor <= end) {
@@ -410,7 +423,7 @@ export default function PricingPanel() {
 
                         <button
                             onClick={handleAdd}
-                            disabled={isAdding || !newDate || !newPrice}
+                            disabled={isAdding}
                             className="admin-btn admin-btn--primary"
                         >
                             {isAdding ? 'Saving…' : useRange ? '💰 Set Range Price' : '💰 Set Price'}
