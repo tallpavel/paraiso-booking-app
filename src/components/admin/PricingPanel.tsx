@@ -25,7 +25,8 @@ function toDateStr(d: Date): string {
 }
 
 function formatDate(dateStr: string): string {
-    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-GB', {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d, 12, 0, 0).toLocaleDateString('en-GB', {
         weekday: 'short',
         day: 'numeric',
         month: 'short',
@@ -114,8 +115,12 @@ export default function PricingPanel() {
 
         try {
             if (useRange) {
-                const cursor = new Date(newDate + 'T12:00:00');
-                const end = new Date(rangeEnd + 'T12:00:00');
+                const [sy, sm, sd] = newDate.split('-').map(Number);
+                const cursor = new Date(sy, sm - 1, sd, 12, 0, 0);
+
+                const [ey, em, ed] = rangeEnd.split('-').map(Number);
+                const end = new Date(ey, em - 1, ed, 12, 0, 0);
+
                 while (cursor <= end) {
                     const dateStr = toDateStr(cursor);
                     await createDailyRate(token, dateStr, price, newNote || undefined);
