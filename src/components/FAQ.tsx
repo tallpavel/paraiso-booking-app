@@ -12,6 +12,11 @@ const FAQ_ITEMS: { q: TranslationKey; a: TranslationKey }[] = [
     { q: 'faq.q7', a: 'faq.a7' },
     { q: 'faq.q8', a: 'faq.a8' },
     { q: 'faq.q9', a: 'faq.a9' },
+    { q: 'faq.q10', a: 'faq.a10' },
+    { q: 'faq.q11', a: 'faq.a11' },
+    { q: 'faq.q12', a: 'faq.a12' },
+    { q: 'faq.q13', a: 'faq.a13' },
+    { q: 'faq.q14', a: 'faq.a14' },
 ];
 
 function AccordionItem({ question, answer, isOpen, onToggle, index }: {
@@ -68,6 +73,11 @@ export default function FAQ() {
     const sectionRef = useRef<HTMLElement>(null);
     const [isVisible, setIsVisible] = useState(false);
     const [openIndex, setOpenIndex] = useState<number | null>(null);
+    const [expanded, setExpanded] = useState(false);
+
+    const INITIAL_COUNT = 7;
+    const visibleItems = expanded ? FAQ_ITEMS : FAQ_ITEMS.slice(0, INITIAL_COUNT);
+    const hasMore = FAQ_ITEMS.length > INITIAL_COUNT;
 
     useEffect(() => {
         const el = sectionRef.current;
@@ -136,6 +146,31 @@ export default function FAQ() {
                             name: 'Is there a damage deposit?',
                             acceptedAnswer: { '@type': 'Answer', text: 'Yes, a damage deposit of 300 euros will be held via card, Bizum, or cash upon check-in. The deposit will be fully refunded 24 hours after check-out, subject to a property inspection.' },
                         },
+                        {
+                            '@type': 'Question',
+                            name: 'Is Playa Paraíso a good area to stay in Tenerife?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Yes. Playa Paraíso is a quiet residential area in the municipality of Adeje, on Tenerife\u2019s sunny southwest coast. It offers sandy beaches within walking distance, year-round temperatures of 22\u201328\u00b0C, and is 20 minutes from the airport. Ideal for couples and families seeking a peaceful base with easy access to Costa Adeje.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'How far is Playa Paraíso from Tenerife South Airport?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Playa Paraíso is approximately 25 km (20 minutes by car) from Tenerife South Airport (TFS). Taxis cost around \u20ac30\u201335, and we can arrange airport transfers on request. Rental cars are readily available at the airport.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'Can you book holiday apartments in Tenerife directly without Booking.com?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Yes. Many holiday apartments in Tenerife, including Ver\u00f3nica\u2019s Flat, offer direct booking through their own website. Booking directly with the owner saves you 10\u201315% in platform commissions, gives you direct communication, and often comes with flexible cancellation terms.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'What is there to do near Playa Paraíso?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Playa Paraíso offers sandy beaches (3-min walk), snorkelling, whale watching excursions, and is a short drive from Siam Park, Teide National Park, and the charming village of Masca. Local restaurants and a supermarket are within a 2-minute walk.' },
+                        },
+                        {
+                            '@type': 'Question',
+                            name: 'What is the best time to visit Playa Paraíso, Tenerife?',
+                            acceptedAnswer: { '@type': 'Answer', text: 'Tenerife enjoys year-round warm weather, making any month a good time to visit Playa Paraíso. Peak season (December\u2013March) is busiest. For lower prices and fewer crowds, consider April\u2013June or September\u2013November. Sea temperatures are warmest from August to October.' },
+                        },
                     ],
                 })}</script>
             </Helmet>
@@ -165,7 +200,7 @@ export default function FAQ() {
 
                 {/* Accordion */}
                 <div className={`overflow-hidden rounded-2xl bg-white shadow-lg shadow-navy/[0.04] ring-1 ring-navy/[0.06] transition-all duration-700 delay-200 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-                    {FAQ_ITEMS.map((item, i) => (
+                    {visibleItems.map((item, i) => (
                         <AccordionItem
                             key={item.q}
                             question={t(item.q)}
@@ -176,6 +211,31 @@ export default function FAQ() {
                         />
                     ))}
                 </div>
+
+                {/* Show more / less toggle */}
+                {hasMore && (
+                    <div className={`mt-6 text-center transition-all duration-500 delay-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setExpanded(prev => !prev);
+                                // Close any open accordion item that's about to be hidden
+                                if (expanded && openIndex !== null && openIndex >= INITIAL_COUNT) {
+                                    setOpenIndex(null);
+                                }
+                            }}
+                            className="group inline-flex items-center gap-2 rounded-full border border-navy/[0.1] bg-white px-6 py-2.5 text-sm font-semibold text-navy shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-navy/[0.2] hover:shadow-md"
+                        >
+                            {expanded ? t('faq.showLess') : t('faq.showMore')}
+                            <svg
+                                className={`h-4 w-4 text-ocean transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+                )}
 
             </div>
         </section>

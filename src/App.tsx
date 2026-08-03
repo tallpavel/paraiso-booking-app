@@ -12,6 +12,7 @@ import DiscoverSection from './components/DiscoverSection';
 import CustomerReviews from './components/CustomerReviews';
 import BookingCTA from './components/BookingCTA';
 import FAQ from './components/FAQ';
+import WhyBookDirect from './components/WhyBookDirect';
 import FloatingContactButton from './components/FloatingContactButton';
 import Footer from './components/Footer';
 import AdminLogin from './components/admin/AdminLogin';
@@ -37,8 +38,8 @@ function PublicSite() {
   return (
     <>
       <Helmet>
-        <title>Sea View Holiday Apartment in Playa Paraíso, Tenerife | Book Direct</title>
-        <meta name="description" content="Holiday apartment with sea views in Playa Paraíso, Adeje. Pool, terrace, free WiFi &amp; 300 days of sunshine. Book direct — save up to 15%. ★ 5.0 rated." />
+        <title>Holiday Apartment in Playa Paraíso, Tenerife | Book Direct</title>
+        <meta name="description" content="Modern holiday apartment with ocean views in Playa Paraíso, Tenerife. Pool, terrace &amp; WiFi. Book direct — save up to 15% on booking fees. ★ 5.0 rated." />
         <link rel="canonical" href="https://veronicasflat.com" />
       </Helmet>
       <a
@@ -56,6 +57,7 @@ function PublicSite() {
         <DiscoverSection />
         <CustomerReviews />
         <FAQ />
+        <WhyBookDirect />
         <BookingCTA />
       </main>
       <Footer />
